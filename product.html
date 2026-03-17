@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetlyHannahMade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#fdf2f8',
+              100: '#fce7f3',
+              200: '#fbcfe8',
+              300: '#f9a8d4',
+              400: '#f472b6',
+              500: '#ec4899',
+              600: '#db2777',
+              700: '#be185d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold text-brand-600 tracking-tight hover:text-brand-700 transition-colors">
+        SweetlyHannahMade
+      </a>
+      <nav class="flex items-center gap-6">
+        <a href="category.html?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Patterns</a>
+        <a href="category.html?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Plushies</a>
+        <div id="social-links" class="flex items-center gap-3 ml-2"></div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Breadcrumb -->
+  <nav class="max-w-6xl mx-auto px-4 py-3 text-sm text-gray-500" aria-label="Breadcrumb">
+    <ol class="flex items-center gap-1">
+      <li><a href="index.html" class="hover:text-brand-600 transition-colors">Home</a></li>
+      <li class="text-gray-400">&rsaquo;</li>
+      <li><a id="breadcrumb-category" href="#" class="hover:text-brand-600 transition-colors"></a></li>
+      <li class="text-gray-400">&rsaquo;</li>
+      <li id="breadcrumb-product" class="text-gray-700 font-medium"></li>
+    </ol>
+  </nav>
+
+  <!-- Not found state -->
+  <div id="not-found-state" class="hidden max-w-6xl mx-auto px-4 py-20 text-center">
+    <p class="text-5xl mb-4">&#128269;</p>
+    <p class="text-gray-500 text-lg font-medium">Product not found.</p>
+    <a href="index.html" class="inline-block mt-4 text-brand-600 hover:text-brand-700 font-medium transition-colors">
+      &larr; Back to home
+    </a>
+  </div>
+
+  <!-- Product detail -->
+  <main id="product-detail" class="hidden max-w-6xl mx-auto px-4 py-10">
+    <div class="flex flex-col md:flex-row gap-10">
+
+      <!-- Left column: image gallery + video -->
+      <div class="w-full md:w-1/2 flex-shrink-0">
+        <!-- Main image -->
+        <div class="rounded-2xl overflow-hidden bg-brand-50 border border-brand-100 shadow-md aspect-square">
+          <img id="main-image" src="" alt="" class="w-full h-full object-cover">
+        </div>
+
+        <!-- Thumbnail strip -->
+        <div id="thumbnail-strip" class="flex gap-3 mt-4 flex-wrap"></div>
+
+        <!-- Video player -->
+        <div id="video-container" class="hidden mt-6">
+          <video id="product-video" controls class="w-full rounded-xl shadow-md bg-black">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+
+      <!-- Right column: product info -->
+      <div class="flex-1 flex flex-col gap-5">
+        <!-- Name -->
+        <h1 id="product-name" class="text-3xl md:text-4xl font-bold text-gray-800 leading-tight"></h1>
+
+        <!-- Price -->
+        <p id="product-price" class="text-2xl font-bold text-brand-600"></p>
+
+        <!-- Difficulty badge -->
+        <span id="difficulty-badge" class="hidden inline-flex self-start items-center px-3 py-1 rounded-full text-sm font-semibold bg-brand-100 text-brand-700"></span>
+
+        <!-- Tags -->
+        <div id="tags-container" class="flex flex-wrap gap-2"></div>
+
+        <!-- Buy Now button -->
+        <a id="buy-now-btn"
+           href="#"
+           class="w-full md:w-auto inline-block text-center bg-brand-500 hover:bg-brand-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-colors shadow-md">
+          Buy Now
+        </a>
+
+        <!-- Description -->
+        <div id="product-description" class="product-description prose prose-sm text-gray-600 leading-relaxed mt-2"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-gray-300 py-10 px-4 mt-16">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <p class="text-white font-bold text-lg">SweetlyHannahMade</p>
+        <p class="text-sm mt-1 text-gray-400">Handmade with love</p>
+      </div>
+      <nav class="flex flex-wrap gap-4 text-sm">
+        <a href="category.html?id=patterns" class="hover:text-white transition-colors">Patterns</a>
+        <a href="category.html?id=plushies" class="hover:text-white transition-colors">Plushies</a>
+        <a href="policy.html#shipping" class="hover:text-white transition-colors">Shipping Policy</a>
+        <a href="policy.html#refunds" class="hover:text-white transition-colors">Refunds</a>
+        <a href="policy.html#privacy" class="hover:text-white transition-colors">Privacy Policy</a>
+      </nav>
+      <p class="text-sm text-gray-500">&copy; <span id="footer-year"></span> SweetlyHannahMade</p>
+    </div>
+  </footer>
+
+  <script src="assets/shop.js"></script>
+  <script>
+    const INSTAGRAM_PATH = 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z';
+    const TIKTOK_PATH = 'M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.77a4.85 4.85 0 01-1.01-.08z';
+
+    function makeSocialAnchor(href, label, svgPath) {
+      const a = document.createElement('a');
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', label);
+      a.className = 'text-gray-500 hover:text-brand-500 transition-colors';
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'w-5 h-5');
+      svg.setAttribute('fill', 'currentColor');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', svgPath);
+      svg.appendChild(path);
+      a.appendChild(svg);
+      return a;
+    }
+
+    async function init() {
+      const productId = getParam('id');
+      const inv = await getInventory();
+      const product = inv.products.find(p => p.id === productId);
+
+      // Footer year always
+      document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+      // Header social icons
+      const socialLinks = document.getElementById('social-links');
+      const shop = inv.shop;
+      if (shop && shop.instagram) {
+        socialLinks.appendChild(makeSocialAnchor(shop.instagram, 'Instagram', INSTAGRAM_PATH));
+      }
+      if (shop && shop.tiktok) {
+        socialLinks.appendChild(makeSocialAnchor(shop.tiktok, 'TikTok', TIKTOK_PATH));
+      }
+
+      if (!product) {
+        document.getElementById('not-found-state').classList.remove('hidden');
+        return;
+      }
+
+      // Show main product detail section
+      document.getElementById('product-detail').classList.remove('hidden');
+
+      // Document title
+      document.title = product.name + ' \u2014 SweetlyHannahMade';
+
+      // Breadcrumb — textContent only
+      const category = (inv.categories || []).find(c => c.id === product.categoryId);
+      const breadcrumbCategory = document.getElementById('breadcrumb-category');
+      if (category) {
+        breadcrumbCategory.textContent = category.name;
+        breadcrumbCategory.href = 'category.html?id=' + encodeURIComponent(category.id);
+      } else {
+        breadcrumbCategory.textContent = product.categoryId || 'Shop';
+        breadcrumbCategory.href = 'index.html';
+      }
+      document.getElementById('breadcrumb-product').textContent = product.name;
+
+      // Name and price via textContent
+      document.getElementById('product-name').textContent = product.name;
+      document.getElementById('product-price').textContent = formatPrice(product.price);
+
+      // Main image — first in images array
+      const mainImage = document.getElementById('main-image');
+      const images = product.images && product.images.length ? product.images : [];
+      if (images.length > 0) {
+        mainImage.src = images[0];
+        mainImage.alt = product.name;
+      }
+
+      // Thumbnail strip — click listener swaps main image src using thumb.src
+      const thumbStrip = document.getElementById('thumbnail-strip');
+      if (images.length > 1) {
+        images.forEach((imgSrc, index) => {
+          const thumb = document.createElement('img');
+          thumb.src = imgSrc;
+          thumb.alt = product.name;
+          thumb.className = 'w-20 h-20 object-cover rounded-xl border-2 cursor-pointer transition-all ' +
+            (index === 0 ? 'border-brand-500 shadow-md' : 'border-brand-100 hover:border-brand-400');
+          thumb.addEventListener('click', () => {
+            mainImage.src = thumb.src;
+            thumbStrip.querySelectorAll('img').forEach(t => {
+              t.classList.remove('border-brand-500', 'shadow-md');
+              t.classList.add('border-brand-100');
+            });
+            thumb.classList.remove('border-brand-100');
+            thumb.classList.add('border-brand-500', 'shadow-md');
+          });
+          thumbStrip.appendChild(thumb);
+        });
+      }
+
+      // Video — only show if product.video is a non-empty string
+      if (product.video && typeof product.video === 'string' && product.video.trim() !== '') {
+        const videoSrc = product.video.trim();
+        // Only allow src that starts with 'assets/' (sanitize)
+        if (videoSrc.startsWith('assets/')) {
+          const videoEl = document.getElementById('product-video');
+          videoEl.src = videoSrc;
+          document.getElementById('video-container').classList.remove('hidden');
+        }
+      }
+
+      // Difficulty badge — show only if product.difficulty is truthy (not null, not empty string)
+      if (product.difficulty) {
+        const badge = document.getElementById('difficulty-badge');
+        badge.textContent = product.difficulty;
+        badge.classList.remove('hidden');
+      }
+
+      // Tags — escapeHtml() in template literals
+      const tagsContainer = document.getElementById('tags-container');
+      if (product.tags && product.tags.length) {
+        tagsContainer.insertAdjacentHTML('beforeend', product.tags.map(tag =>
+          `<span class="inline-block px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-medium">${escapeHtml(tag)}</span>`
+        ).join(''));
+      }
+
+      // Buy Now button — href to stripeLink; disable if out of stock
+      const buyBtn = document.getElementById('buy-now-btn');
+      if (product.inStock === false) {
+        buyBtn.removeAttribute('href');
+        buyBtn.textContent = 'Currently Unavailable';
+        buyBtn.className = 'w-full md:w-auto inline-block text-center bg-gray-300 text-gray-500 font-bold text-lg px-8 py-4 rounded-full cursor-not-allowed';
+        buyBtn.setAttribute('aria-disabled', 'true');
+      } else {
+        buyBtn.href = product.stripeLink;
+        buyBtn.target = '_blank';
+        buyBtn.rel = 'noopener noreferrer';
+      }
+
+      // Description — render markdown, sanitize with DOMPurify before inserting
+      const descriptionEl = document.getElementById('product-description');
+      descriptionEl.innerHTML = DOMPurify.sanitize(renderMarkdown(product.description));
+    }
+
+    init();
+  </script>
+
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', user => {
+        if (!user) {
+          window.netlifyIdentity.on('login', () => {
+            document.location.href = '/admin/';
+          });
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
