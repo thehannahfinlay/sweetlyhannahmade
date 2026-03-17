@@ -1,0 +1,66 @@
+{
+  "shop": {
+    "name": "SweetlyHannahMade",
+    "tagline": "Handmade with love, stitch by stitch",
+    "announcement": "Free pattern with every plushie purchase!",
+    "about": "Hi, I'm Hannah! I'm a passionate crocheter who loves bringing adorable characters to life. Every plushie and pattern is made with care and lots of love.",
+    "aboutPhoto": "assets/images/hannah.jpg",
+    "instagram": "https://instagram.com/sweetlyhannahmade",
+    "tiktok": "https://tiktok.com/@sweetlyhannahmade",
+    "beholdEmbedId": "YOUR_BEHOLD_EMBED_ID"
+  },
+  "testimonials": [
+    { "name": "Sarah M.", "text": "The bunny plushie is absolutely adorable. The quality is amazing!", "rating": 5 },
+    { "name": "Jessica L.", "text": "The pattern was so well written and easy to follow.", "rating": 5 },
+    { "name": "Emily R.", "text": "Hannah is so talented. I've bought three plushies now!", "rating": 5 }
+  ],
+  "trustBadges": [
+    { "icon": "heart", "text": "100% Handmade" },
+    { "icon": "download", "text": "Instant PDF Download" },
+    { "icon": "star", "text": "Made with Love" }
+  ],
+  "categories": [
+    {
+      "id": "patterns",
+      "name": "Crochet Patterns",
+      "description": "Downloadable PDF patterns for all skill levels",
+      "coverImage": "assets/images/patterns-cover.jpg"
+    },
+    {
+      "id": "plushies",
+      "name": "Plushies",
+      "description": "Handmade crochet plushies, ready to ship",
+      "coverImage": "assets/images/plushies-cover.jpg"
+    }
+  ],
+  "products": [
+    {
+      "id": "sample-bunny-pattern",
+      "categoryId": "patterns",
+      "name": "Bunny Amigurumi Pattern",
+      "price": 5.00,
+      "featured": true,
+      "images": ["assets/images/sample-product.jpg"],
+      "video": "",
+      "description": "This beginner-friendly bunny pattern will guide you through creating the most adorable little bunny!\n\n**What's included:**\n- 10-page PDF pattern\n- Full photo tutorial\n- Yarn and materials list\n- Finished size: approx. 6 inches tall",
+      "difficulty": "Beginner",
+      "tags": ["bunny", "beginner", "PDF", "amigurumi"],
+      "stripeLink": "https://buy.stripe.com/REPLACE_WITH_YOUR_LINK",
+      "inStock": true
+    },
+    {
+      "id": "sample-bear-plushie",
+      "categoryId": "plushies",
+      "name": "Teddy Bear Plushie",
+      "price": 35.00,
+      "featured": true,
+      "images": ["assets/images/sample-product.jpg"],
+      "video": "",
+      "description": "A handmade teddy bear crocheted with soft, high-quality yarn.\n\n**Details:**\n- Premium acrylic yarn\n- Safety eyes\n- Approx. 8 inches tall\n- Ships within 3-5 business days",
+      "difficulty": null,
+      "tags": ["bear", "plushie", "gift", "handmade"],
+      "stripeLink": "https://buy.stripe.com/REPLACE_WITH_YOUR_LINK",
+      "inStock": true
+    }
+  ]
+}
