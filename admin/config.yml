@@ -51,7 +51,8 @@ collections:
             widget: list
             fields:
               - {label: "ID (no spaces, e.g. bunny-pattern)", name: id, widget: string}
-              - {label: Category ID, name: categoryId, widget: string}
+              # note: update this list when you add categories
+              - {label: Category, name: categoryId, widget: select, options: [patterns, plushies]}
               - {label: Product Name, name: name, widget: string}
               - {label: "Price ($)", name: price, widget: number, valueType: float}
               - {label: Feature on Homepage, name: featured, widget: boolean, default: false}
