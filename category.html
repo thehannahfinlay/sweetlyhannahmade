@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetlyHannahMade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#fdf2f8',
+              100: '#fce7f3',
+              200: '#fbcfe8',
+              300: '#f9a8d4',
+              400: '#f472b6',
+              500: '#ec4899',
+              600: '#db2777',
+              700: '#be185d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold text-brand-600 tracking-tight hover:text-brand-700 transition-colors">
+        SweetlyHannahMade
+      </a>
+      <nav class="flex items-center gap-6">
+        <a href="category.html?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Patterns</a>
+        <a href="category.html?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Plushies</a>
+        <div id="social-links" class="flex items-center gap-3 ml-2"></div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Breadcrumb -->
+  <nav class="max-w-6xl mx-auto px-4 py-3 text-sm text-gray-500" aria-label="Breadcrumb">
+    <ol class="flex items-center gap-1">
+      <li><a href="index.html" class="hover:text-brand-600 transition-colors">Home</a></li>
+      <li class="text-gray-400">&rsaquo;</li>
+      <li id="breadcrumb-category" class="text-gray-700 font-medium"></li>
+    </ol>
+  </nav>
+
+  <!-- Category header -->
+  <section class="bg-gradient-to-br from-brand-100 via-brand-50 to-white py-12 px-4 text-center">
+    <div class="max-w-2xl mx-auto">
+      <h1 id="category-name" class="text-3xl md:text-4xl font-bold text-brand-700 mb-3"></h1>
+      <p id="category-description" class="text-gray-600 text-lg leading-relaxed"></p>
+    </div>
+  </section>
+
+  <!-- Product grid -->
+  <section class="max-w-6xl mx-auto px-4 py-14">
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-20">
+      <p class="text-5xl mb-4">🧶</p>
+      <p class="text-gray-500 text-lg font-medium">No products in this category yet.</p>
+      <p class="text-gray-400 text-sm mt-2">Check back soon!</p>
+    </div>
+
+    <!-- Not found state -->
+    <div id="not-found-state" class="hidden text-center py-20">
+      <p class="text-5xl mb-4">🔍</p>
+      <p class="text-gray-500 text-lg font-medium">Category not found.</p>
+      <a href="index.html" class="inline-block mt-4 text-brand-600 hover:text-brand-700 font-medium transition-colors">
+        &larr; Back to home
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-gray-300 py-10 px-4">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <p class="text-white font-bold text-lg">SweetlyHannahMade</p>
+        <p class="text-sm mt-1 text-gray-400">Handmade with love</p>
+      </div>
+      <nav class="flex flex-wrap gap-4 text-sm">
+        <a href="category.html?id=patterns" class="hover:text-white transition-colors">Patterns</a>
+        <a href="category.html?id=plushies" class="hover:text-white transition-colors">Plushies</a>
+        <a href="policy.html#shipping" class="hover:text-white transition-colors">Shipping Policy</a>
+        <a href="policy.html#refunds" class="hover:text-white transition-colors">Refunds</a>
+        <a href="policy.html#privacy" class="hover:text-white transition-colors">Privacy Policy</a>
+      </nav>
+      <p class="text-sm text-gray-500">&copy; <span id="footer-year"></span> SweetlyHannahMade</p>
+    </div>
+  </footer>
+
+  <script src="assets/shop.js"></script>
+  <script>
+    const INSTAGRAM_PATH = 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z';
+    const TIKTOK_PATH = 'M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.77a4.85 4.85 0 01-1.01-.08z';
+
+    function makeSocialAnchor(href, label, svgPath) {
+      const a = document.createElement('a');
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', label);
+      a.className = 'text-gray-500 hover:text-brand-500 transition-colors';
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'w-5 h-5');
+      svg.setAttribute('fill', 'currentColor');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', svgPath);
+      svg.appendChild(path);
+      a.appendChild(svg);
+      return a;
+    }
+
+    async function init() {
+      const categoryId = getParam('id');
+      const inv = await getInventory();
+      const category = inv.categories.find(c => c.id === categoryId);
+
+      if (!category) {
+        document.getElementById('not-found-state').classList.remove('hidden');
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+        return;
+      }
+
+      // Page title
+      document.title = category.name + ' \u2014 SweetlyHannahMade';
+
+      // Breadcrumb — textContent only
+      document.getElementById('breadcrumb-category').textContent = category.name;
+
+      // Category heading and description — textContent only
+      document.getElementById('category-name').textContent = category.name;
+      document.getElementById('category-description').textContent = category.description || '';
+
+      // Header social icons
+      const socialLinks = document.getElementById('social-links');
+      const shop = inv.shop;
+      if (shop && shop.instagram) {
+        socialLinks.appendChild(makeSocialAnchor(shop.instagram, 'Instagram', INSTAGRAM_PATH));
+      }
+      if (shop && shop.tiktok) {
+        socialLinks.appendChild(makeSocialAnchor(shop.tiktok, 'TikTok', TIKTOK_PATH));
+      }
+
+      // Product grid
+      const grid = document.getElementById('product-grid');
+      const products = (inv.products || []).filter(p => p.categoryId === categoryId);
+
+      if (products.length === 0) {
+        document.getElementById('empty-state').classList.remove('hidden');
+      } else {
+        products.forEach(p => {
+          const card = document.createElement('a');
+          card.href = 'product.html?id=' + encodeURIComponent(p.id);
+          card.className = 'group bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-shadow border border-brand-100 flex flex-col';
+          card.insertAdjacentHTML('beforeend', `
+            <div class="relative overflow-hidden h-52 bg-brand-50">
+              <img src="${escapeHtml(p.images && p.images[0] ? p.images[0] : '')}"
+                   alt="${escapeHtml(p.name)}"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                   onerror="this.style.display='none'">
+              ${p.inStock === false ? '<span class="absolute top-3 left-3 bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full">Out of Stock</span>' : ''}
+            </div>
+            <div class="p-5 flex flex-col flex-1">
+              <h2 class="font-bold text-gray-800 text-base mb-1 flex-1">${escapeHtml(p.name)}</h2>
+              ${p.difficulty ? `<p class="text-xs text-brand-400 font-medium mb-2">${escapeHtml(p.difficulty)}</p>` : ''}
+              <p class="text-brand-600 font-bold text-lg mt-auto">${escapeHtml(formatPrice(p.price))}</p>
+            </div>
+          `);
+          grid.appendChild(card);
+        });
+      }
+
+      // Footer year
+      document.getElementById('footer-year').textContent = new Date().getFullYear();
+    }
+
+    init();
+  </script>
+
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', user => {
+        if (!user) {
+          window.netlifyIdentity.on('login', () => {
+            document.location.href = '/admin/';
+          });
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
