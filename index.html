@@ -234,7 +234,7 @@
       if (inv.trustBadges && inv.trustBadges.length) {
         trustBadgesEl.insertAdjacentHTML('beforeend', inv.trustBadges.map(badge => `
           <div class="bg-brand-50 rounded-2xl p-6 text-center border border-brand-100">
-            ${renderIcon(badge.icon)}
+            ${DOMPurify.sanitize(renderIcon(badge.icon))}
             <p class="font-semibold text-gray-700 text-sm">${escapeHtml(badge.text)}</p>
           </div>
         `).join(''));
@@ -301,7 +301,7 @@
 
         if (shop.instagram) {
           handleLink.href = shop.instagram;
-          handleLink.textContent = '@' + shop.instagram.replace(/.*@/, '').replace(/\/$/, '');
+          handleLink.textContent = '@' + shop.instagram.replace(/\/$/, '').split('/').pop();
         }
 
         // Build embed using DOM to avoid inserting raw HTML
