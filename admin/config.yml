@@ -1,0 +1,75 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: assets/images
+public_folder: /assets/images
+
+collections:
+  - name: shop_data
+    label: Shop Data
+    files:
+      - name: inventory
+        label: Products & Categories
+        file: inventory.json
+        fields:
+          - label: Shop Info
+            name: shop
+            widget: object
+            fields:
+              - {label: Shop Name, name: name, widget: string}
+              - {label: Tagline, name: tagline, widget: string}
+              - {label: Announcement Bar, name: announcement, widget: string, required: false}
+              - {label: About Me, name: about, widget: text}
+              - {label: My Photo, name: aboutPhoto, widget: image, required: false}
+              - {label: Instagram URL, name: instagram, widget: string, required: false}
+              - {label: TikTok URL, name: tiktok, widget: string, required: false}
+              - {label: Behold Embed ID, name: beholdEmbedId, widget: string, required: false}
+          - label: Testimonials
+            name: testimonials
+            widget: list
+            fields:
+              - {label: Customer Name, name: name, widget: string}
+              - {label: Review Text, name: text, widget: text}
+              - {label: Rating (1-5), name: rating, widget: number, min: 1, max: 5, default: 5}
+          - label: Trust Badges
+            name: trustBadges
+            widget: list
+            fields:
+              - {label: Icon, name: icon, widget: select, options: [heart, download, star]}
+              - {label: Text, name: text, widget: string}
+          - label: Categories
+            name: categories
+            widget: list
+            fields:
+              - {label: "ID (no spaces, e.g. patterns)", name: id, widget: string}
+              - {label: Display Name, name: name, widget: string}
+              - {label: Description, name: description, widget: string}
+              - {label: Cover Photo, name: coverImage, widget: image, required: false}
+          - label: Products
+            name: products
+            widget: list
+            fields:
+              - {label: "ID (no spaces, e.g. bunny-pattern)", name: id, widget: string}
+              - {label: Category ID, name: categoryId, widget: string}
+              - {label: Product Name, name: name, widget: string}
+              - {label: "Price ($)", name: price, widget: number, valueType: float}
+              - {label: Feature on Homepage, name: featured, widget: boolean, default: false}
+              - label: Photos
+                name: images
+                widget: list
+                field: {label: Photo, name: image, widget: image}
+              - {label: Video (optional), name: video, widget: string, required: false}
+              - {label: Description, name: description, widget: markdown}
+              - label: Difficulty (patterns only)
+                name: difficulty
+                widget: select
+                options: [Beginner, Intermediate, Advanced]
+                required: false
+              - label: Tags
+                name: tags
+                widget: list
+                field: {label: Tag, name: tag, widget: string}
+                required: false
+              - {label: Stripe Payment Link, name: stripeLink, widget: string}
+              - {label: In Stock, name: inStock, widget: boolean, default: true}
