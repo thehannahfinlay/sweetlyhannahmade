@@ -205,7 +205,9 @@
       const mainImage = document.getElementById('main-image');
       const images = product.images && product.images.length ? product.images : [];
       if (images.length > 0) {
-        mainImage.src = images[0];
+        if (typeof images[0] === 'string' && images[0].startsWith('assets/')) {
+          mainImage.src = images[0];
+        }
         mainImage.alt = product.name;
       }
 
@@ -213,21 +215,24 @@
       const thumbStrip = document.getElementById('thumbnail-strip');
       if (images.length > 1) {
         images.forEach((imgSrc, index) => {
-          const thumb = document.createElement('img');
-          thumb.src = imgSrc;
-          thumb.alt = product.name;
-          thumb.className = 'w-20 h-20 object-cover rounded-xl border-2 cursor-pointer transition-all ' +
-            (index === 0 ? 'border-brand-500 shadow-md' : 'border-brand-100 hover:border-brand-400');
-          thumb.addEventListener('click', () => {
-            mainImage.src = thumb.src;
-            thumbStrip.querySelectorAll('img').forEach(t => {
-              t.classList.remove('border-brand-500', 'shadow-md');
-              t.classList.add('border-brand-100');
+          // Only add thumb if src is valid
+          if (typeof imgSrc === 'string' && imgSrc.startsWith('assets/')) {
+            const thumb = document.createElement('img');
+            thumb.src = imgSrc;
+            thumb.alt = product.name;
+            thumb.className = 'w-20 h-20 object-cover rounded-xl border-2 cursor-pointer transition-all ' +
+              (index === 0 ? 'border-brand-500 shadow-md' : 'border-brand-100 hover:border-brand-400');
+            thumb.addEventListener('click', () => {
+              mainImage.src = thumb.src;
+              thumbStrip.querySelectorAll('img').forEach(t => {
+                t.classList.remove('border-brand-500', 'shadow-md');
+                t.classList.add('border-brand-100');
+              });
+              thumb.classList.remove('border-brand-100');
+              thumb.classList.add('border-brand-500', 'shadow-md');
             });
-            thumb.classList.remove('border-brand-100');
-            thumb.classList.add('border-brand-500', 'shadow-md');
-          });
-          thumbStrip.appendChild(thumb);
+            thumbStrip.appendChild(thumb);
+          }
         });
       }
 
@@ -259,7 +264,7 @@
 
       // Buy Now button — href to stripeLink; disable if out of stock
       const buyBtn = document.getElementById('buy-now-btn');
-      if (product.inStock === false) {
+      if (!product.inStock) {
         buyBtn.removeAttribute('href');
         buyBtn.textContent = 'Currently Unavailable';
         buyBtn.className = 'w-full md:w-auto inline-block text-center bg-gray-300 text-gray-500 font-bold text-lg px-8 py-4 rounded-full cursor-not-allowed';
