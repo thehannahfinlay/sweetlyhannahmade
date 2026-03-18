@@ -56,9 +56,9 @@
   ],
   "products": [
     {
-      "stripeLink": "https://buy.stripe.com/REPLACE_WITH_YOUR_LINK",
-      "price": 5,
-      "name": "Bunny Amigurumi Pattern",
+      "stripeLink": "",
+      "price": 4.99,
+      "name": "No-Sew Minecraft-Inspired Axolotl Crochet Pattern: Amigurumi (PDF Pattern)",
       "featured": true,
       "inStock": true,
       "images": [
@@ -72,30 +72,9 @@
       ],
       "categoryId": "patterns",
       "video": "",
-      "id": "sample-bunny-pattern",
+      "id": "No-Sew-Minecraft-Inspired-Axolotl-Crochet-Pattern",
       "difficulty": "Beginner",
       "description": "This beginner-friendly bunny pattern will guide you through creating the most adorable little bunny!\n\n**What's included:**\n- 10-page PDF pattern\n- Full photo tutorial\n- Yarn and materials list\n- Finished size: approx. 6 inches tall"
-    },
-    {
-      "stripeLink": "https://buy.stripe.com/REPLACE_WITH_YOUR_LINK",
-      "price": 35,
-      "name": "Teddy Bear Plushie",
-      "featured": true,
-      "inStock": true,
-      "images": [
-        "assets/images/sample-product.jpg"
-      ],
-      "tags": [
-        "bear",
-        "plushie",
-        "gift",
-        "handmade"
-      ],
-      "categoryId": "plushies",
-      "video": "",
-      "id": "sample-bear-plushie",
-      "difficulty": null,
-      "description": "A handmade teddy bear crocheted with soft, high-quality yarn.\n\n**Details:**\n- Premium acrylic yarn\n- Safety eyes\n- Approx. 8 inches tall\n- Ships within 3-5 business days"
     }
   ]
 }
