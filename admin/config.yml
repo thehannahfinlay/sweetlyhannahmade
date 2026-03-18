@@ -72,5 +72,5 @@ collections:
                 widget: list
                 field: {label: Tag, name: tag, widget: string}
                 required: false
-              - {label: Stripe Payment Link, name: stripeLink, widget: string}
+              - {label: Stripe Payment Link (unused), name: stripeLink, widget: string, required: false}
               - {label: In Stock, name: inStock, widget: boolean, default: true}
