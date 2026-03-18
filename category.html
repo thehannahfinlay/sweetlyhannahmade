@@ -143,7 +143,7 @@
       } else {
         products.forEach(p => {
           const card = document.createElement('a');
-          card.href = 'product.html?id=' + encodeURIComponent(p.id);
+          card.href = 'product?id=' + encodeURIComponent(p.id);
           card.className = 'group bg-white rounded-xl overflow-hidden shadow hover:shadow-md transition-shadow border border-brand-100 flex flex-col';
           card.insertAdjacentHTML('beforeend', `
             <div class="relative overflow-hidden h-52 bg-brand-50">
