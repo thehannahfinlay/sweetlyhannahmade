@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You — SweetlyHannahMade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#fff5fb',
+              100: '#FFCFF6',
+              200: '#f0d4e4',
+              300: '#e3bcd0',
+              400: '#DAA2BA',
+              500: '#DAA2BA',
+              600: '#c08aa0',
+              700: '#9e6e82',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-brand-50 min-h-screen flex items-center justify-center">
+  <div class="text-center px-6">
+    <div class="text-6xl mb-6">🎉</div>
+    <h1 class="text-3xl font-bold text-brand-700 mb-4">Thank you for your order!</h1>
+    <p class="text-gray-600 mb-8">You'll receive a confirmation email shortly.<br>If you purchased a pattern, check your email for the download link.</p>
+    <a href="/" class="inline-block bg-brand-500 text-white font-semibold px-8 py-3 rounded-full hover:bg-brand-600 transition-colors">
+      Back to Shop
+    </a>
+  </div>
+</body>
+</html>

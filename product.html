@@ -241,7 +241,7 @@
         ).join(''));
       }
 
-      // Buy Now button — href to stripeLink; disable if out of stock
+      // Buy Now button — calls Netlify Function to create Stripe Checkout session
       const buyBtn = document.getElementById('buy-now-btn');
       if (!product.inStock) {
         buyBtn.removeAttribute('href');
@@ -249,9 +249,34 @@
         buyBtn.className = 'w-full md:w-auto inline-block text-center bg-gray-300 text-gray-500 font-bold text-lg px-8 py-4 rounded-full cursor-not-allowed';
         buyBtn.setAttribute('aria-disabled', 'true');
       } else {
-        buyBtn.href = product.stripeLink;
-        buyBtn.target = '_blank';
-        buyBtn.rel = 'noopener noreferrer';
+        buyBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          buyBtn.textContent = 'Loading…';
+          buyBtn.style.opacity = '0.7';
+          try {
+            const res = await fetch('/.netlify/functions/create-checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: product.name,
+                price: product.price,
+                productId: product.id,
+              }),
+            });
+            const data = await res.json();
+            if (data.url) {
+              window.location.href = data.url;
+            } else {
+              alert('Something went wrong. Please try again.');
+              buyBtn.textContent = 'Buy Now';
+              buyBtn.style.opacity = '1';
+            }
+          } catch {
+            alert('Something went wrong. Please try again.');
+            buyBtn.textContent = 'Buy Now';
+            buyBtn.style.opacity = '1';
+          }
+        });
       }
 
       // Description — render markdown, sanitize with DOMPurify before inserting
