@@ -23,7 +23,7 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: 'Invalid price' };
   }
 
-  const origin = event.headers.origin || event.headers.referer || 'https://curious-wisp-0fab32.netlify.app';
+  const origin = event.headers.origin || event.headers.referer || 'https://sweetlyhannahmade.netlify.app';
 
   try {
     const session = await stripe.checkout.sessions.create({
