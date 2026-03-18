@@ -41,8 +41,8 @@
         SweetlyHannahMade
       </a>
       <nav class="flex items-center gap-6">
-        <a href="category.html?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Patterns</a>
-        <a href="category.html?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Plushies</a>
+        <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Patterns</a>
+        <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Plushies</a>
         <div id="social-links" class="flex items-center gap-3 ml-2"></div>
       </nav>
     </div>
@@ -55,8 +55,8 @@
       <h1 class="text-4xl md:text-5xl font-bold text-brand-700 mb-4 leading-tight">SweetlyHannahMade</h1>
       <p id="hero-tagline" class="text-lg md:text-xl text-brand-600 font-medium mb-8"></p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="category.html?id=plushies" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-8 py-3 rounded-full transition-colors shadow-md">Shop Plushies</a>
-        <a href="category.html?id=patterns" class="bg-white hover:bg-brand-50 text-brand-600 font-semibold px-8 py-3 rounded-full border-2 border-brand-300 transition-colors">Browse Patterns</a>
+        <a href="category?id=plushies" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-8 py-3 rounded-full transition-colors shadow-md">Shop Plushies</a>
+        <a href="category?id=patterns" class="bg-white hover:bg-brand-50 text-brand-600 font-semibold px-8 py-3 rounded-full border-2 border-brand-300 transition-colors">Browse Patterns</a>
       </div>
     </div>
   </section>
@@ -124,8 +124,8 @@
         <p class="text-sm mt-1 text-gray-400">Handmade with love</p>
       </div>
       <nav class="flex flex-wrap gap-4 text-sm">
-        <a href="category.html?id=patterns" class="hover:text-white transition-colors">Patterns</a>
-        <a href="category.html?id=plushies" class="hover:text-white transition-colors">Plushies</a>
+        <a href="category?id=patterns" class="hover:text-white transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="hover:text-white transition-colors">Plushies</a>
         <a href="policy.html#shipping" class="hover:text-white transition-colors">Shipping Policy</a>
         <a href="policy.html#refunds" class="hover:text-white transition-colors">Refunds</a>
         <a href="policy.html#privacy" class="hover:text-white transition-colors">Privacy Policy</a>
@@ -163,7 +163,7 @@
       const categoryGrid = document.getElementById('category-grid');
       if (inv.categories && inv.categories.length) {
         categoryGrid.insertAdjacentHTML('beforeend', inv.categories.map(cat => `
-          <a href="category.html?id=${escapeHtml(cat.id)}"
+          <a href="category?id=${escapeHtml(cat.id)}"
              class="group block rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow bg-white border border-brand-100">
             <div class="relative overflow-hidden h-56 bg-brand-100">
               <img src="${escapeHtml(cat.coverImage)}" alt="${escapeHtml(cat.name)}"
