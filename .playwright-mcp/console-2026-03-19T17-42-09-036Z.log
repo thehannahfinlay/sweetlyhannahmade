@@ -1,0 +1,29 @@
+[     107ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[     324ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/plushies-cover.jpg:0
+[     324ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/patterns-cover.jpg:0
+[     335ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/hannah.jpg:0
+[   45881ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   52199ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   52352ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/hannah.jpg:0
+[   52352ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/patterns-cover.jpg:0
+[   52352ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/plushies-cover.jpg:0
+[   54252ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   56748ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   56866ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/patterns-cover.jpg:0
+[   56869ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/plushies-cover.jpg:0
+[   56869ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/hannah.jpg:0
+[   64208ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   70291ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   70420ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/patterns-cover.jpg:0
+[   70420ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/plushies-cover.jpg:0
+[   70420ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/hannah.jpg:0
+[   72992ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   74359ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   74478ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/patterns-cover.jpg:0
+[   74478ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/plushies-cover.jpg:0
+[   74479ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/hannah.jpg:0
+[   76457ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   77625ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[   77741ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/patterns-cover.jpg:0
+[   77741ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/plushies-cover.jpg:0
+[   77741ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/assets/images/hannah.jpg:0

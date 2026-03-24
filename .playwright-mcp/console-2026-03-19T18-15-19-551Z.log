@@ -1,0 +1,2 @@
+[     127ms] [WARNING] cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation @ https://cdn.tailwindcss.com/:63
+[     319ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://5.78.150.112/static/1773941377297-Mincraft-Inspired%20Axolotl%20Crochet%20Pattern%20Cover.png:0
