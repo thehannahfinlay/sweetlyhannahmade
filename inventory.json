@@ -1,35 +1,44 @@
 {
   "shop": {
     "name": "SweetlyHannahMade",
-    "tagline": "Handmade with love, stitch by stitch",
-    "announcement": "Free pattern with every plushie purchase!",
-    "about": "Hi, I'm Hannah! I'm a passionate crocheter who loves bringing adorable characters to life. Every plushie and pattern is made with care and lots of love.",
-    "aboutPhoto": "assets/images/hannah.jpg",
+    "tagline": "",
+    "announcements": [
+      { "text": "Buy 2 or more patterns and save 20% — applied automatically at checkout!" },
+      { "text": "New patterns added regularly — follow me on Instagram!", "link": "https://instagram.com/sweetlyhannahmade", "linkText": "@sweetlyhannahmade" },
+      { "text": "Crochet patterns at the lowest prices" },
+      { "text": "Play my Memory Match game and win a discount!", "link": "https://sweetlyhannahmade.com/play", "linkText": "Play Now" },
+      { "text": "Now open for custom orders!", "link": "https://sweetlyhannahmade.com/gallery#custom-order", "linkText": "Submit a request" }
+    ],
+    "about": "Hi there! I'm Hannah. I first learned to crochet from my mom when I was nine, and a few years later I discovered amigurumi — and I've been hooked ever since! I love the whole craft of bringing little stuffed animals to life, from designing patterns to crocheting custom plushies. Most of my patterns are beginner-friendly with plenty of photos, and many include video tutorials to help you along the way.",
+    "aboutPhoto": "assets/images/logo.png",
     "instagram": "https://instagram.com/sweetlyhannahmade",
     "tiktok": "",
-    "beholdEmbedId": "YOUR_BEHOLD_EMBED_ID"
+    "beholdEmbedId": ""
   },
   "testimonials": [
     {
-      "name": "Sarah M.",
-      "text": "The bunny plushie is absolutely adorable. The quality is amazing!",
-      "rating": 5
+      "name": "Leah",
+      "text": "Really well written pattern and a lovely design. I am so pleased with my axolotl and I will be making more!",
+      "rating": 5,
+      "source": "Etsy"
     },
     {
-      "name": "Jessica L.",
-      "text": "The pattern was so well written and easy to follow.",
-      "rating": 5
+      "name": "Amanda",
+      "text": "This crocheted item is very good quality and well crafted. I'm always worried that crocheted toys won't hold up, but this one will get a lot of play time and the eyes are very very secure. Very impressed!",
+      "rating": 5,
+      "source": "Etsy"
     },
     {
-      "name": "Emily R.",
-      "text": "Hannah is so talented. I've bought three plushies now!",
-      "rating": 5
+      "name": "Amelia",
+      "text": "Fantastic pattern, make up quickly in just a few hours! Lovely presentation and links to videos if needed, I've never made a plushie this way so it was a fresh difference from all the other patterns. Plenty of informational photos too!!",
+      "rating": 5,
+      "source": "Etsy"
     }
   ],
   "trustBadges": [
     {
       "icon": "heart",
-      "text": "100% Handmade"
+      "text": "100% Handmade Plushies & Patterns"
     },
     {
       "icon": "download",
@@ -37,44 +46,22 @@
     },
     {
       "icon": "star",
-      "text": "Made with Love"
+      "text": "Lowest Pattern Prices"
     }
   ],
   "categories": [
     {
       "id": "patterns",
       "name": "Crochet Patterns",
-      "description": "Downloadable PDF patterns for all skill levels",
-      "coverImage": "assets/images/patterns-cover.jpg"
+      "description": "Downloadable PDF crochet patterns",
+      "coverImage": "/static/patterns-cover.jpg"
     },
     {
       "id": "plushies",
-      "name": "Plushies",
-      "description": "Handmade crochet plushies, ready to ship",
-      "coverImage": "assets/images/plushies-cover.jpg"
+      "name": "Plushies & More",
+      "description": "Handmade crochet plushies and physical items",
+      "coverImage": "/static/1773962578119-plushie_prod_01KM46HHHYJVHH8XDP6RKPE905.jpg"
     }
   ],
-  "products": [
-    {
-      "stripeLink": "",
-      "price": 4.99,
-      "name": "No-Sew Minecraft-Inspired Axolotl Crochet Pattern: Amigurumi (PDF Pattern)",
-      "featured": true,
-      "inStock": true,
-      "images": [
-        "assets/images/sample-product.jpg"
-      ],
-      "tags": [
-        "bunny",
-        "beginner",
-        "PDF",
-        "amigurumi"
-      ],
-      "categoryId": "patterns",
-      "video": "",
-      "id": "No-Sew-Minecraft-Inspired-Axolotl-Crochet-Pattern",
-      "difficulty": "Beginner",
-      "description": "This beginner-friendly bunny pattern will guide you through creating the most adorable little bunny!\n\n**What's included:**\n- 10-page PDF pattern\n- Full photo tutorial\n- Yarn and materials list\n- Finished size: approx. 6 inches tall"
-    }
-  ]
+  "products": []
 }

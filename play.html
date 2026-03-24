@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Match – SweetlyHannahMade</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta property="og:title" content="Memory Match – SweetlyHannahMade">
+  <meta property="og:description" content="Test your memory and win a discount on handmade crochet plushies!">
+  <meta property="og:image" content="https://sweetlyhannahmade.com/assets/images/logo.png">
+  <meta property="og:url" content="https://sweetlyhannahmade.com/play">
+  <meta property="og:type" content="website">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#fdf2f6',
+              100: '#f5dce6',
+              200: '#e8c4d2',
+              300: '#d4a3b8',
+              400: '#c98da8',
+              500: '#c48a9e',
+              600: '#b87a90',
+              700: '#a0687c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    /* ── Drawer transitions ── */
+    .mobile-menu-overlay { transition: opacity 0.3s; }
+    .mobile-menu-panel   { transition: transform 0.3s ease-out; }
+    .cart-drawer-overlay { transition: opacity 0.3s; }
+    .cart-drawer-panel   { transition: transform 0.3s ease-out; }
+
+    /* ── Card flip ── */
+    .card-scene {
+      perspective: 800px;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+    .card-back {
+      background-color: #c48a9e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-front {
+      transform: rotateY(180deg);
+      background-color: #fdf2f6;
+    }
+    .card-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── Results modal animation ── */
+    @keyframes fadeScaleIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .modal-anim {
+      animation: fadeScaleIn 0.3s ease-out forwards;
+    }
+
+    /* ── Match pulse ── */
+    @keyframes matchPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(196, 138, 158, 0.6); }
+      70%  { box-shadow: 0 0 0 10px rgba(196, 138, 158, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(196, 138, 158, 0); }
+    }
+    .matched-pulse {
+      animation: matchPulse 0.6s ease-out;
+    }
+
+    /* ── Screen visibility helpers ── */
+    #game-screen   { display: block; }
+    #intro-overlay { position: fixed; inset: 0; z-index: 55; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); padding: 1rem; padding-top: 5rem; }
+
+    /* ── Intro decorative dots ── */
+    .dot-pattern {
+      background-image: radial-gradient(circle, rgba(255,255,255,0.25) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+  <script>if(history.scrollRestoration)history.scrollRestoration="manual";window.scrollTo(0,0);</script>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+
+  <!-- Announcement Bar -->
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
+    <span id="announcement-text" class="inline-block"></span>
+    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ HEADER -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <img src="assets/images/logo.png" alt="SweetlyHannahMade" class="w-8 h-8 rounded">
+        <span class="text-xl md:text-2xl font-bold text-brand-600 tracking-tight" style="font-family:'Playfair Display',serif">SweetlyHannahMade</span>
+      </a>
+      <!-- Desktop nav -->
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies &amp; More</a>
+        <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Contact</a>
+        <a href="play" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Win a Discount</a>
+        <button id="cart-icon-btn" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
+      </nav>
+      <!-- Mobile right-side buttons -->
+      <div class="md:hidden flex items-center gap-1">
+        <button id="cart-icon-btn-mobile" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
+        <button id="mobile-menu-btn" class="p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════ MOBILE MENU -->
+  <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/40 z-50 hidden mobile-menu-overlay opacity-0">
+    <div id="mobile-menu-panel" class="absolute right-0 top-0 h-full w-72 bg-white shadow-xl mobile-menu-panel translate-x-full">
+      <div class="flex items-center justify-between p-4 border-b border-brand-100">
+        <span class="font-bold text-brand-600 text-lg">Menu</span>
+        <button id="mobile-menu-close" class="p-2 text-gray-500 hover:text-brand-600" aria-label="Close menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="flex flex-col p-4 gap-1">
+        <a href="/" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Home</a>
+        <a href="category?id=patterns" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Plushies &amp; More</a>
+        <a href="gallery" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Contact</a>
+        <a href="play" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Win a Discount</a>
+        <hr class="my-2 border-brand-100">
+        <a href="https://instagram.com/sweetlyhannahmade" target="_blank" rel="noopener noreferrer" class="py-3 px-4 text-gray-500 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors flex items-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          Instagram
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ CART DRAWER -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/40 z-50 hidden cart-drawer-overlay opacity-0">
+    <div id="cart-drawer-panel" class="absolute right-0 top-0 h-full w-80 max-w-full bg-white shadow-xl cart-drawer-panel translate-x-full flex flex-col">
+      <div class="flex items-center justify-between p-4 border-b border-brand-100 flex-shrink-0">
+        <span class="font-bold text-brand-700 text-lg">Your Bag</span>
+        <button id="cart-drawer-close" class="p-2 text-gray-500 hover:text-brand-600 transition-colors" aria-label="Close cart">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div id="cart-drawer-empty" class="flex-1 flex-col items-center justify-center text-center p-8" style="display:flex">
+        <svg class="w-16 h-16 text-brand-200 mb-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <p class="text-gray-500 font-medium">Your bag is empty</p>
+        <p class="text-gray-400 text-sm mt-1">Add some items to get started!</p>
+      </div>
+      <div id="cart-drawer-items" class="flex-1 overflow-y-auto px-4"></div>
+      <div id="cart-drawer-footer" class="border-t border-brand-100 p-4 flex-shrink-0" style="display:none">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-semibold text-gray-700">Subtotal</span>
+          <span id="cart-drawer-total" class="font-bold text-brand-700 text-lg">$0.00</span>
+        </div>
+        <button id="cart-checkout-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-md">
+          Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ MAIN -->
+  <main class="min-h-screen">
+
+    <!-- ── INTRO OVERLAY ──────────────────────────────────────────── -->
+    <div id="intro-overlay">
+      <div class="max-w-lg w-full max-h-[80vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
+
+        <!-- Hero banner -->
+        <div class="bg-brand-600 py-6 px-4 text-center rounded-t-2xl">
+          <p class="text-white/80 text-xs font-semibold uppercase tracking-widest mb-1">Weekly Game</p>
+          <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">Memory Match</h1>
+          <p class="text-white/90 text-sm">Test your memory and win a discount!</p>
+        </div>
+
+        <!-- Instructions + form -->
+        <div class="p-5 space-y-4">
+
+          <!-- How to play card -->
+          <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6">
+            <h2 class="font-bold text-brand-700 text-lg mb-4">How to play:</h2>
+            <ul class="space-y-2 text-gray-700 text-sm">
+              <li class="flex items-start gap-2">
+                <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
+                <span>Flip two cards at a time to find matching pairs</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
+                <span>Find all 8 pairs in as few moves as possible</span>
+              </li>
+            </ul>
+
+            <div class="mt-5 pt-5 border-t border-brand-100">
+              <p class="font-semibold text-brand-700 text-sm mb-3">Discount tiers:</p>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
+                  <span class="text-sm text-gray-700 font-medium">8–15 moves</span>
+                  <span class="text-brand-700 font-bold text-sm">15% off</span>
+                </div>
+                <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
+                  <span class="text-sm text-gray-700 font-medium">16–20 moves</span>
+                  <span class="text-brand-700 font-bold text-sm">10% off</span>
+                </div>
+                <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
+                  <span class="text-sm text-gray-700 font-medium">21–25 moves</span>
+                  <span class="text-brand-700 font-bold text-sm">5% off</span>
+                </div>
+                <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2.5">
+                  <span class="text-sm text-gray-500">26+ moves</span>
+                  <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email + name form -->
+          <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6 space-y-4">
+            <div>
+              <label for="player-email" class="block text-sm font-semibold text-gray-700 mb-1.5">Enter your email to play</label>
+              <input
+                id="player-email"
+                type="email"
+                autocomplete="email"
+                placeholder="you@example.com"
+                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
+              >
+            </div>
+            <div>
+              <label for="player-name" class="block text-sm font-semibold text-gray-700 mb-1.5">Your name</label>
+              <input
+                id="player-name"
+                type="text"
+                autocomplete="given-name"
+                placeholder="Your name"
+                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
+              >
+            </div>
+            <!-- Verification code (hidden until email sent) -->
+            <div id="verify-section" class="hidden">
+              <label for="verify-code" class="block text-sm font-semibold text-gray-700 mb-1.5">Enter the 4-digit code sent to your email</label>
+              <input
+                id="verify-code"
+                type="text"
+                inputmode="numeric"
+                maxlength="4"
+                placeholder="0000"
+                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm text-center text-2xl tracking-widest font-bold"
+              >
+              <p class="text-gray-400 text-xs mt-1">Check your email for the code. It expires in 10 minutes.</p>
+            </div>
+            <div id="form-error" class="hidden text-red-500 text-sm font-medium"></div>
+            <button
+              id="send-code-btn"
+              class="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base mt-2"
+            >
+              Send Verification Code
+            </button>
+            <button
+              id="start-btn"
+              class="hidden w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base mt-2"
+            >
+              Start Game
+            </button>
+          </div>
+
+          <!-- Note -->
+          <p class="text-center text-gray-400 text-sm pb-2">
+            You can play once per week.
+          </p>
+
+        </div>
+      </div>
+    </div><!-- /intro-overlay -->
+
+    <!-- ── GAME SCREEN ───────────────────────────────────────────── -->
+    <div id="game-screen">
+
+      <!-- Title -->
+      <section class="bg-brand-600 py-6 px-4 text-center relative">
+        <button id="show-instructions-btn" class="absolute top-4 right-4 text-white/70 hover:text-white text-sm flex items-center gap-1 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Rules
+        </button>
+        <p class="text-white/80 text-xs font-semibold uppercase tracking-widest mb-1">Weekly Game</p>
+        <h1 class="text-2xl md:text-3xl font-bold text-white">Memory Match</h1>
+        <p class="text-white/90 text-sm">Test your memory and win a discount!</p>
+      </section>
+
+      <!-- Stats bar -->
+      <div class="bg-white border-b border-brand-100 py-4 px-4">
+        <div class="max-w-2xl mx-auto flex items-center justify-center gap-6">
+          <div class="flex items-center gap-2 bg-brand-50 rounded-2xl border border-brand-100 px-5 py-2.5">
+            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+            </svg>
+            <span class="text-gray-500 text-sm font-medium">Moves:</span>
+            <span id="moves-display" class="text-brand-700 font-bold text-base tabular-nums">0</span>
+          </div>
+          <div class="flex items-center gap-2 bg-brand-50 rounded-2xl border border-brand-100 px-5 py-2.5">
+            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+            </svg>
+            <span class="text-gray-500 text-sm font-medium">Pairs:</span>
+            <span id="pairs-display" class="text-brand-700 font-bold text-base tabular-nums">0/8</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Board -->
+      <div class="bg-white py-8 px-4 pb-16">
+        <div class="max-w-2xl mx-auto">
+          <div id="game-board" class="grid grid-cols-4 gap-2 md:gap-4">
+            <!-- Cards injected by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /game-screen -->
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════ RULES MODAL -->
+  <div id="rules-modal" class="fixed inset-0 bg-black/50 z-40 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+      <h2 class="font-bold text-brand-700 text-lg mb-4">How to play:</h2>
+      <ul class="space-y-2 text-gray-700 text-sm mb-4">
+        <li class="flex items-start gap-2">
+          <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
+          <span>Flip two cards at a time to find matching pairs</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
+          <span>Find all 8 pairs in as few moves as possible</span>
+        </li>
+      </ul>
+      <div class="space-y-2 mb-6">
+        <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
+          <span class="text-sm text-gray-700 font-medium">8-15 moves</span>
+          <span class="text-brand-700 font-bold text-sm">15% off</span>
+        </div>
+        <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
+          <span class="text-sm text-gray-700 font-medium">16-20 moves</span>
+          <span class="text-brand-700 font-bold text-sm">10% off</span>
+        </div>
+        <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
+          <span class="text-sm text-gray-700 font-medium">21-25 moves</span>
+          <span class="text-brand-700 font-bold text-sm">5% off</span>
+        </div>
+        <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2">
+          <span class="text-sm text-gray-500">26+ moves</span>
+          <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
+        </div>
+      </div>
+      <button id="rules-back-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors">Back to Game</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ RESULTS MODAL -->
+  <div id="results-modal" class="fixed inset-0 bg-black/50 z-40 hidden flex items-center justify-center p-4">
+    <div id="results-panel" class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center modal-anim">
+
+      <div id="results-heading" class="text-2xl font-bold text-brand-700 mb-1"></div>
+      <p id="results-stats" class="text-gray-500 text-sm mb-6"></p>
+
+      <div id="results-reward" class="mb-7"></div>
+
+      <div class="flex flex-col gap-3">
+        <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-md text-base text-center">
+          Browse Patterns
+        </a>
+        <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-base text-center">
+          Shop Plushies
+        </a>
+      </div>
+
+      <div class="mt-6 pt-5 border-t border-gray-100">
+        <a href="/" class="inline-block w-full text-center text-brand-600 hover:text-brand-700 font-medium text-sm transition-colors py-2">
+          Back to Home
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ FOOTER -->
+  <footer class="bg-gray-800 text-gray-300 py-10 px-4">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <p class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif">SweetlyHannahMade</p>
+        <p class="text-sm mt-1 text-gray-400">Handmade crochet plushies, patterns, and more</p>
+      </div>
+      <nav class="flex flex-wrap gap-4 text-sm">
+        <a href="category?id=patterns" class="hover:text-white transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="hover:text-white transition-colors">Plushies &amp; More</a>
+        <a href="contact" class="hover:text-white transition-colors">Contact</a>
+        <a href="policy.html#shipping" class="hover:text-white transition-colors">Shipping Policy</a>
+        <a href="policy.html#refunds" class="hover:text-white transition-colors">Refunds</a>
+        <a href="policy.html#privacy" class="hover:text-white transition-colors">Privacy Policy</a>
+      </nav>
+      <p class="text-sm text-gray-500">&copy; <span id="footer-year"></span> SweetlyHannahMade</p>
+    </div>
+  </footer>
+
+  <script src="assets/shop.js"></script>
+  <script>
+    // ── Footer year ───────────────────────────────────────────────────
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+    // ── Mobile menu ───────────────────────────────────────────────────
+    const menuBtn     = document.getElementById('mobile-menu-btn');
+    const menuOverlay = document.getElementById('mobile-menu-overlay');
+    const menuPanel   = document.getElementById('mobile-menu-panel');
+    const menuClose   = document.getElementById('mobile-menu-close');
+
+    function openMenu() {
+      menuOverlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        menuOverlay.classList.remove('opacity-0');
+        menuPanel.classList.remove('translate-x-full');
+      });
+    }
+    function closeMenu() {
+      menuOverlay.classList.add('opacity-0');
+      menuPanel.classList.add('translate-x-full');
+      setTimeout(() => menuOverlay.classList.add('hidden'), 300);
+    }
+    menuBtn.addEventListener('click', openMenu);
+    menuClose.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', function(e) { if (e.target === menuOverlay) closeMenu(); });
+
+    // ── Cart buttons ──────────────────────────────────────────────────
+    var mobileCartBtn  = document.getElementById('cart-icon-btn-mobile');
+    var desktopCartBtn = document.getElementById('cart-icon-btn');
+    if (mobileCartBtn && typeof openCartDrawer === 'function') {
+      mobileCartBtn.addEventListener('click', openCartDrawer);
+    }
+    if (desktopCartBtn && typeof openCartDrawer === 'function') {
+      desktopCartBtn.addEventListener('click', openCartDrawer);
+    }
+
+    // ── Announcement bar ────────────────────────────────────────────────
+    var announcementIndex = 0;
+    function rotateAnnouncements(announcements) {
+      var el = document.getElementById('announcement-text');
+      var linkEl = document.getElementById('announcement-link');
+      var item = announcements[announcementIndex];
+      var text = typeof item === 'string' ? item : item.text;
+      el.textContent = text;
+      if (item.link) {
+        linkEl.href = item.link;
+        linkEl.textContent = item.linkText || 'Learn more';
+        linkEl.classList.remove('hidden');
+      } else {
+        linkEl.classList.add('hidden');
+      }
+      announcementIndex = (announcementIndex + 1) % announcements.length;
+    }
+    (function() {
+      fetch('/inventory.json').then(function(r) { return r.json(); }).then(function(data) {
+        var announcements = (data.shop && data.shop.announcements) || [];
+        if (announcements.length) {
+          rotateAnnouncements(announcements);
+          if (announcements.length > 1) setInterval(function() { rotateAnnouncements(announcements); }, 4000);
+        }
+      }).catch(function() {});
+    })();
+
+    // ══════════════════════════════════════════════════════════════════
+    //  GAME DATA
+    // ══════════════════════════════════════════════════════════════════
+    var PLUSHIES = [
+      { id: 'turtles',  src: '/static/gallery-turtles-beach.jpg',                                         alt: 'Turtles' },
+      { id: 'cow',      src: '/static/gallery-IMG_4169.JPG',                                               alt: 'Highland Cow' },
+      { id: 'cat',      src: '/static/gallery-IMG_2324.JPG',                                               alt: 'Cat' },
+      { id: 'monkey',   src: '/static/1773962579713-plushie_prod_01KM46HJV5E74YBFY665J76Z7H.jpg',         alt: 'Monkey' },
+      { id: 'eagle',    src: '/static/gallery-IMG_1512.JPG',                                               alt: 'Eagle' },
+      { id: 'bunny',    src: '/static/gallery-IMG_2088.JPG',                                               alt: 'Bunny' },
+      { id: 'axolotl',  src: '/static/1773962578723-plushie_prod_01KM46HJ8WXSZPGJGG929Q7D4Y.jpg',          alt: 'Axolotl' },
+      { id: 'starfish', src: '/static/gallery-IMG_2054.JPG',                                               alt: 'Starfish' }
+    ];
+
+    // Reward tiers — moves is total 2nd-card flips
+    var REWARD_TIERS = [
+      { minMoves: 8,  maxMoves: 15, pct: 15 },
+      { minMoves: 16, maxMoves: 20, pct: 10 },
+      { minMoves: 21, maxMoves: 25, pct: 5  },
+      { minMoves: 26, maxMoves: Infinity, pct: 0 }
+    ];
+
+    function getTier(moves) {
+      for (var i = 0; i < REWARD_TIERS.length; i++) {
+        var t = REWARD_TIERS[i];
+        if (moves >= t.minMoves && moves <= t.maxMoves) return t;
+      }
+      // Fewer than 8 moves → treat as 15% (theoretical perfect game)
+      return REWARD_TIERS[0];
+    }
+
+    // ── Game state ────────────────────────────────────────────────────
+    var cards        = [];
+    var firstCard    = null;
+    var locked       = false;
+    var moves        = 0;
+    var matchedPairs = 0;
+    var playerEmail  = '';
+    var playerName   = '';
+    var deckOrder    = []; // track card order for save/restore
+
+    var movesDisplay = document.getElementById('moves-display');
+    var pairsDisplay = document.getElementById('pairs-display');
+    var board        = document.getElementById('game-board');
+
+    // ── Screens ───────────────────────────────────────────────────────
+    var introOverlay = document.getElementById('intro-overlay');
+
+    function showIntro() {
+      introOverlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    function hideIntro() {
+      introOverlay.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // ── Shuffle ───────────────────────────────────────────────────────
+    function shuffle(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    }
+
+    // ── Card back "?" ─────────────────────────────────────────────────
+    function makeCardBackContent() {
+      var span = document.createElement('span');
+      span.textContent = '?';
+      span.style.cssText = 'color:#fff;font-size:2.2rem;font-weight:bold;line-height:1;user-select:none;';
+      return span;
+    }
+
+    // ── Build board ───────────────────────────────────────────────────
+    function buildBoard() {
+      while (board.firstChild) board.removeChild(board.firstChild);
+      cards        = [];
+      firstCard    = null;
+      locked       = false;
+      moves        = 0;
+      matchedPairs = 0;
+      movesDisplay.textContent = String(moves);
+      pairsDisplay.textContent = matchedPairs + '/8';
+
+      var deck = shuffle(PLUSHIES.concat(PLUSHIES));
+
+      deck.forEach(function(plushie) {
+        // Scene
+        var scene = document.createElement('div');
+        scene.className = 'card-scene cursor-pointer select-none';
+        scene.style.aspectRatio = '1';
+
+        // Inner (flips)
+        var inner = document.createElement('div');
+        inner.className = 'card-inner';
+
+        // Back face
+        var back = document.createElement('div');
+        back.className = 'card-face card-back';
+        back.appendChild(makeCardBackContent());
+
+        // Front face
+        var front = document.createElement('div');
+        front.className = 'card-face card-front';
+
+        var img = document.createElement('img');
+        img.src = plushie.src;
+        img.alt = plushie.alt;
+        img.setAttribute('draggable', 'false');
+        img.setAttribute('loading', 'lazy');
+        front.appendChild(img);
+
+        inner.appendChild(back);
+        inner.appendChild(front);
+        scene.appendChild(inner);
+        board.appendChild(scene);
+
+        var cardIndex = cards.length;
+        var cardObj = {
+          el: scene,
+          inner: inner,
+          plushieId: plushie.id,
+          index: cardIndex,
+          flipped: false,
+          matched: false
+        };
+        cards.push(cardObj);
+
+
+        scene.addEventListener('click', (function(c) {
+          return function() { onCardClick(c); };
+        })(cardObj));
+      });
+    }
+
+    // ── Card click ────────────────────────────────────────────────────
+    function onCardClick(card) {
+      if (locked)        return;
+      if (card.flipped)  return;
+      if (card.matched)  return;
+
+      card.flipped = true;
+      card.inner.classList.add('flipped');
+
+      if (!firstCard) {
+        firstCard = card;
+        return;
+      }
+
+      // Second card — count the move
+      moves++;
+      movesDisplay.textContent = String(moves);
+
+      var second = card;
+      var prev   = firstCard;
+      firstCard  = null;
+
+      if (prev !== second && prev.plushieId === second.plushieId) {
+        // Match!
+        prev.matched   = true;
+        second.matched = true;
+        matchedPairs++;
+        pairsDisplay.textContent = matchedPairs + '/8';
+
+        // Pulse + ring
+        [prev, second].forEach(function(c) {
+          c.el.classList.add('matched-pulse');
+          c.el.style.cursor = 'default';
+          c.inner.style.outline       = '3px solid #a0687c';
+          c.inner.style.outlineOffset = '2px';
+          c.inner.style.borderRadius  = '0.75rem';
+          c.el.addEventListener('animationend', function() {
+            c.el.classList.remove('matched-pulse');
+          }, { once: true });
+        });
+
+        if (matchedPairs === 8) {
+          setTimeout(showResults, 600);
+        } else {
+        }
+
+      } else {
+        // No match — flip back after 1s
+        locked = true;
+        setTimeout(function() {
+          prev.flipped   = false;
+          second.flipped = false;
+          prev.inner.classList.remove('flipped');
+          second.inner.classList.remove('flipped');
+          locked = false;
+        }, 1000);
+      }
+    }
+
+    // Code will be filled in by server response
+
+    // ── Results modal ─────────────────────────────────────────────────
+    function showResults() {
+      gameActive = false;
+      var tier    = getTier(moves);
+      var won     = tier.pct > 0;
+
+      // Call server to generate real code and send email
+      fetch('/api/game-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: playerEmail, name: playerName, moves: moves })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.code && data.code !== 'ERROR') {
+          var codeBoxEl = document.querySelector('#results-reward .tracking-widest');
+          if (codeBoxEl) codeBoxEl.textContent = data.code;
+        }
+      }).catch(function() {});
+
+      var headingEl = document.getElementById('results-heading');
+      var statsEl   = document.getElementById('results-stats');
+      var rewardEl  = document.getElementById('results-reward');
+      var panel     = document.getElementById('results-panel');
+      var modal     = document.getElementById('results-modal');
+
+      headingEl.textContent = won ? 'Congratulations!' : 'Nice try!';
+      statsEl.textContent   = 'You found all pairs in ' + moves + ' move' + (moves === 1 ? '' : 's') + '!';
+
+      // Clear reward area safely
+      while (rewardEl.firstChild) rewardEl.removeChild(rewardEl.firstChild);
+
+      if (won) {
+        var code = 'Loading...';
+
+
+        var earnedP = document.createElement('p');
+        earnedP.className = 'text-brand-700 font-semibold text-base mb-4';
+        earnedP.textContent = 'You earned ' + tier.pct + '% off!';
+        rewardEl.appendChild(earnedP);
+
+        var codeRow = document.createElement('div');
+        codeRow.className = 'flex items-center justify-center gap-3 mb-3';
+
+        var codeBox = document.createElement('div');
+        codeBox.className = 'bg-brand-50 border-2 border-brand-300 rounded-xl px-5 py-2.5 font-bold text-brand-700 text-lg tracking-widest select-all';
+        codeBox.textContent = code;
+
+        var copyBtn = document.createElement('button');
+        copyBtn.className = 'bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm flex-shrink-0';
+        copyBtn.textContent = 'Copy';
+        copyBtn.addEventListener('click', function() {
+          navigator.clipboard.writeText(code).then(function() {
+            copyBtn.textContent = 'Copied!';
+            setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+          }).catch(function() {
+            var ta = document.createElement('textarea');
+            ta.value = code;
+            ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+          });
+        });
+
+        codeRow.appendChild(codeBox);
+        codeRow.appendChild(copyBtn);
+        rewardEl.appendChild(codeRow);
+
+        var emailNote = document.createElement('p');
+        emailNote.className = 'text-gray-500 text-xs mb-1';
+        emailNote.textContent = 'Your code has been emailed to you!';
+        rewardEl.appendChild(emailNote);
+
+        var validNote = document.createElement('p');
+        validNote.className = 'text-gray-400 text-xs';
+        validNote.textContent = 'Valid for 7 days from when you played.';
+        rewardEl.appendChild(validNote);
+
+      } else {
+        var noWinP = document.createElement('p');
+        noWinP.className = 'text-gray-600 text-base';
+        noWinP.textContent = 'So close! Come back in a week for another chance.';
+        rewardEl.appendChild(noWinP);
+      }
+
+      // Animate panel
+      panel.classList.remove('modal-anim');
+      void panel.offsetWidth;
+      panel.classList.add('modal-anim');
+
+      modal.classList.remove('hidden');
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('results-modal').addEventListener('click', function(e) {
+      if (e.target === document.getElementById('results-modal')) {
+        document.getElementById('results-modal').classList.add('hidden');
+      }
+    });
+
+    // ── Start button ──────────────────────────────────────────────────
+    // Step 1: Send verification code
+    document.getElementById('send-code-btn').addEventListener('click', function() {
+      var emailInput = document.getElementById('player-email');
+      var nameInput  = document.getElementById('player-name');
+      var errorDiv   = document.getElementById('form-error');
+      var sendBtn    = document.getElementById('send-code-btn');
+
+      var email = emailInput.value.trim();
+      var name  = nameInput.value.trim();
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!email || !emailOk) {
+        errorDiv.textContent = 'Please enter a valid email address.';
+        errorDiv.classList.remove('hidden');
+        emailInput.focus();
+        return;
+      }
+      if (!name) {
+        errorDiv.textContent = 'Please enter your name.';
+        errorDiv.classList.remove('hidden');
+        nameInput.focus();
+        return;
+      }
+
+      errorDiv.classList.add('hidden');
+      sendBtn.textContent = 'Checking...';
+      sendBtn.disabled = true;
+
+      // First check if already played
+      fetch('/api/game-check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.alreadyPlayed) {
+          var nextDate = new Date(data.nextPlay);
+          var msg = 'You already played this week!';
+          if (data.code && data.pct > 0) {
+            msg += ' Your code: ' + data.code + ' (' + data.pct + '% off).';
+          }
+          msg += ' You can play again on ' + nextDate.toLocaleDateString() + '.';
+          errorDiv.textContent = msg;
+          errorDiv.classList.remove('hidden');
+          sendBtn.textContent = 'Send Verification Code';
+          sendBtn.disabled = false;
+          return;
+        }
+
+        // Send verification code
+        sendBtn.textContent = 'Sending code...';
+        return fetch('/api/game-send-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        }).then(function(r) { return r.json(); }).then(function(d) {
+          if (d.success) {
+            document.getElementById('verify-section').classList.remove('hidden');
+            document.getElementById('start-btn').classList.remove('hidden');
+            sendBtn.classList.add('hidden');
+            emailInput.readOnly = true;
+            emailInput.style.opacity = '0.6';
+            nameInput.readOnly = true;
+            nameInput.style.opacity = '0.6';
+            document.getElementById('verify-code').focus();
+          } else {
+            errorDiv.textContent = 'Could not send code. Try again.';
+            errorDiv.classList.remove('hidden');
+            sendBtn.textContent = 'Send Verification Code';
+            sendBtn.disabled = false;
+          }
+        });
+      })
+      .catch(function() {
+        errorDiv.textContent = 'Something went wrong. Try again.';
+        errorDiv.classList.remove('hidden');
+        sendBtn.textContent = 'Send Verification Code';
+        sendBtn.disabled = false;
+      });
+    });
+
+    // Step 2: Verify code and start game
+    document.getElementById('start-btn').addEventListener('click', function() {
+      var emailInput = document.getElementById('player-email');
+      var nameInput  = document.getElementById('player-name');
+      var codeInput  = document.getElementById('verify-code');
+      var errorDiv   = document.getElementById('form-error');
+      var startBtn   = document.getElementById('start-btn');
+
+      var email = emailInput.value.trim();
+      var name  = nameInput.value.trim();
+      var code  = codeInput.value.trim();
+
+      if (!code || code.length !== 4) {
+        errorDiv.textContent = 'Please enter the 4-digit code from your email.';
+        errorDiv.classList.remove('hidden');
+        codeInput.focus();
+        return;
+      }
+
+      errorDiv.classList.add('hidden');
+      startBtn.textContent = 'Verifying...';
+      startBtn.disabled = true;
+
+      fetch('/api/game-verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, code: code })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.verified) {
+          playerEmail = email;
+          playerName  = name;
+          buildBoard();
+          gameActive = true;
+          hideIntro();
+          window.scrollTo(0, 0);
+        } else {
+          errorDiv.textContent = data.error || 'Incorrect code. Try again.';
+          errorDiv.classList.remove('hidden');
+          startBtn.textContent = 'Start Game';
+          startBtn.disabled = false;
+          codeInput.value = '';
+          codeInput.focus();
+        }
+      })
+      .catch(function() {
+        errorDiv.textContent = 'Something went wrong. Try again.';
+        errorDiv.classList.remove('hidden');
+        startBtn.textContent = 'Start Game';
+        startBtn.disabled = false;
+      });
+    });
+
+    // ── Instructions button ────────────────────────────────────────────
+    var instrBtn = document.getElementById('show-instructions-btn');
+    var rulesModal = document.getElementById('rules-modal');
+    var rulesBackBtn = document.getElementById('rules-back-btn');
+    if (instrBtn && rulesModal) {
+      instrBtn.addEventListener('click', function() {
+        rulesModal.classList.remove('hidden');
+      });
+      rulesBackBtn.addEventListener('click', function() {
+        rulesModal.classList.add('hidden');
+      });
+      rulesModal.addEventListener('click', function(e) {
+        if (e.target === rulesModal) rulesModal.classList.add('hidden');
+      });
+    }
+
+    // ── Warn before leaving during active game ─────────────────────────
+    var gameActive = false;
+    window.addEventListener('beforeunload', function(e) {
+      if (gameActive && matchedPairs < 8) {
+        e.preventDefault();
+        e.returnValue = 'You have a game in progress. Your progress will not be saved if you leave.';
+        return e.returnValue;
+      }
+    });
+
+    // ── Init ──────────────────────────────────────────────────────────
+    buildBoard();
+    showIntro();
+  </script>
+</body>
+</html>

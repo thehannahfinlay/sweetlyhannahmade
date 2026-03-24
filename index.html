@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SweetlyHannahMade</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta property="og:title" content="SweetlyHannahMade">
+  <meta property="og:description" content="Crochet patterns & handmade plushies">
+  <meta property="og:image" content="https://sweetlyhannahmade.com/assets/images/logo.png">
+  <meta property="og:url" content="https://sweetlyhannahmade.com">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <script>
@@ -12,120 +19,302 @@
         extend: {
           colors: {
             brand: {
-              50:  '#fff5fb',
-              100: '#FFCFF6',
-              200: '#f0d4e4',
-              300: '#e3bcd0',
-              400: '#DAA2BA',
-              500: '#DAA2BA',
-              600: '#c08aa0',
-              700: '#9e6e82',
+              50:  '#fdf2f6',
+              100: '#f5dce6',
+              200: '#e8c4d2',
+              300: '#d4a3b8',
+              400: '#c98da8',
+              500: '#c48a9e',
+              600: '#b87a90',
+              700: '#a0687c',
             }
           }
         }
       }
     }
   </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <style>
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .announcement-fade { animation: slideIn 0.4s ease-out; }
+    .mobile-menu-overlay { transition: opacity 0.3s; }
+    .mobile-menu-panel { transition: transform 0.3s ease-out; }
+    .cart-drawer-overlay { transition: opacity 0.3s; }
+    .cart-drawer-panel { transition: transform 0.3s ease-out; }
+  </style>
+<script>if(history.scrollRestoration)history.scrollRestoration="manual";window.scrollTo(0,0);</script>
 </head>
-<body class="bg-white text-gray-800 font-sans">
+<body class="bg-white text-gray-800 font-sans" onbeforeunload="window.scrollTo(0,0)" onload="setTimeout(function(){window.scrollTo(0,0)},50)">
 
-  <!-- 1. Announcement Bar -->
-  <div id="announcement-bar" class="hidden bg-brand-600 text-white text-center text-sm py-2 px-4 font-medium"></div>
+  <!-- 1. Announcement Bar (rotating) -->
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
+    <span id="announcement-text" class="announcement-fade inline-block"></span>
+    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
+  </div>
 
   <!-- 2. Header -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold text-brand-600 tracking-tight hover:text-brand-700 transition-colors">
-        SweetlyHannahMade
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <img src="assets/images/logo.png" alt="SweetlyHannahMade" class="w-8 h-8 rounded">
+        <span class="text-xl md:text-2xl font-bold text-brand-600 tracking-tight" style="font-family:'Playfair Display',serif">SweetlyHannahMade</span>
       </a>
-      <nav class="flex items-center gap-6">
-        <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Patterns</a>
-        <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Plushies</a>
+      <!-- Desktop nav -->
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies & More</a>
+        <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Contact</a>
+        <a href="play" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Win a Discount</a>
         <div id="social-links" class="flex items-center gap-3 ml-2"></div>
+        <!-- Cart icon (desktop) -->
+        <button id="cart-icon-btn" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
       </nav>
+      <!-- Mobile right-side buttons (cart + hamburger) -->
+      <div class="md:hidden flex items-center gap-1">
+        <button id="cart-icon-btn-mobile" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
+        <!-- Mobile hamburger -->
+        <button id="mobile-menu-btn" class="p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
+  <!-- Mobile menu overlay -->
+  <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/40 z-50 hidden mobile-menu-overlay opacity-0">
+    <div id="mobile-menu-panel" class="absolute right-0 top-0 h-full w-72 bg-white shadow-xl mobile-menu-panel translate-x-full">
+      <div class="flex items-center justify-between p-4 border-b border-brand-100">
+        <span class="font-bold text-brand-600 text-lg">Menu</span>
+        <button id="mobile-menu-close" class="p-2 text-gray-500 hover:text-brand-600" aria-label="Close menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="flex flex-col p-4 gap-1">
+        <a href="/" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Home</a>
+        <a href="category?id=patterns" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Plushies & More</a>
+        <a href="gallery" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Contact</a>
+        <a href="play" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Win a Discount</a>
+        <hr class="my-2 border-brand-100">
+        <a href="https://instagram.com/sweetlyhannahmade" target="_blank" rel="noopener noreferrer" class="py-3 px-4 text-gray-500 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors flex items-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          Instagram
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/40 z-50 hidden cart-drawer-overlay opacity-0">
+    <div id="cart-drawer-panel" class="absolute right-0 top-0 h-full w-80 max-w-full bg-white shadow-xl cart-drawer-panel translate-x-full flex flex-col">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b border-brand-100 flex-shrink-0">
+        <span class="font-bold text-brand-700 text-lg">Your Bag</span>
+        <button id="cart-drawer-close" class="p-2 text-gray-500 hover:text-brand-600 transition-colors" aria-label="Close cart">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Empty state -->
+      <div id="cart-drawer-empty" class="flex-1 flex-col items-center justify-center text-center p-8" style="display:flex">
+        <svg class="w-16 h-16 text-brand-200 mb-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <p class="text-gray-500 font-medium">Your bag is empty</p>
+        <p class="text-gray-400 text-sm mt-1">Add some items to get started!</p>
+      </div>
+      <!-- Items list -->
+      <div id="cart-drawer-items" class="flex-1 overflow-y-auto px-4"></div>
+      <!-- Footer -->
+      <div id="cart-drawer-footer" class="border-t border-brand-100 p-4 flex-shrink-0" style="display:none">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-semibold text-gray-700">Subtotal</span>
+          <span id="cart-drawer-total" class="font-bold text-brand-700 text-lg">$0.00</span>
+        </div>
+        <button id="cart-checkout-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-md">
+          Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 3. Hero -->
-  <section class="bg-gradient-to-br from-brand-100 via-brand-50 to-white py-20 px-4 text-center">
-    <div class="max-w-2xl mx-auto">
-      <div class="text-5xl mb-4">🧶</div>
-      <h1 class="text-4xl md:text-5xl font-bold text-brand-700 mb-4 leading-tight">SweetlyHannahMade</h1>
-      <p id="hero-tagline" class="text-lg md:text-xl text-brand-600 font-medium mb-8"></p>
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="category?id=plushies" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-8 py-3 rounded-full transition-colors shadow-md">Shop Plushies</a>
-        <a href="category?id=patterns" class="bg-white hover:bg-brand-50 text-brand-600 font-semibold px-8 py-3 rounded-full border-2 border-brand-300 transition-colors">Browse Patterns</a>
+  <section class="relative px-4 text-center overflow-hidden" style="height: 700px; max-height: 70vh">
+    <div class="absolute inset-0">
+      <img src="/static/hero-collage.png" alt="" class="w-full h-full object-cover object-center">
+      <div class="absolute inset-0 bg-black/30"></div>
+    </div>
+    <div class="max-w-2xl mx-auto relative flex flex-col items-center justify-center h-full">
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg" style="font-family:'Playfair Display',serif">SweetlyHannahMade</h1>
+      <div class="flex flex-wrap gap-2 sm:gap-3 justify-center">
+        <a href="category?id=patterns" class="bg-white/90 hover:bg-white text-brand-700 font-semibold px-4 sm:px-7 py-2 sm:py-2.5 rounded-full transition-colors shadow-md text-xs sm:text-sm backdrop-blur-sm">Browse Patterns</a>
+        <a href="category?id=plushies" class="bg-white/90 hover:bg-white text-brand-700 font-semibold px-4 sm:px-7 py-2 sm:py-2.5 rounded-full transition-colors shadow-md text-xs sm:text-sm backdrop-blur-sm">Plushies & More</a>
+        <a href="gallery" class="bg-white/90 hover:bg-white text-brand-700 font-semibold px-4 sm:px-7 py-2 sm:py-2.5 rounded-full transition-colors shadow-md text-xs sm:text-sm backdrop-blur-sm">Gallery</a>
+        <a href="gallery#custom-order" class="bg-white/90 hover:bg-white text-brand-700 font-semibold px-4 sm:px-7 py-2 sm:py-2.5 rounded-full transition-colors shadow-md text-xs sm:text-sm backdrop-blur-sm">Custom Orders</a>
       </div>
     </div>
   </section>
 
-  <!-- 4. Category Tiles -->
-  <section class="max-w-6xl mx-auto px-4 py-16">
-    <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">Shop by Category</h2>
-    <div id="category-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+  <!-- Custom Orders Banner -->
+  <section class="pt-16 pb-12 px-4 bg-white">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8 bg-brand-50 rounded-2xl overflow-hidden shadow-md border border-brand-100">
+      <div class="w-full md:w-2/5">
+        <img id="custom-order-img" src="/static/highland-cow.jpg" alt="Highland cow plushie" class="w-full aspect-square md:aspect-auto md:h-full object-cover">
+      </div>
+      <div class="flex-1 p-6 md:p-10 text-center md:text-left">
+        <h2 class="text-2xl md:text-3xl font-bold text-brand-700 mb-3">Now Accepting Custom Orders!</h2>
+        <p class="text-gray-600 mb-6">Want a one-of-a-kind handmade plushie? Browse my gallery and submit a custom order request. I'll work with you to create something special!</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+          <a href="gallery" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-full transition-colors shadow-md text-sm">View Gallery</a>
+          <a href="gallery#custom-order" class="bg-white hover:bg-brand-50 text-brand-700 font-semibold px-6 py-3 rounded-full border-2 border-brand-300 transition-colors text-sm">Submit a Request</a>
+        </div>
+      </div>
+    </div>
+    <!-- Trust Badges -->
+    <div class="max-w-4xl mx-auto mt-10">
+      <div id="trust-badges" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center"></div>
+    </div>
   </section>
 
-  <!-- 5. Featured Products -->
-  <section class="bg-brand-50 py-16 px-4">
+  <!-- About -->
+  <section class="bg-brand-50 py-16 px-4" id="about">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10">
+      <div class="flex-shrink-0">
+        <img id="about-photo" src="assets/images/logo.png" alt="SweetlyHannahMade" class="w-40 h-40 rounded-2xl object-cover shadow-lg border-4 border-brand-200">
+      </div>
+      <div class="text-center md:text-left">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">About Hannah</h2>
+        <p id="about-text" class="text-gray-600 leading-relaxed text-lg"></p>
+        <div class="mt-6 flex gap-4 justify-center md:justify-start" id="about-social-links"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game Promo -->
+  <section class="py-12 px-4 bg-white">
+    <div class="max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-md bg-brand-600">
+      <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10 p-8 md:p-10">
+        <!-- Preview cards -->
+        <div class="w-full md:w-1/2 flex items-center justify-center bg-brand-50 rounded-2xl p-6">
+          <div class="grid grid-cols-4 gap-2 sm:gap-3 w-full max-w-[320px]">
+            <div class="aspect-square rounded-xl bg-brand-400 flex items-center justify-center text-white font-bold text-2xl">?</div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-md"><img src="/static/gallery-turtles-beach.jpg" class="w-full h-full object-cover"></div>
+            <div class="aspect-square rounded-xl bg-brand-400 flex items-center justify-center text-white font-bold text-2xl">?</div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-md"><img src="/static/gallery-IMG_2324.JPG" class="w-full h-full object-cover"></div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-md"><img src="/static/gallery-IMG_4169.JPG" class="w-full h-full object-cover"></div>
+            <div class="aspect-square rounded-xl bg-brand-400 flex items-center justify-center text-white font-bold text-2xl">?</div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-md"><img src="/static/gallery-IMG_1512.JPG" class="w-full h-full object-cover"></div>
+            <div class="aspect-square rounded-xl bg-brand-400 flex items-center justify-center text-white font-bold text-2xl">?</div>
+            <div class="aspect-square rounded-xl bg-brand-400 flex items-center justify-center text-white font-bold text-2xl">?</div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-md"><img src="/static/gallery-IMG_2088.JPG" class="w-full h-full object-cover"></div>
+            <div class="aspect-square rounded-xl bg-brand-400 flex items-center justify-center text-white font-bold text-2xl">?</div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-md"><img src="/static/gallery-IMG_4169.JPG" class="w-full h-full object-cover"></div>
+          </div>
+        </div>
+        <!-- Text -->
+        <div class="w-full md:w-1/2 text-center md:text-left">
+          <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-2">Weekly Game</p>
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-3">Memory Match</h2>
+          <p class="text-white/90 text-base mb-6">Test your memory and win a discount! Find matching pairs in as few moves as possible to earn up to 15% off.</p>
+          <a href="play" class="inline-block bg-white hover:bg-brand-50 text-brand-700 font-semibold px-8 py-3 rounded-full transition-colors shadow-md">Play Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Category Tiles -->
+  <section class="bg-white py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+    <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">Shop by Category</h2>
+    <!-- Mobile: compact dropdown list -->
+    <div id="category-mobile" class="md:hidden flex flex-col gap-3 mb-6"></div>
+    <!-- Desktop: image grid -->
+    <div id="category-grid" class="hidden md:grid grid-cols-2 gap-8"></div>
+    </div>
+  </section>
+
+  <!-- 5b. Latest Pattern -->
+  <section id="latest-pattern-section" class="hidden bg-brand-50 py-16 px-4">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">Check Out My Latest Pattern</h2>
+      <div id="latest-pattern" class="flex flex-col md:flex-row gap-8 items-center"></div>
+    </div>
+  </section>
+
+  <!-- 6. Featured Products -->
+  <section class="bg-white py-16 px-4">
     <div class="max-w-6xl mx-auto">
       <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">Featured Items</h2>
       <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </div>
   </section>
 
-  <!-- 6. Trust Badges -->
-  <section class="py-14 px-4 bg-white">
-    <div class="max-w-4xl mx-auto">
-      <div id="trust-badges" class="grid grid-cols-1 sm:grid-cols-3 gap-6"></div>
-    </div>
-  </section>
-
-  <!-- 7. About Me -->
-  <section class="bg-brand-50 py-16 px-4">
-    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10">
-      <div class="flex-shrink-0">
-        <img id="about-photo" src="" alt="Hannah" class="w-48 h-48 rounded-full object-cover shadow-lg border-4 border-brand-200 hidden">
-        <div id="about-photo-placeholder" class="w-48 h-48 rounded-full bg-brand-200 flex items-center justify-center text-6xl shadow-lg border-4 border-brand-300">🧶</div>
-      </div>
-      <div>
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">About Hannah</h2>
-        <p id="about-text" class="text-gray-600 leading-relaxed text-lg"></p>
-        <div class="mt-6 flex gap-4" id="about-social-links"></div>
-      </div>
-    </div>
-  </section>
-
   <!-- 8. Testimonials -->
-  <section class="py-16 px-4 bg-white">
+  <section class="py-16 px-4 bg-brand-50">
     <div class="max-w-6xl mx-auto">
-      <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">What Customers Say</h2>
+      <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-3">What Customers Say</h2>
+      <p class="text-center text-sm font-medium mb-10"><a href="https://www.etsy.com/shop/SweetlyHannahMade" target="_blank" rel="noopener noreferrer" class="text-brand-500 hover:text-brand-700 transition-colors underline">Real reviews from Etsy customers</a></p>
       <div id="testimonials" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
     </div>
   </section>
 
-  <!-- 9. Instagram Feed (Behold embed rendered by JS if beholdEmbedId is set) -->
-  <section id="instagram-section" class="py-16 px-4 bg-brand-50 hidden">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">Follow Along</h2>
-      <p class="text-center text-brand-500 font-medium mb-8">
-        <a id="instagram-handle-link" href="#" target="_blank" rel="noopener noreferrer" class="hover:text-brand-700 transition-colors"></a>
-      </p>
-      <div id="behold-embed"></div>
+  <!-- Email Signup -->
+  <section class="py-16 px-4 bg-white">
+    <div class="max-w-xl mx-auto text-center">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3">Stay in the Loop</h2>
+      <p class="text-gray-500 mb-6">Get notified about new patterns, restocks, and exclusive discounts.</p>
+      <form id="email-signup-form" class="flex flex-col sm:flex-row gap-3">
+        <input
+          id="signup-email"
+          type="email"
+          autocomplete="email"
+          placeholder="your@email.com"
+          required
+          class="flex-1 border border-brand-200 rounded-full px-5 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
+        >
+        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-md text-sm whitespace-nowrap">
+          Subscribe
+        </button>
+      </form>
+      <p id="signup-message" class="hidden text-sm mt-3 font-medium"></p>
+      <p class="text-gray-400 text-xs mt-3">No spam, ever. Unsubscribe anytime.</p>
     </div>
   </section>
 
-  <!-- 10. Footer -->
+  <!-- 9. Footer -->
   <footer class="bg-gray-800 text-gray-300 py-10 px-4">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div>
-        <p class="text-white font-bold text-lg">SweetlyHannahMade</p>
-        <p class="text-sm mt-1 text-gray-400">Handmade with love</p>
+        <p class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif">SweetlyHannahMade</p>
+        <p class="text-sm mt-1 text-gray-400">Handmade crochet plushies, patterns, and more</p>
       </div>
       <nav class="flex flex-wrap gap-4 text-sm">
         <a href="category?id=patterns" class="hover:text-white transition-colors">Patterns</a>
-        <a href="category?id=plushies" class="hover:text-white transition-colors">Plushies</a>
+        <a href="category?id=plushies" class="hover:text-white transition-colors">Plushies & More</a>
+        <a href="contact" class="hover:text-white transition-colors">Contact</a>
         <a href="policy.html#shipping" class="hover:text-white transition-colors">Shipping Policy</a>
         <a href="policy.html#refunds" class="hover:text-white transition-colors">Refunds</a>
         <a href="policy.html#privacy" class="hover:text-white transition-colors">Privacy Policy</a>
@@ -136,18 +325,68 @@
 
   <script src="assets/shop.js"></script>
   <script>
+    // Mobile menu
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const menuOverlay = document.getElementById('mobile-menu-overlay');
+    const menuPanel = document.getElementById('mobile-menu-panel');
+    const menuClose = document.getElementById('mobile-menu-close');
+
+    function openMenu() {
+      menuOverlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        menuOverlay.classList.remove('opacity-0');
+        menuPanel.classList.remove('translate-x-full');
+      });
+    }
+    function closeMenu() {
+      menuOverlay.classList.add('opacity-0');
+      menuPanel.classList.add('translate-x-full');
+      setTimeout(() => menuOverlay.classList.add('hidden'), 300);
+    }
+    menuBtn.addEventListener('click', openMenu);
+    menuClose.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', (e) => { if (e.target === menuOverlay) closeMenu(); });
+
+    // Mobile cart button
+    const mobileCartBtn = document.getElementById('cart-icon-btn-mobile');
+    if (mobileCartBtn) mobileCartBtn.addEventListener('click', openCartDrawer);
+
+    // Rotating announcement bar
+    let announcementIndex = 0;
+    function rotateAnnouncements(announcements) {
+      const el = document.getElementById('announcement-text');
+      const linkEl = document.getElementById('announcement-link');
+      el.classList.remove('announcement-fade');
+      void el.offsetWidth;
+      const item = announcements[announcementIndex];
+      const text = typeof item === 'string' ? item : item.text;
+      el.textContent = text;
+      el.classList.add('announcement-fade');
+      if (item.link) {
+        linkEl.href = item.link;
+        linkEl.textContent = item.linkText || 'Learn more';
+        linkEl.classList.remove('hidden');
+        linkEl.classList.add('announcement-fade');
+      } else {
+        linkEl.classList.add('hidden');
+      }
+      announcementIndex = (announcementIndex + 1) % announcements.length;
+    }
+
     async function init() {
       const inv = await getInventory();
       const shop = inv.shop;
 
-      // 1. Announcement Bar
-      if (shop.announcement) {
-        const bar = document.getElementById('announcement-bar');
-        bar.textContent = shop.announcement;
-        bar.classList.remove('hidden');
+      // 1. Announcement Bar (rotating)
+      const announcements = shop.announcements || (shop.announcement ? [shop.announcement] : []);
+      if (announcements.length) {
+        rotateAnnouncements(announcements);
+        if (announcements.length > 1) {
+          setInterval(() => rotateAnnouncements(announcements), 4000);
+        }
       }
 
-      // 2. Header — social icons via DOM (avoids innerHTML with dynamic content)
+      // 2. Header social icons
       const socialLinks = document.getElementById('social-links');
       if (shop.instagram) {
         socialLinks.appendChild(makeSocialAnchor(shop.instagram, 'Instagram', INSTAGRAM_PATH));
@@ -156,16 +395,26 @@
         socialLinks.appendChild(makeSocialAnchor(shop.tiktok, 'TikTok', TIKTOK_PATH));
       }
 
-      // 3. Hero — tagline via textContent
-      document.getElementById('hero-tagline').textContent = shop.tagline || '';
+      // 4. Trust Badges
+      const trustBadgesEl = document.getElementById('trust-badges');
+      if (inv.trustBadges && inv.trustBadges.length) {
+        trustBadgesEl.insertAdjacentHTML('beforeend', inv.trustBadges.map(badge => `
+          <div class="flex flex-col items-center justify-center py-3">
+            ${DOMPurify.sanitize(renderIcon(badge.icon))}
+            <p class="font-semibold text-gray-700 text-sm mt-1">${escapeHtml(badge.text)}</p>
+          </div>
+        `).join(''));
+      }
 
-      // 4. Category Tiles — escapeHtml for all text in template literals
+      // 5. Category Tiles
       const categoryGrid = document.getElementById('category-grid');
+      const categoryMobile = document.getElementById('category-mobile');
       if (inv.categories && inv.categories.length) {
+        // Desktop: image grid tiles
         categoryGrid.insertAdjacentHTML('beforeend', inv.categories.map(cat => `
           <a href="category?id=${escapeHtml(cat.id)}"
              class="group block rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow bg-white border border-brand-100">
-            <div class="relative overflow-hidden h-56 bg-brand-100">
+            <div class="relative overflow-hidden aspect-square bg-brand-100">
               <img src="${escapeHtml(cat.coverImage)}" alt="${escapeHtml(cat.name)}"
                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                    onerror="this.style.display='none'">
@@ -177,16 +426,60 @@
             </div>
           </a>
         `).join(''));
+
+        // Mobile: compact button list
+        categoryMobile.insertAdjacentHTML('beforeend', inv.categories.map(cat => `
+          <a href="category?id=${escapeHtml(cat.id)}"
+             class="flex items-center gap-4 bg-brand-50 hover:bg-brand-100 rounded-xl p-4 border border-brand-100 transition-colors">
+            <div class="w-16 h-16 rounded-lg overflow-hidden bg-brand-100 flex-shrink-0">
+              <img src="${escapeHtml(cat.coverImage)}" alt="${escapeHtml(cat.name)}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-gray-800 text-base">${escapeHtml(cat.name)}</h3>
+              <p class="text-gray-500 text-xs mt-0.5 truncate">${escapeHtml(cat.description)}</p>
+            </div>
+            <svg class="w-5 h-5 text-brand-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        `).join(''));
       }
 
-      // 5. Featured Products — escapeHtml for name/price in template literals
+      // 5b. Latest Pattern — show a specific product as the latest release
+      const allProducts = inv.products || [];
+      const latestId = 'prod_01KM43A9JND498Z2HX7BHT5SW1'; // Low-Sew Minecraft Pig
+      const latest = allProducts.find(p => p.id === latestId) || allProducts[allProducts.length - 1];
+      if (latest) {
+        const latestSection = document.getElementById('latest-pattern-section');
+        const latestContainer = document.getElementById('latest-pattern');
+        latestSection.classList.remove('hidden');
+        latestContainer.insertAdjacentHTML('beforeend', `
+          <a href="product?id=${escapeHtml(latest.id)}" class="block w-full md:w-1/2 flex-shrink-0">
+            <div class="rounded-2xl overflow-hidden shadow-lg border border-brand-100 bg-brand-50 aspect-square">
+              <img src="${escapeHtml(latest.images && latest.images[0] ? latest.images[0] : '')}"
+                   alt="${escapeHtml(latest.name)}"
+                   class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                   onerror="this.style.display='none'">
+            </div>
+          </a>
+          <div class="flex-1 text-center md:text-left">
+            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-3">${escapeHtml(latest.name)}</h3>
+            <p class="text-brand-600 font-bold text-2xl mb-4">${escapeHtml(formatPrice(latest.price))}</p>
+            <p class="text-brand-500 text-sm font-medium mb-6">PDF Pattern — Instant Download</p>
+            <a href="product?id=${escapeHtml(latest.id)}"
+               class="inline-block bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-3 rounded-full transition-colors shadow-md">
+              View Pattern
+            </a>
+          </div>
+        `);
+      }
+
+      // 6. Featured Products
       const featuredContainer = document.getElementById('featured-products');
       const featured = (inv.products || []).filter(p => p.featured === true);
       if (featured.length) {
         featuredContainer.insertAdjacentHTML('beforeend', featured.map(product => `
           <a href="product?id=${escapeHtml(product.id)}"
              class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-brand-100 flex flex-col">
-            <div class="relative overflow-hidden h-52 bg-brand-50">
+            <div class="relative overflow-hidden aspect-square bg-brand-50">
               <img src="${escapeHtml(product.images && product.images[0] ? product.images[0] : '')}"
                    alt="${escapeHtml(product.name)}"
                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -207,30 +500,10 @@
         featuredContainer.appendChild(p);
       }
 
-      // 6. Trust Badges — escapeHtml for badge text
-      const trustBadgesEl = document.getElementById('trust-badges');
-      if (inv.trustBadges && inv.trustBadges.length) {
-        trustBadgesEl.insertAdjacentHTML('beforeend', inv.trustBadges.map(badge => `
-          <div class="bg-brand-50 rounded-2xl p-6 text-center border border-brand-100">
-            ${DOMPurify.sanitize(renderIcon(badge.icon))}
-            <p class="font-semibold text-gray-700 text-sm">${escapeHtml(badge.text)}</p>
-          </div>
-        `).join(''));
-      }
-
-      // 7. About Me — textContent for bio text
+      // 7. About
       document.getElementById('about-text').textContent = shop.about || '';
-
       if (shop.aboutPhoto) {
-        const img = document.getElementById('about-photo');
-        const placeholder = document.getElementById('about-photo-placeholder');
-        img.src = shop.aboutPhoto;
-        img.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-        img.onerror = function() {
-          img.classList.add('hidden');
-          placeholder.classList.remove('hidden');
-        };
+        document.getElementById('about-photo').src = shop.aboutPhoto;
       }
 
       const aboutSocialLinks = document.getElementById('about-social-links');
@@ -258,60 +531,52 @@
         aboutSocialLinks.appendChild(makeAboutSocialAnchor(shop.tiktok, 'TikTok', TIKTOK_PATH, 'TikTok'));
       }
 
-      // 8. Testimonials — escapeHtml for name and text
+      // 8. Testimonials
       const testimonialsEl = document.getElementById('testimonials');
       if (inv.testimonials && inv.testimonials.length) {
         testimonialsEl.insertAdjacentHTML('beforeend', inv.testimonials.map(t => `
-          <div class="bg-brand-50 rounded-2xl p-6 border border-brand-100 flex flex-col">
+          <div class="bg-white rounded-2xl p-6 border border-brand-100 shadow-sm flex flex-col">
             <p class="text-yellow-400 text-lg mb-3">${renderStars(t.rating)}</p>
             <p class="text-gray-600 leading-relaxed flex-1 italic">&ldquo;${escapeHtml(t.text)}&rdquo;</p>
-            <p class="mt-4 font-semibold text-gray-800 text-sm">${escapeHtml(t.name)}</p>
+            <div class="mt-4 flex items-center justify-between">
+              <p class="font-semibold text-gray-800 text-sm">${escapeHtml(t.name)}</p>
+              ${t.source ? `<span class="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">${escapeHtml(t.source)} review</span>` : ''}
+            </div>
           </div>
         `).join(''));
       }
 
-      // 9. Instagram Feed — only render Behold embed if beholdEmbedId is set and not the placeholder
-      const beholdId = shop.beholdEmbedId;
-      if (beholdId && beholdId !== 'YOUR_BEHOLD_EMBED_ID') {
-        const instagramSection = document.getElementById('instagram-section');
-        const beholdEmbed = document.getElementById('behold-embed');
-        const handleLink = document.getElementById('instagram-handle-link');
-
-        if (shop.instagram) {
-          handleLink.href = shop.instagram;
-          handleLink.textContent = '@' + shop.instagram.replace(/\/$/, '').split('/').pop();
-        }
-
-        // Build embed using DOM to avoid inserting raw HTML
-        const widgetDiv = document.createElement('div');
-        widgetDiv.id = beholdId;
-        beholdEmbed.appendChild(widgetDiv);
-
-        const script = document.createElement('script');
-        script.src = 'https://w.behold.so/widget.js';
-        script.type = 'module';
-        document.body.appendChild(script);
-
-        instagramSection.classList.remove('hidden');
-      }
-
-      // 10. Footer — copyright year
+      // Footer year
       document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+      // Email signup
+      document.getElementById('email-signup-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('signup-email').value.trim();
+        const msgEl = document.getElementById('signup-message');
+        const btn = this.querySelector('button[type="submit"]');
+        if (!email) return;
+        btn.textContent = 'Subscribing...';
+        btn.disabled = true;
+        fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        }).then(r => r.json()).then(data => {
+          msgEl.textContent = data.message || 'Thanks for subscribing!';
+          msgEl.className = 'text-sm mt-3 font-medium text-green-600';
+          msgEl.classList.remove('hidden');
+          btn.textContent = 'Subscribed!';
+        }).catch(() => {
+          msgEl.textContent = 'Thanks for subscribing!';
+          msgEl.className = 'text-sm mt-3 font-medium text-green-600';
+          msgEl.classList.remove('hidden');
+          btn.textContent = 'Subscribed!';
+        });
+      });
     }
 
     init();
-  </script>
-
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on('init', user => {
-        if (!user) {
-          window.netlifyIdentity.on('login', () => {
-            document.location.href = '/admin/';
-          });
-        }
-      });
-    }
   </script>
 
 </body>

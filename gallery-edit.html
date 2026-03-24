@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Editor — SweetlyHannahMade</title>
+
+  <link rel="icon" type="image/png" href="favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#fdf2f6',
+              100: '#f5dce6',
+              200: '#e8c4d2',
+              300: '#d4a3b8',
+              400: '#c98da8',
+              500: '#c48a9e',
+              600: '#b87a90',
+              700: '#a0687c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    .font-playfair { font-family: 'Playfair Display', serif; }
+
+    /* Drag-and-drop styles */
+    .photo-card {
+      cursor: grab;
+      transition: opacity 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .photo-card:active {
+      cursor: grabbing;
+    }
+    .photo-card.dragging {
+      opacity: 0.45;
+      box-shadow: 0 0 0 3px #c48a9e, 0 8px 24px rgba(0,0,0,0.18);
+      transform: scale(0.97);
+    }
+    .photo-card.drag-over {
+      box-shadow: 0 0 0 3px #c48a9e, 0 4px 16px rgba(196,138,158,0.35);
+    }
+    /* Grip icon shown on hover */
+    .drag-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+      background: rgba(0,0,0,0.45);
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .drag-handle span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+    }
+    .photo-card:hover .drag-handle,
+    .photo-card:focus-within .drag-handle {
+      opacity: 1;
+    }
+
+    /* Category bar at bottom of each card */
+    .category-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.52);
+      padding: 4px 6px;
+    }
+    .category-select {
+      width: 100%;
+      background: transparent;
+      color: #fff;
+      font-size: 11px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 14px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23fff' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 2px center;
+    }
+    .category-select option {
+      color: #111;
+      background: #fff;
+    }
+  </style>
+</head>
+<body class="bg-brand-50 min-h-screen">
+
+  <!-- Auth gate — hidden until password verified -->
+  <div id="auth-gate" class="fixed inset-0 bg-brand-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm mx-4">
+      <h1 class="font-playfair text-2xl text-brand-700 text-center mb-6">Gallery Editor</h1>
+      <p class="text-sm text-gray-500 text-center mb-6">Enter the password to continue</p>
+      <input
+        id="pw-input"
+        type="password"
+        placeholder="Password"
+        class="w-full border border-brand-200 rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-brand-400 text-sm"
+        autocomplete="current-password"
+      >
+      <p id="pw-error" class="text-red-500 text-xs mb-3 hidden">Incorrect password. Try again.</p>
+      <button
+        id="pw-submit"
+        class="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-lg py-2 text-sm font-medium transition-colors"
+      >
+        Enter
+      </button>
+    </div>
+  </div>
+
+  <!-- Main editor — hidden until authenticated -->
+  <div id="main" class="hidden">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-brand-100 sticky top-0 z-10">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+        <h1 class="font-playfair text-2xl text-brand-700">Gallery Editor</h1>
+        <div class="flex items-center gap-3">
+          <button
+            id="add-btn"
+            class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+          >
+            <span aria-hidden="true">+</span> Add Photos
+          </button>
+          <a
+            href="/gallery.html"
+            class="text-brand-600 hover:text-brand-700 text-sm underline underline-offset-2"
+          >
+            View Gallery
+          </a>
+          <a
+            href="/"
+            class="text-gray-400 hover:text-gray-600 text-sm underline underline-offset-2"
+          >
+            Back to site
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Notice banner -->
+    <div id="notice" class="hidden max-w-6xl mx-auto px-4 pt-4">
+      <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm flex items-center justify-between">
+        <span id="notice-text"></span>
+        <button id="notice-close" class="text-green-600 hover:text-green-800 ml-4 font-bold leading-none">&times;</button>
+      </div>
+    </div>
+
+    <!-- Upload progress -->
+    <div id="upload-progress" class="hidden max-w-6xl mx-auto px-4 pt-4">
+      <div class="bg-brand-50 border border-brand-200 rounded-lg px-4 py-3 text-sm text-brand-700 flex items-center gap-3">
+        <svg class="animate-spin h-4 w-4 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <span id="upload-progress-text">Uploading photos…</span>
+      </div>
+    </div>
+
+    <!-- Gallery grid -->
+    <main class="max-w-6xl mx-auto px-4 py-6">
+      <!-- Loading state -->
+      <div id="loading" class="text-center py-20 text-brand-400">
+        <svg class="animate-spin h-8 w-8 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <p class="text-sm">Loading gallery…</p>
+      </div>
+
+      <!-- Empty state -->
+      <div id="empty" class="hidden text-center py-20 text-brand-300">
+        <p class="text-lg font-medium mb-2">No photos yet</p>
+        <p class="text-sm">Click "Add Photos" to upload your first images.</p>
+      </div>
+
+      <!-- Error state -->
+      <div id="error-state" class="hidden text-center py-20 text-red-400">
+        <p class="text-sm font-medium" id="error-message">Could not load gallery.</p>
+        <button id="retry-btn" class="mt-3 text-brand-600 underline text-sm">Try again</button>
+      </div>
+
+      <!-- Photo grid -->
+      <div
+        id="photo-grid"
+        class="hidden grid grid-cols-2 md:grid-cols-4 gap-3"
+        role="list"
+        aria-label="Gallery photos"
+      ></div>
+    </main>
+
+    <!-- Hidden file input -->
+    <input
+      id="file-input"
+      type="file"
+      accept="image/*"
+      multiple
+      class="hidden"
+      aria-label="Select photos to upload"
+    >
+
+  </div><!-- /main -->
+
+  <!-- Delete confirmation dialog -->
+  <div id="delete-dialog" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-6 max-w-xs w-full">
+      <h2 class="font-playfair text-lg text-brand-700 mb-2">Delete photo?</h2>
+      <p class="text-sm text-gray-500 mb-5">This cannot be undone.</p>
+      <div class="flex gap-3">
+        <button id="delete-cancel" class="flex-1 border border-brand-200 text-brand-600 rounded-lg py-2 text-sm font-medium hover:bg-brand-50 transition-colors">Cancel</button>
+        <button id="delete-confirm" class="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-lg py-2 text-sm font-medium transition-colors">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // ── Constants ──────────────────────────────────────────────
+      var PASSWORD = 'sweetly2026';
+      var SESSION_KEY = 'gallery_auth';
+
+      // ── DOM refs ───────────────────────────────────────────────
+      var authGate        = document.getElementById('auth-gate');
+      var mainEl          = document.getElementById('main');
+      var pwInput         = document.getElementById('pw-input');
+      var pwSubmit        = document.getElementById('pw-submit');
+      var pwError         = document.getElementById('pw-error');
+      var addBtn          = document.getElementById('add-btn');
+      var fileInput       = document.getElementById('file-input');
+      var photoGrid       = document.getElementById('photo-grid');
+      var loadingEl       = document.getElementById('loading');
+      var emptyEl         = document.getElementById('empty');
+      var errorStateEl    = document.getElementById('error-state');
+      var errorMessage    = document.getElementById('error-message');
+      var retryBtn        = document.getElementById('retry-btn');
+      var noticeEl        = document.getElementById('notice');
+      var noticeText      = document.getElementById('notice-text');
+      var noticeClose     = document.getElementById('notice-close');
+      var uploadProgress  = document.getElementById('upload-progress');
+      var uploadProgressText = document.getElementById('upload-progress-text');
+      var deleteDialog    = document.getElementById('delete-dialog');
+      var deleteCancel    = document.getElementById('delete-cancel');
+      var deleteConfirm   = document.getElementById('delete-confirm');
+
+      var pendingDelete = null; // filename queued for deletion
+
+      // ── Auth ───────────────────────────────────────────────────
+      function checkAuth() {
+        return sessionStorage.getItem(SESSION_KEY) === '1';
+      }
+
+      function unlock() {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        authGate.classList.add('hidden');
+        mainEl.classList.remove('hidden');
+        loadGallery();
+      }
+
+      function handlePasswordSubmit() {
+        var val = pwInput.value;
+        if (val === PASSWORD) {
+          pwError.classList.add('hidden');
+          unlock();
+        } else {
+          pwError.classList.remove('hidden');
+          pwInput.value = '';
+          pwInput.focus();
+        }
+      }
+
+      pwSubmit.addEventListener('click', handlePasswordSubmit);
+      pwInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') handlePasswordSubmit();
+      });
+
+      // Auto-unlock if already authenticated this session
+      if (checkAuth()) {
+        unlock();
+      } else {
+        // Focus password field when gate is shown
+        pwInput.focus();
+      }
+
+      // ── Notice banner ──────────────────────────────────────────
+      function showNotice(msg) {
+        noticeText.textContent = msg;
+        noticeEl.classList.remove('hidden');
+      }
+
+      noticeClose.addEventListener('click', function () {
+        noticeEl.classList.add('hidden');
+      });
+
+      // ── Gallery load ───────────────────────────────────────────
+      function setGridState(state) {
+        loadingEl.classList.add('hidden');
+        emptyEl.classList.add('hidden');
+        errorStateEl.classList.add('hidden');
+        photoGrid.classList.add('hidden');
+        if (state === 'loading')  loadingEl.classList.remove('hidden');
+        else if (state === 'empty') emptyEl.classList.remove('hidden');
+        else if (state === 'error') errorStateEl.classList.remove('hidden');
+        else if (state === 'grid') photoGrid.classList.remove('hidden');
+      }
+
+      function loadGallery() {
+        setGridState('loading');
+        noticeEl.classList.add('hidden');
+        categoriesDirty = false;
+
+        Promise.all([
+          fetch('/api/gallery-list').then(function (res) {
+            if (!res.ok) throw new Error('Server returned ' + res.status);
+            return res.json();
+          }),
+          fetch('/api/gallery-categories').then(function (res) {
+            if (!res.ok) return { categories: {} };
+            return res.json();
+          }).catch(function () { return { categories: {} }; })
+        ])
+          .then(function (results) {
+            var listData = results[0];
+            var catData  = results[1];
+            currentCategories = (catData && catData.categories) ? catData.categories : {};
+            renderGrid(listData.files || []);
+          })
+          .catch(function (err) {
+            errorMessage.textContent = 'Could not load gallery. (' + err.message + ')';
+            setGridState('error');
+          });
+      }
+
+      retryBtn.addEventListener('click', loadGallery);
+
+      // ── Grid rendering ─────────────────────────────────────────
+      var currentFiles = [];
+      var currentCategories = {}; // { filename: categoryString }
+      var categoriesDirty = false;
+
+      // Drag state
+      var dragSrcIndex = null;
+      var touchDragSrcIndex = null;
+      var touchClone = null;
+      var touchOffsetX = 0;
+      var touchOffsetY = 0;
+
+      function renderGrid(files) {
+        currentFiles = files.slice();
+        while (photoGrid.firstChild) {
+          photoGrid.removeChild(photoGrid.firstChild);
+        }
+
+        if (files.length === 0) {
+          setGridState('empty');
+          return;
+        }
+
+        files.forEach(function (file, index) {
+          photoGrid.appendChild(buildCard(file, index, files.length));
+        });
+
+        // Hide save-categories button on fresh render; only reshow if dirty
+        if (!categoriesDirty) {
+          saveCategoriesBtn.classList.add('hidden');
+        }
+
+        setGridState('grid');
+      }
+
+      var saveOrderBtn = document.createElement('button');
+      saveOrderBtn.className = 'hidden fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-full shadow-lg z-50';
+      saveOrderBtn.textContent = 'Save Order';
+      saveOrderBtn.addEventListener('click', function() {
+        saveOrderBtn.textContent = 'Saving...';
+        saveOrderBtn.disabled = true;
+        var orderedFiles = currentFiles.map(function(f) { return f.filename; });
+        fetch('/api/gallery-rebuild', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: orderedFiles, categories: currentCategories })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          showNotice('Gallery order saved!');
+          saveOrderBtn.classList.add('hidden');
+          saveOrderBtn.textContent = 'Save Order';
+          saveOrderBtn.disabled = false;
+        })
+        .catch(function() {
+          saveOrderBtn.textContent = 'Save Order';
+          saveOrderBtn.disabled = false;
+        });
+      });
+      document.body.appendChild(saveOrderBtn);
+
+      // Save Categories button (blue, appears when any category dropdown changes)
+      var saveCategoriesBtn = document.createElement('button');
+      saveCategoriesBtn.className = 'hidden fixed bottom-6 right-40 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-full shadow-lg z-50';
+      saveCategoriesBtn.textContent = 'Save Categories';
+      saveCategoriesBtn.addEventListener('click', function () {
+        saveCategoriesBtn.textContent = 'Saving...';
+        saveCategoriesBtn.disabled = true;
+        fetch('/api/gallery-save-categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ categories: currentCategories })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function () {
+          categoriesDirty = false;
+          showNotice('Categories saved!');
+          saveCategoriesBtn.classList.add('hidden');
+          saveCategoriesBtn.textContent = 'Save Categories';
+          saveCategoriesBtn.disabled = false;
+        })
+        .catch(function () {
+          showNotice('Error saving categories. Please try again.');
+          saveCategoriesBtn.textContent = 'Save Categories';
+          saveCategoriesBtn.disabled = false;
+        });
+      });
+      document.body.appendChild(saveCategoriesBtn);
+
+      // ── Drag-and-drop helpers ───────────────────────────────────
+
+      function getCardIndex(card) {
+        var cards = photoGrid.querySelectorAll('.photo-card');
+        for (var i = 0; i < cards.length; i++) {
+          if (cards[i] === card) return i;
+        }
+        return -1;
+      }
+
+      function moveItem(fromIndex, toIndex) {
+        if (fromIndex === toIndex) return;
+        var item = currentFiles.splice(fromIndex, 1)[0];
+        currentFiles.splice(toIndex, 0, item);
+        renderGrid(currentFiles);
+        saveOrderBtn.classList.remove('hidden');
+      }
+
+      // ── HTML5 Drag events ───────────────────────────────────────
+
+      function onDragStart(e) {
+        dragSrcIndex = getCardIndex(this);
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        // Store index in transfer so drop works cross-browser
+        e.dataTransfer.setData('text/plain', String(dragSrcIndex));
+      }
+
+      function onDragEnd() {
+        dragSrcIndex = null;
+        var cards = photoGrid.querySelectorAll('.photo-card');
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].classList.remove('dragging');
+          cards[i].classList.remove('drag-over');
+        }
+      }
+
+      function onDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        var cards = photoGrid.querySelectorAll('.photo-card');
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].classList.remove('drag-over');
+        }
+        this.classList.add('drag-over');
+      }
+
+      function onDragLeave() {
+        this.classList.remove('drag-over');
+      }
+
+      function onDrop(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        var toIndex = getCardIndex(this);
+        if (dragSrcIndex !== null && toIndex !== -1) {
+          moveItem(dragSrcIndex, toIndex);
+        }
+      }
+
+      // ── Touch drag events (mobile) ──────────────────────────────
+
+      function onTouchStart(e) {
+        if (e.touches.length !== 1) return;
+        var touch = e.touches[0];
+        touchDragSrcIndex = getCardIndex(this);
+
+        var rect = this.getBoundingClientRect();
+        touchOffsetX = touch.clientX - rect.left;
+        touchOffsetY = touch.clientY - rect.top;
+
+        // Create a floating clone to follow the finger
+        touchClone = this.cloneNode(true);
+        touchClone.style.position = 'fixed';
+        touchClone.style.left = rect.left + 'px';
+        touchClone.style.top = rect.top + 'px';
+        touchClone.style.width = rect.width + 'px';
+        touchClone.style.height = rect.height + 'px';
+        touchClone.style.opacity = '0.75';
+        touchClone.style.pointerEvents = 'none';
+        touchClone.style.zIndex = '9999';
+        touchClone.style.borderRadius = '12px';
+        touchClone.style.boxShadow = '0 0 0 3px #c48a9e, 0 8px 24px rgba(0,0,0,0.25)';
+        touchClone.style.transition = 'none';
+        document.body.appendChild(touchClone);
+
+        this.classList.add('dragging');
+      }
+
+      function onTouchMove(e) {
+        if (touchDragSrcIndex === null || !touchClone) return;
+        e.preventDefault(); // prevent page scroll during drag
+
+        var touch = e.touches[0];
+        touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+        touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+        // Highlight card under finger
+        touchClone.style.display = 'none';
+        var el = document.elementFromPoint(touch.clientX, touch.clientY);
+        touchClone.style.display = '';
+
+        var target = el ? el.closest('.photo-card') : null;
+        var cards = photoGrid.querySelectorAll('.photo-card');
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].classList.remove('drag-over');
+        }
+        if (target && getCardIndex(target) !== touchDragSrcIndex) {
+          target.classList.add('drag-over');
+        }
+      }
+
+      function onTouchEnd(e) {
+        if (touchDragSrcIndex === null) return;
+
+        // Remove clone
+        if (touchClone && touchClone.parentNode) {
+          touchClone.parentNode.removeChild(touchClone);
+        }
+        touchClone = null;
+
+        var touch = e.changedTouches[0];
+
+        // Find drop target
+        var cards = photoGrid.querySelectorAll('.photo-card');
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].classList.remove('dragging');
+          cards[i].classList.remove('drag-over');
+        }
+
+        var el = document.elementFromPoint(touch.clientX, touch.clientY);
+        var target = el ? el.closest('.photo-card') : null;
+        var toIndex = target ? getCardIndex(target) : -1;
+
+        if (toIndex !== -1 && toIndex !== touchDragSrcIndex) {
+          moveItem(touchDragSrcIndex, toIndex);
+        }
+
+        touchDragSrcIndex = null;
+      }
+
+      var CATEGORY_OPTIONS = [
+        'Uncategorized',
+        'Water Animals',
+        'Farm Animals',
+        'Woodland & Forest',
+        'Pets',
+        'Birds',
+        'Safari',
+        'Jungle',
+        'Fantasy & Characters',
+        'Holiday',
+        'Videogame',
+        'Dinosaurs',
+        'Food',
+        'Fun Characters',
+        'Accessories & Decor',        'Other'
+      ];
+
+      function buildCard(file, index, total) {
+        var position = index + 1;
+        var wrapper = document.createElement('div');
+        wrapper.setAttribute('role', 'listitem');
+        wrapper.className = 'photo-card relative rounded-xl overflow-hidden bg-white shadow-sm group aspect-square';
+        wrapper.setAttribute('draggable', 'true');
+
+        var img = document.createElement('img');
+        img.src = file.url;
+        img.className = 'w-full h-full object-cover block pointer-events-none select-none';
+        img.setAttribute('alt', 'Gallery photo ' + position);
+        img.setAttribute('loading', 'lazy');
+        img.setAttribute('draggable', 'false');
+
+        // Drag handle overlay (grip icon)
+        var handle = document.createElement('div');
+        handle.className = 'drag-handle';
+        handle.setAttribute('aria-hidden', 'true');
+        for (var i = 0; i < 3; i++) {
+          handle.appendChild(document.createElement('span'));
+        }
+
+        // Delete button
+        var delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity shadow';
+        delBtn.appendChild(document.createTextNode('\u00d7'));
+        delBtn.addEventListener('click', function() { openDeleteDialog(file.filename); });
+
+        // Position badge (shifted up to sit above the category bar)
+        var badge = document.createElement('span');
+        badge.className = 'absolute left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full pointer-events-none select-none';
+        badge.style.bottom = '30px';
+        badge.textContent = String(position);
+
+        // Category bar
+        var catBar = document.createElement('div');
+        catBar.className = 'category-bar';
+
+        var catSelect = document.createElement('select');
+        catSelect.className = 'category-select';
+        catSelect.setAttribute('aria-label', 'Category for photo ' + position);
+
+        var savedCategory = currentCategories[file.filename] || 'Uncategorized';
+
+        CATEGORY_OPTIONS.forEach(function (opt) {
+          var option = document.createElement('option');
+          option.value = opt;
+          option.textContent = opt;
+          if (opt === savedCategory) {
+            option.selected = true;
+          }
+          catSelect.appendChild(option);
+        });
+
+        catSelect.addEventListener('change', function (e) {
+          // Stop drag events from firing when interacting with the select
+          e.stopPropagation();
+          currentCategories[file.filename] = catSelect.value;
+          categoriesDirty = true;
+          saveCategoriesBtn.classList.remove('hidden');
+        });
+
+        // Prevent drag events from triggering when clicking the dropdown
+        catSelect.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+        catSelect.addEventListener('touchstart', function (e) { e.stopPropagation(); }, { passive: true });
+
+        catBar.appendChild(catSelect);
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(handle);
+        wrapper.appendChild(delBtn);
+        wrapper.appendChild(badge);
+        wrapper.appendChild(catBar);
+
+        // HTML5 drag events
+        wrapper.addEventListener('dragstart', onDragStart);
+        wrapper.addEventListener('dragend', onDragEnd);
+        wrapper.addEventListener('dragover', onDragOver);
+        wrapper.addEventListener('dragleave', onDragLeave);
+        wrapper.addEventListener('drop', onDrop);
+
+        // Touch events (mobile)
+        wrapper.addEventListener('touchstart', onTouchStart, { passive: false });
+        wrapper.addEventListener('touchmove', onTouchMove, { passive: false });
+        wrapper.addEventListener('touchend', onTouchEnd);
+
+        return wrapper;
+      }
+
+      // ── Delete flow ────────────────────────────────────────────
+      function openDeleteDialog(filename) {
+        pendingDelete = filename;
+        deleteDialog.classList.remove('hidden');
+        deleteConfirm.focus();
+      }
+
+      function closeDeleteDialog() {
+        pendingDelete = null;
+        deleteDialog.classList.add('hidden');
+      }
+
+      deleteCancel.addEventListener('click', closeDeleteDialog);
+
+      deleteDialog.addEventListener('click', function (e) {
+        if (e.target === deleteDialog) closeDeleteDialog();
+      });
+
+      deleteDialog.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeDeleteDialog();
+      });
+
+      deleteConfirm.addEventListener('click', function () {
+        var filename = pendingDelete;
+        closeDeleteDialog();
+        if (!filename) return;
+        doDelete(filename);
+      });
+
+      function doDelete(filename) {
+        // Optimistically disable add button during operation
+        addBtn.disabled = true;
+
+        fetch('/api/gallery-remove', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: filename })
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('Server returned ' + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            if (!data.success) throw new Error('Delete failed');
+            fetch('/api/gallery-rebuild', { method: 'POST' });
+            showNotice('Photo deleted. Gallery updated!');
+            loadGallery();
+          })
+          .catch(function (err) {
+            showNotice('Error deleting photo: ' + err.message);
+            loadGallery();
+          })
+          .finally(function () {
+            addBtn.disabled = false;
+          });
+      }
+
+      // ── Upload flow ────────────────────────────────────────────
+      addBtn.addEventListener('click', function () {
+        fileInput.value = '';
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', function () {
+        var files = fileInput.files;
+        if (!files || files.length === 0) return;
+        doUpload(files);
+      });
+
+      function doUpload(files) {
+        var count = files.length;
+        var label = count === 1 ? '1 photo' : count + ' photos';
+
+        uploadProgressText.textContent = 'Uploading ' + label + '…';
+        uploadProgress.classList.remove('hidden');
+        addBtn.disabled = true;
+        noticeEl.classList.add('hidden');
+
+        var formData = new FormData();
+        for (var i = 0; i < files.length; i++) {
+          formData.append('files', files[i]);
+        }
+
+        fetch('/api/gallery-upload', {
+          method: 'POST',
+          body: formData
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('Server returned ' + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            if (!data.success) throw new Error('Upload failed');
+            var uploaded = (data.files || []).length;
+            var msg = uploaded === 1
+              ? '1 photo uploaded successfully!'
+              : uploaded + ' photos uploaded successfully!';
+            fetch('/api/gallery-rebuild', { method: 'POST' });
+            showNotice(msg);
+            loadGallery();
+          })
+          .catch(function (err) {
+            showNotice('Upload error: ' + err.message);
+          })
+          .finally(function () {
+            uploadProgress.classList.add('hidden');
+            addBtn.disabled = false;
+            fileInput.value = '';
+          });
+      }
+
+    }());
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policies — SweetlyHannahMade</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#fdf2f6',
+              100: '#f5dce6',
+              200: '#e8c4d2',
+              300: '#d4a3b8',
+              400: '#c98da8',
+              500: '#c48a9e',
+              600: '#b87a90',
+              700: '#a0687c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-white text-gray-800 font-sans">
+
+  <!-- Announcement Bar -->
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
+    <span id="announcement-text" class="inline-block"></span>
+    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
+  </div>
+
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <img src="assets/images/logo.png" alt="SweetlyHannahMade" class="w-8 h-8 rounded">
+        <span class="text-xl md:text-2xl font-bold text-brand-600 tracking-tight" style="font-family:'Playfair Display',serif">SweetlyHannahMade</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies & More</a>
+      </nav>
+      <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/40 z-50 hidden" style="transition:opacity 0.3s">
+    <div id="mobile-menu-panel" class="absolute right-0 top-0 h-full w-72 bg-white shadow-xl translate-x-full" style="transition:transform 0.3s ease-out">
+      <div class="flex items-center justify-between p-4 border-b border-brand-100">
+        <span class="font-bold text-brand-600 text-lg">Menu</span>
+        <button id="mobile-menu-close" class="p-2 text-gray-500 hover:text-brand-600" aria-label="Close menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="flex flex-col p-4 gap-1">
+        <a href="/" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Home</a>
+        <a href="category?id=patterns" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Plushies & More</a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const menuOverlay = document.getElementById('mobile-menu-overlay');
+      const menuPanel = document.getElementById('mobile-menu-panel');
+      const menuClose = document.getElementById('mobile-menu-close');
+      if (menuBtn && menuOverlay && menuPanel && menuClose) {
+        menuBtn.addEventListener('click', () => {
+          menuOverlay.classList.remove('hidden');
+          requestAnimationFrame(() => { menuOverlay.style.opacity = '1'; menuPanel.classList.remove('translate-x-full'); });
+        });
+        menuClose.addEventListener('click', () => {
+          menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full');
+          setTimeout(() => menuOverlay.classList.add('hidden'), 300);
+        });
+        menuOverlay.addEventListener('click', (e) => {
+          if (e.target === menuOverlay) { menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full'); setTimeout(() => menuOverlay.classList.add('hidden'), 300); }
+        });
+      }
+    })();
+  </script>
+
+  <main class="max-w-3xl mx-auto px-4 py-12">
+
+    <section id="shipping" class="mb-16">
+      <h1 class="text-3xl font-bold text-gray-800 mb-6">Shipping Policy</h1>
+      <div class="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-4">
+        <h3 class="text-lg font-semibold text-gray-800">Digital Products (PDF Patterns)</h3>
+        <p>All crochet patterns are digital PDF files. After completing your purchase, you'll receive your pattern in two ways:</p>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>An instant download link on the order confirmation page</li>
+          <li>An email with the PDF attached, sent to the email you provided at checkout</li>
+        </ul>
+        <p>No physical shipping is required for digital products. You'll have access to your pattern within minutes of purchase.</p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mt-8">Physical Products (Plushies)</h3>
+        <p>Handmade plushies are shipped within the United States only. Since each plushie is handmade, processing times vary — some may take 3-5 business days while others may take 1-3 weeks depending on the item.</p>
+        <p>Shipping costs vary depending on the item and will be shown at checkout.</p>
+      </div>
+    </section>
+
+    <section id="refunds" class="mb-16">
+      <h1 class="text-3xl font-bold text-gray-800 mb-6">Refund Policy</h1>
+      <div class="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-4">
+        <h3 class="text-lg font-semibold text-gray-800">Digital Products (PDF Patterns)</h3>
+        <p>Due to the digital nature of PDF patterns, all sales are final and non-refundable. Once a pattern has been downloaded or emailed, it cannot be returned.</p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mt-8">Physical Products (Plushies)</h3>
+        <p>Because each plushie is handmade, all sales are final. I put a lot of care into every item and want you to be happy with your purchase!</p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mt-8">Questions or Issues?</h3>
+        <p>If you have any questions about your order or run into issues with a pattern download, please don't hesitate to reach out! You can contact me at:</p>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Email: <a href="mailto:sweetlyhannahmade@gmail.com" class="text-brand-600 hover:text-brand-700">sweetlyhannahmade@gmail.com</a></li>
+          <li>Instagram: <a href="https://instagram.com/sweetlyhannahmade" target="_blank" rel="noopener noreferrer" class="text-brand-600 hover:text-brand-700">@sweetlyhannahmade</a></li>
+        </ul>
+        <p>I'm always happy to help!</p>
+      </div>
+    </section>
+
+    <section id="privacy">
+      <h1 class="text-3xl font-bold text-gray-800 mb-6">Privacy Policy</h1>
+      <div class="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-4">
+        <p><strong>Last updated:</strong> March 19, 2026</p>
+
+        <h3 class="text-lg font-semibold text-gray-800">What information I collect</h3>
+        <p>When you make a purchase, I collect the information you provide at checkout, including your name, email address, and payment details. Payment processing is handled securely by <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" class="text-brand-600 hover:text-brand-700">Stripe</a> — I never store your credit card information.</p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mt-8">How I use your information</h3>
+        <p>I use your information to:</p>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Process your order and deliver your products</li>
+          <li>Send you your purchased pattern via email</li>
+          <li>Respond to questions or concerns about your order</li>
+        </ul>
+        <p>I do not sell, trade, or share your personal information with third parties for marketing purposes.</p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mt-8">Cookies</h3>
+        <p>This website does not use tracking or advertising cookies. Only essential technical functionality is used to keep the site working properly.</p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mt-8">Contact</h3>
+        <p>If you have questions about this privacy policy, contact me at <a href="mailto:sweetlyhannahmade@gmail.com" class="text-brand-600 hover:text-brand-700">sweetlyhannahmade@gmail.com</a>.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-gray-800 text-gray-300 py-10 px-4">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <p class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif">SweetlyHannahMade</p>
+        <p class="text-sm mt-1 text-gray-400">Handmade crochet plushies, patterns, and more</p>
+      </div>
+      <nav class="flex flex-wrap gap-4 text-sm">
+        <a href="category?id=patterns" class="hover:text-white transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="hover:text-white transition-colors">Plushies & More</a>
+        <a href="contact" class="hover:text-white transition-colors">Contact</a>
+        <a href="policy.html#shipping" class="hover:text-white transition-colors">Shipping Policy</a>
+        <a href="policy.html#refunds" class="hover:text-white transition-colors">Refunds</a>
+        <a href="policy.html#privacy" class="hover:text-white transition-colors">Privacy Policy</a>
+      </nav>
+      <p class="text-sm text-gray-500">&copy; <span id="footer-year"></span> SweetlyHannahMade</p>
+    </div>
+  </footer>
+
+  <script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
+  <script>
+    // Announcement bar
+    var announcementIndex = 0;
+    function rotateAnnouncements(announcements) {
+      var el = document.getElementById('announcement-text');
+      var linkEl = document.getElementById('announcement-link');
+      var item = announcements[announcementIndex];
+      var text = typeof item === 'string' ? item : item.text;
+      el.textContent = text;
+      if (item.link) {
+        linkEl.href = item.link;
+        linkEl.textContent = item.linkText || 'Learn more';
+        linkEl.classList.remove('hidden');
+      } else {
+        linkEl.classList.add('hidden');
+      }
+      announcementIndex = (announcementIndex + 1) % announcements.length;
+    }
+    (function() {
+      fetch('/inventory.json').then(function(r) { return r.json(); }).then(function(data) {
+        var announcements = (data.shop && data.shop.announcements) || [];
+        if (announcements.length) {
+          rotateAnnouncements(announcements);
+          if (announcements.length > 1) setInterval(function() { rotateAnnouncements(announcements); }, 4000);
+        }
+      }).catch(function() {});
+    })();
+  </script>
+  <script>
+    if (window.location.hash) {
+      const el = document.querySelector(window.location.hash);
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
+    }
+  </script>
+</body>
+</html>

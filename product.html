@@ -12,43 +12,133 @@
         extend: {
           colors: {
             brand: {
-              50:  '#fff5fb',
-              100: '#FFCFF6',
-              200: '#f0d4e4',
-              300: '#e3bcd0',
-              400: '#DAA2BA',
-              500: '#DAA2BA',
-              600: '#c08aa0',
-              700: '#9e6e82',
+              50:  '#fdf2f6',
+              100: '#f5dce6',
+              200: '#e8c4d2',
+              300: '#d4a3b8',
+              400: '#c98da8',
+              500: '#c48a9e',
+              600: '#b87a90',
+              700: '#a0687c',
             }
           }
         }
       }
     }
   </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    .cart-drawer-overlay { transition: opacity 0.3s; }
+    .cart-drawer-panel { transition: transform 0.3s ease-out; }
+  </style>
+<script>if(history.scrollRestoration)history.scrollRestoration="manual";window.scrollTo(0,0);</script>
 </head>
-<body class="bg-white text-gray-800 font-sans">
+<body class="bg-white text-gray-800 font-sans" onbeforeunload="window.scrollTo(0,0)" onload="setTimeout(function(){window.scrollTo(0,0)},50)">
+
+  <!-- Announcement Bar -->
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
+    <span id="announcement-text" class="inline-block"></span>
+    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
+  </div>
 
   <!-- Header -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold text-brand-600 tracking-tight hover:text-brand-700 transition-colors">
-        SweetlyHannahMade
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <img src="assets/images/logo.png" alt="SweetlyHannahMade" class="w-8 h-8 rounded">
+        <span class="text-xl md:text-2xl font-bold text-brand-600 tracking-tight" style="font-family:'Playfair Display',serif">SweetlyHannahMade</span>
       </a>
-      <nav class="flex items-center gap-6">
-        <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Patterns</a>
-        <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors text-sm md:text-base">Plushies</a>
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies & More</a>
+        <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Contact</a>
+        <a href="play" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Win a Discount</a>
         <div id="social-links" class="flex items-center gap-3 ml-2"></div>
+        <button id="cart-icon-btn" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
       </nav>
+      <div class="md:hidden flex items-center gap-1">
+        <button id="cart-icon-btn-mobile" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
+        <button id="mobile-menu-btn" class="p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/40 z-50 hidden cart-drawer-overlay opacity-0">
+    <div id="cart-drawer-panel" class="absolute right-0 top-0 h-full w-80 max-w-full bg-white shadow-xl cart-drawer-panel translate-x-full flex flex-col">
+      <div class="flex items-center justify-between p-4 border-b border-brand-100 flex-shrink-0">
+        <span class="font-bold text-brand-700 text-lg">Your Bag</span>
+        <button id="cart-drawer-close" class="p-2 text-gray-500 hover:text-brand-600 transition-colors" aria-label="Close cart">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div id="cart-drawer-empty" class="flex-1 flex-col items-center justify-center text-center p-8" style="display:flex">
+        <svg class="w-16 h-16 text-brand-200 mb-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <p class="text-gray-500 font-medium">Your bag is empty</p>
+        <p class="text-gray-400 text-sm mt-1">Add some items to get started!</p>
+      </div>
+      <div id="cart-drawer-items" class="flex-1 overflow-y-auto px-4"></div>
+      <div id="cart-drawer-footer" class="border-t border-brand-100 p-4 flex-shrink-0" style="display:none">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-semibold text-gray-700">Subtotal</span>
+          <span id="cart-drawer-total" class="font-bold text-brand-700 text-lg">$0.00</span>
+        </div>
+        <button id="cart-checkout-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-md">
+          Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/40 z-50 hidden" style="transition:opacity 0.3s">
+    <div id="mobile-menu-panel" class="absolute right-0 top-0 h-full w-72 bg-white shadow-xl translate-x-full" style="transition:transform 0.3s ease-out">
+      <div class="flex items-center justify-between p-4 border-b border-brand-100">
+        <span class="font-bold text-brand-600 text-lg">Menu</span>
+        <button id="mobile-menu-close" class="p-2 text-gray-500 hover:text-brand-600" aria-label="Close menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="flex flex-col p-4 gap-1">
+        <a href="/" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Home</a>
+        <a href="category?id=patterns" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Patterns</a>
+        <a href="category?id=plushies" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Plushies & More</a>
+        <a href="gallery" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Contact</a>
+        <a href="play" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Win a Discount</a>
+      </nav>
+    </div>
+  </div>
 
   <!-- Breadcrumb -->
   <nav class="max-w-6xl mx-auto px-4 py-3 text-sm text-gray-500" aria-label="Breadcrumb">
     <ol class="flex items-center gap-1">
-      <li><a href="index.html" class="hover:text-brand-600 transition-colors">Home</a></li>
+      <li><a href="/" class="hover:text-brand-600 transition-colors">Home</a></li>
       <li class="text-gray-400">&rsaquo;</li>
       <li><a id="breadcrumb-category" href="#" class="hover:text-brand-600 transition-colors"></a></li>
       <li class="text-gray-400">&rsaquo;</li>
@@ -60,7 +150,7 @@
   <div id="not-found-state" class="hidden max-w-6xl mx-auto px-4 py-20 text-center">
     <p class="text-5xl mb-4">&#128269;</p>
     <p class="text-gray-500 text-lg font-medium">Product not found.</p>
-    <a href="index.html" class="inline-block mt-4 text-brand-600 hover:text-brand-700 font-medium transition-colors">
+    <a href="/" class="inline-block mt-4 text-brand-600 hover:text-brand-700 font-medium transition-colors">
       &larr; Back to home
     </a>
   </div>
@@ -71,20 +161,20 @@
 
       <!-- Left column: image gallery + video -->
       <div class="w-full md:w-1/2 flex-shrink-0">
-        <!-- Main image -->
-        <div class="rounded-2xl overflow-hidden bg-brand-50 border border-brand-100 shadow-md aspect-square">
+        <!-- Main image with arrows -->
+        <div class="relative rounded-2xl overflow-hidden bg-brand-50 border border-brand-100 shadow-md aspect-square group">
           <img id="main-image" src="" alt="" class="w-full h-full object-cover">
+          <button id="prev-img-btn" class="hidden absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-md flex items-center justify-center text-gray-700 hover:text-brand-600 transition-all" aria-label="Previous image">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button id="next-img-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-md flex items-center justify-center text-gray-700 hover:text-brand-600 transition-all" aria-label="Next image">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="img-counter" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-3 py-1 rounded-full"></div>
         </div>
 
         <!-- Thumbnail strip -->
         <div id="thumbnail-strip" class="flex gap-3 mt-4 flex-wrap"></div>
-
-        <!-- Video player -->
-        <div id="video-container" class="hidden mt-6">
-          <video id="product-video" controls class="w-full rounded-xl shadow-md bg-black">
-            Your browser does not support the video tag.
-          </video>
-        </div>
       </div>
 
       <!-- Right column: product info -->
@@ -94,6 +184,8 @@
 
         <!-- Price -->
         <p id="product-price" class="text-2xl font-bold text-brand-600"></p>
+        <div id="shipping-info" class="hidden text-sm text-gray-500"></div>
+        <div id="processing-info" class="hidden text-sm text-gray-500"></div>
 
         <!-- Difficulty badge -->
         <span id="difficulty-badge" class="hidden inline-flex self-start items-center px-3 py-1 rounded-full text-sm font-semibold bg-brand-100 text-brand-700"></span>
@@ -101,12 +193,38 @@
         <!-- Tags -->
         <div id="tags-container" class="flex flex-wrap gap-2"></div>
 
-        <!-- Buy Now button -->
-        <a id="buy-now-btn"
-           href="#"
-           class="w-full md:w-auto inline-block text-center bg-brand-500 hover:bg-brand-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-colors shadow-md">
-          Buy Now
-        </a>
+        <!-- Variant selector (shown only if product has multiple variants) -->
+        <div id="variant-selector-section" class="hidden">
+          <label for="variant-select" class="block text-sm font-semibold text-gray-700 mb-1" id="variant-label">Select an option</label>
+          <select id="variant-select" class="w-full px-4 py-3 rounded-xl border border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors text-sm bg-white">
+          </select>
+        </div>
+
+        <!-- Personalization (shown only if enabled via metadata) -->
+        <div id="personalization-section" class="hidden">
+          <label for="personalization-input" class="block text-sm font-semibold text-gray-700 mb-1">
+            <span id="personalization-label">Add personalization</span>
+            <span class="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <textarea id="personalization-input" rows="3"
+                    placeholder="Add your personalization details here (e.g., color preferences, name to add, special requests)"
+                    class="w-full px-4 py-3 rounded-xl border border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors resize-y text-sm"></textarea>
+          <p class="text-xs text-gray-400 mt-1">I'll review your request and reach out if I have any questions before starting.</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button id="add-to-cart-btn"
+             type="button"
+             class="flex-1 text-center bg-brand-500 hover:bg-brand-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-colors shadow-md">
+            Add to Bag
+          </button>
+          <button id="buy-now-btn"
+             type="button"
+             class="flex-1 text-center bg-brand-700 hover:bg-brand-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-colors shadow-md border-2 border-brand-700">
+            Buy Now
+          </button>
+        </div>
 
         <!-- Description -->
         <div id="product-description" class="product-description prose prose-sm text-gray-600 leading-relaxed mt-2"></div>
@@ -119,12 +237,13 @@
   <footer class="bg-gray-800 text-gray-300 py-10 px-4 mt-16">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div>
-        <p class="text-white font-bold text-lg">SweetlyHannahMade</p>
+        <p class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif">SweetlyHannahMade</p>
         <p class="text-sm mt-1 text-gray-400">Handmade with love</p>
       </div>
       <nav class="flex flex-wrap gap-4 text-sm">
         <a href="category?id=patterns" class="hover:text-white transition-colors">Patterns</a>
-        <a href="category?id=plushies" class="hover:text-white transition-colors">Plushies</a>
+        <a href="category?id=plushies" class="hover:text-white transition-colors">Plushies & More</a>
+        <a href="contact" class="hover:text-white transition-colors">Contact</a>
         <a href="policy.html#shipping" class="hover:text-white transition-colors">Shipping Policy</a>
         <a href="policy.html#refunds" class="hover:text-white transition-colors">Refunds</a>
         <a href="policy.html#privacy" class="hover:text-white transition-colors">Privacy Policy</a>
@@ -135,6 +254,47 @@
 
   <script src="assets/shop.js"></script>
   <script>
+    // Mobile menu
+    (function() {
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const menuOverlay = document.getElementById('mobile-menu-overlay');
+      const menuPanel = document.getElementById('mobile-menu-panel');
+      const menuClose = document.getElementById('mobile-menu-close');
+      const mobileCartBtn = document.getElementById('cart-icon-btn-mobile');
+      if (menuBtn && menuOverlay && menuPanel && menuClose) {
+        function openMenu() {
+          menuOverlay.classList.remove('hidden');
+          requestAnimationFrame(() => { menuOverlay.style.opacity = '1'; menuPanel.classList.remove('translate-x-full'); });
+        }
+        function closeMenu() {
+          menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full');
+          setTimeout(() => menuOverlay.classList.add('hidden'), 300);
+        }
+        menuBtn.addEventListener('click', openMenu);
+        menuClose.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', (e) => { if (e.target === menuOverlay) closeMenu(); });
+      }
+      if (mobileCartBtn) mobileCartBtn.addEventListener('click', openCartDrawer);
+    })();
+
+    // Announcement bar
+    var announcementIndex = 0;
+    function rotateAnnouncements(announcements) {
+      var el = document.getElementById('announcement-text');
+      var linkEl = document.getElementById('announcement-link');
+      var item = announcements[announcementIndex];
+      var text = typeof item === 'string' ? item : item.text;
+      el.textContent = text;
+      if (item.link) {
+        linkEl.href = item.link;
+        linkEl.textContent = item.linkText || 'Learn more';
+        linkEl.classList.remove('hidden');
+      } else {
+        linkEl.classList.add('hidden');
+      }
+      announcementIndex = (announcementIndex + 1) % announcements.length;
+    }
+
     async function init() {
       const productId = getParam('id');
       const inv = await getInventory();
@@ -142,6 +302,14 @@
 
       // Footer year always
       document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+      // Announcement bar
+      const shopData = inv.shop;
+      const announcements = (shopData && shopData.announcements) || [];
+      if (announcements.length) {
+        rotateAnnouncements(announcements);
+        if (announcements.length > 1) setInterval(() => rotateAnnouncements(announcements), 4000);
+      }
 
       // Header social icons
       const socialLinks = document.getElementById('social-links');
@@ -180,51 +348,162 @@
       document.getElementById('product-name').textContent = product.name;
       document.getElementById('product-price').textContent = formatPrice(product.price);
 
+      // Shipping info — only show for physical products (plushies), not patterns
+      if (product.categoryId === 'plushies') {
+        const shippingEl = document.getElementById('shipping-info');
+        if (product.shipping && product.shipping > 0) {
+          shippingEl.textContent = '+ ' + formatPrice(product.shipping) + ' shipping (US only)';
+        } else {
+          shippingEl.textContent = 'Free shipping (US only)';
+        }
+        shippingEl.classList.remove('hidden');
+      }
+
+      // Processing time
+      if (product.processingTime) {
+        const procEl = document.getElementById('processing-info');
+        procEl.textContent = product.processingTime;
+        procEl.classList.remove('hidden');
+      }
+
       // Main image — first in images array
       const mainImage = document.getElementById('main-image');
       const images = product.images && product.images.length ? product.images : [];
-      if (images.length > 0) {
-        if (typeof images[0] === 'string' && images[0].startsWith('assets/')) {
-          mainImage.src = images[0];
+      let currentImgIndex = 0;
+
+      // Insert video as second slide if product has one
+      if (product.video && typeof product.video === 'string' && product.video.trim() !== '') {
+        const videoSrc = product.video.trim();
+        if (videoSrc.startsWith('assets/') || videoSrc.startsWith('https://') || videoSrc.startsWith('/static/')) {
+          images.splice(1, 0, { type: 'video', src: videoSrc });
         }
-        mainImage.alt = product.name;
       }
 
-      // Thumbnail strip — click listener swaps main image src using thumb.src
-      const thumbStrip = document.getElementById('thumbnail-strip');
+      // Create a video element for the gallery (hidden initially)
+      var galleryVideo = document.createElement('video');
+      galleryVideo.className = 'w-full h-full object-contain hidden bg-black rounded-2xl';
+      galleryVideo.controls = true;
+      galleryVideo.loop = true;
+      galleryVideo.muted = true;
+      galleryVideo.playsInline = true;
+      var imgContainer = mainImage.parentElement;
+      imgContainer.appendChild(galleryVideo);
+
+      var prevBtn = document.getElementById('prev-img-btn');
+      var nextBtn = document.getElementById('next-img-btn');
+
+      function showImage(index) {
+        currentImgIndex = index;
+        var item = images[index];
+        if (typeof item === 'object' && item.type === 'video') {
+          mainImage.classList.add('hidden');
+          galleryVideo.classList.remove('hidden');
+          galleryVideo.src = item.src;
+          galleryVideo.play();
+          // Keep square container, video fits inside with black bars
+          // Show arrows so user can navigate
+          if (images.length > 1) {
+            if (prevBtn) { prevBtn.style.display = ''; prevBtn.style.zIndex = '20'; }
+            if (nextBtn) { nextBtn.style.display = ''; nextBtn.style.zIndex = '20'; }
+          }
+        } else {
+          galleryVideo.classList.add('hidden');
+          galleryVideo.pause();
+          mainImage.classList.remove('hidden');
+          mainImage.src = typeof item === 'string' ? item : item.src;
+          mainImage.alt = product.name;
+          // Show arrows for images
+          if (images.length > 1) {
+            if (prevBtn) prevBtn.style.display = '';
+            if (nextBtn) nextBtn.style.display = '';
+          }
+        }
+        // Update counter
+        var counter = document.getElementById('img-counter');
+        if (counter && images.length > 1) {
+          counter.textContent = (index + 1) + ' / ' + images.length;
+        }
+        // Update thumbnail highlight
+        var thumbStrip = document.getElementById('thumbnail-strip');
+        if (thumbStrip) {
+          thumbStrip.querySelectorAll('.thumb-item').forEach(function(t, i) {
+            t.classList.toggle('border-brand-500', i === index);
+            t.classList.toggle('shadow-md', i === index);
+            t.classList.toggle('border-brand-100', i !== index);
+          });
+        }
+      }
+
+      if (images.length > 0) {
+        showImage(0);
+      }
+
+      // Arrow navigation
       if (images.length > 1) {
-        images.forEach((imgSrc, index) => {
-          // Only add thumb if src is valid
-          if (typeof imgSrc === 'string' && imgSrc.startsWith('assets/')) {
-            const thumb = document.createElement('img');
-            thumb.src = imgSrc;
-            thumb.alt = product.name;
-            thumb.className = 'w-20 h-20 object-cover rounded-xl border-2 cursor-pointer transition-all ' +
-              (index === 0 ? 'border-brand-500 shadow-md' : 'border-brand-100 hover:border-brand-400');
-            thumb.addEventListener('click', () => {
-              mainImage.src = thumb.src;
-              thumbStrip.querySelectorAll('img').forEach(t => {
-                t.classList.remove('border-brand-500', 'shadow-md');
-                t.classList.add('border-brand-100');
-              });
-              thumb.classList.remove('border-brand-100');
-              thumb.classList.add('border-brand-500', 'shadow-md');
-            });
-            thumbStrip.appendChild(thumb);
+        var counter = document.getElementById('img-counter');
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+        counter.classList.remove('hidden');
+        prevBtn.addEventListener('click', () => showImage((currentImgIndex - 1 + images.length) % images.length));
+        nextBtn.addEventListener('click', () => showImage((currentImgIndex + 1) % images.length));
+
+        // Swipe support for mobile
+        let touchStartX = 0;
+        const imgContainer = mainImage.parentElement;
+        imgContainer.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        imgContainer.addEventListener('touchend', (e) => {
+          const diff = touchStartX - e.changedTouches[0].clientX;
+          if (Math.abs(diff) > 50) {
+            if (diff > 0) showImage((currentImgIndex + 1) % images.length);
+            else showImage((currentImgIndex - 1 + images.length) % images.length);
           }
         });
       }
 
-      // Video — only show if product.video is a non-empty string
-      if (product.video && typeof product.video === 'string' && product.video.trim() !== '') {
-        const videoSrc = product.video.trim();
-        // Only allow src that starts with 'assets/' (sanitize)
-        if (videoSrc.startsWith('assets/') || videoSrc.startsWith('https://')) {
-          const videoEl = document.getElementById('product-video');
-          videoEl.src = videoSrc;
-          document.getElementById('video-container').classList.remove('hidden');
-        }
+      // Thumbnail strip
+      const thumbStrip = document.getElementById('thumbnail-strip');
+      if (images.length > 1) {
+        images.forEach((item, index) => {
+          var isVideo = typeof item === 'object' && item.type === 'video';
+          var thumb;
+          if (isVideo) {
+            // Video thumbnail — show video preview with play icon overlay
+            thumb = document.createElement('div');
+            thumb.className = 'thumb-item w-16 h-16 rounded-lg border-2 cursor-pointer transition-all relative overflow-hidden ' +
+              (index === 0 ? 'border-brand-500 shadow-md' : 'border-brand-100 hover:border-brand-400');
+            // Use a small video element as preview
+            var thumbVid = document.createElement('video');
+            thumbVid.src = item.src;
+            thumbVid.className = 'w-full h-full object-cover';
+            thumbVid.muted = true;
+            thumbVid.preload = 'metadata';
+            thumbVid.addEventListener('loadeddata', function() { thumbVid.currentTime = 0.5; });
+            thumb.appendChild(thumbVid);
+            // Play icon overlay
+            var overlay = document.createElement('div');
+            overlay.className = 'absolute inset-0 flex items-center justify-center bg-black/30';
+            var playIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            playIcon.setAttribute('class', 'w-5 h-5 text-white drop-shadow');
+            playIcon.setAttribute('fill', 'currentColor');
+            playIcon.setAttribute('viewBox', '0 0 24 24');
+            var playPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            playPath.setAttribute('d', 'M8 5v14l11-7z');
+            playIcon.appendChild(playPath);
+            overlay.appendChild(playIcon);
+            thumb.appendChild(overlay);
+          } else {
+            thumb = document.createElement('img');
+            thumb.src = typeof item === 'string' ? item : item.src;
+            thumb.alt = product.name;
+            thumb.className = 'thumb-item w-16 h-16 object-cover rounded-lg border-2 cursor-pointer transition-all ' +
+              (index === 0 ? 'border-brand-500 shadow-md' : 'border-brand-100 hover:border-brand-400');
+          }
+          thumb.addEventListener('click', () => showImage(index));
+          thumbStrip.appendChild(thumb);
+        });
       }
+
+      // Video insertion moved above gallery setup
 
       // Difficulty badge — show only if product.difficulty is truthy (not null, not empty string)
       if (product.difficulty) {
@@ -241,27 +520,120 @@
         ).join(''));
       }
 
-      // Buy Now button — calls Netlify Function to create Stripe Checkout session
+      // Variant selector
+      let selectedVariant = product.variants && product.variants[0];
+      if (product.hasOptions && product.variants.length > 1) {
+        const selectorSection = document.getElementById('variant-selector-section');
+        const selector = document.getElementById('variant-select');
+        const label = document.getElementById('variant-label');
+        selectorSection.classList.remove('hidden');
+
+        // Use the first option's title as the label (e.g., "Colors")
+        const optionTitle = product.variants[0].options && product.variants[0].options[0] ? product.variants[0].options[0].title : 'Option';
+        label.textContent = optionTitle;
+
+        // Add a placeholder
+        const placeholder = document.createElement('option');
+        placeholder.textContent = 'Choose ' + optionTitle.toLowerCase() + '...';
+        placeholder.value = '';
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        selector.appendChild(placeholder);
+
+        // Add each variant as an option
+        product.variants.forEach(v => {
+          const opt = document.createElement('option');
+          const optValue = v.options && v.options[0] ? v.options[0].value : v.title;
+          opt.value = v.id;
+          opt.textContent = optValue + (v.price !== product.price ? ' - ' + formatPrice(v.price) : '');
+          selector.appendChild(opt);
+        });
+
+        // Update selected variant and price when changed
+        selector.addEventListener('change', () => {
+          selectedVariant = product.variants.find(v => v.id === selector.value);
+          if (selectedVariant) {
+            document.getElementById('product-price').textContent = formatPrice(selectedVariant.price);
+          }
+        });
+      }
+
+      // Personalization
+      if (product.personalization) {
+        const persSection = document.getElementById('personalization-section');
+        persSection.classList.remove('hidden');
+        if (product.personalizationLabel) {
+          document.getElementById('personalization-label').textContent = product.personalizationLabel;
+        }
+      }
+
+      // Add to Bag + Buy Now buttons
+      const addBtn = document.getElementById('add-to-cart-btn');
       const buyBtn = document.getElementById('buy-now-btn');
+      const getPersonalization = () => document.getElementById('personalization-input') ? document.getElementById('personalization-input').value.trim() : '';
+      function getCartItem() {
+        const sv = selectedVariant || product.variants[0];
+        const optValue = sv && sv.options && sv.options[0] ? sv.options[0].value : '';
+        return {
+          id: product.id + (optValue ? '-' + optValue : ''),
+          productId: product.id,
+          name: product.name + (optValue ? ' (' + optValue + ')' : ''),
+          price: sv ? sv.price : product.price,
+          image: product.images && product.images[0] ? product.images[0] : '',
+          variantId: sv ? sv.id : product.variantId,
+          quantity: 1,
+          shipping: product.shipping || 0,
+          categoryId: product.categoryId || '',
+        };
+      }
+
       if (!product.inStock) {
-        buyBtn.removeAttribute('href');
-        buyBtn.textContent = 'Currently Unavailable';
-        buyBtn.className = 'w-full md:w-auto inline-block text-center bg-gray-300 text-gray-500 font-bold text-lg px-8 py-4 rounded-full cursor-not-allowed';
-        buyBtn.setAttribute('aria-disabled', 'true');
+        addBtn.textContent = 'Currently Unavailable';
+        addBtn.disabled = true;
+        addBtn.className = 'flex-1 text-center bg-gray-300 text-gray-500 font-bold text-lg px-8 py-4 rounded-full cursor-not-allowed';
+        buyBtn.style.display = 'none';
       } else {
-        buyBtn.addEventListener('click', async (e) => {
-          e.preventDefault();
-          buyBtn.textContent = 'Loading…';
-          buyBtn.style.opacity = '0.7';
+        addBtn.addEventListener('click', () => {
+          // Validate variant selection if needed
+          if (product.hasOptions && product.variants.length > 1) {
+            const selector = document.getElementById('variant-select');
+            if (!selector.value) {
+              selector.focus();
+              selector.style.borderColor = '#ef4444';
+              return;
+            }
+          }
+          const item = getCartItem();
+          item.personalization = getPersonalization();
+          addToCart(item);
+          addBtn.textContent = 'Added!';
+          addBtn.style.background = '#22c55e';
+          setTimeout(() => {
+            addBtn.textContent = 'Add to Bag';
+            addBtn.style.background = '';
+            openCartDrawer();
+          }, 600);
+        });
+
+        buyBtn.addEventListener('click', async () => {
+          // Validate variant selection if needed
+          if (product.hasOptions && product.variants.length > 1) {
+            const selector = document.getElementById('variant-select');
+            if (!selector.value) {
+              selector.focus();
+              selector.style.borderColor = '#ef4444';
+              return;
+            }
+          }
+          buyBtn.textContent = 'Loading...';
+          buyBtn.disabled = true;
+          const item = getCartItem();
+          const pers = getPersonalization();
           try {
-            const res = await fetch('/.netlify/functions/create-checkout', {
+            const res = await fetch('/api/create-checkout', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: product.name,
-                price: product.price,
-                productId: product.id,
-              }),
+              body: JSON.stringify({ name: item.name + (pers ? ' [' + pers + ']' : ''), price: item.price, productId: item.productId || product.id, shipping: product.shipping || 0 }),
             });
             const data = await res.json();
             if (data.url) {
@@ -269,12 +641,12 @@
             } else {
               alert('Something went wrong. Please try again.');
               buyBtn.textContent = 'Buy Now';
-              buyBtn.style.opacity = '1';
+              buyBtn.disabled = false;
             }
           } catch {
             alert('Something went wrong. Please try again.');
             buyBtn.textContent = 'Buy Now';
-            buyBtn.style.opacity = '1';
+            buyBtn.disabled = false;
           }
         });
       }
@@ -287,17 +659,6 @@
     init();
   </script>
 
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on('init', user => {
-        if (!user) {
-          window.netlifyIdentity.on('login', () => {
-            document.location.href = '/admin/';
-          });
-        }
-      });
-    }
-  </script>
 
 </body>
 </html>
