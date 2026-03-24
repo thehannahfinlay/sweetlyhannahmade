@@ -45,6 +45,10 @@
     .gallery-img { cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
     .gallery-img:hover { transform: scale(1.03); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
     .lightbox { transition: opacity 0.3s; }
+    .cat-btn { white-space: nowrap; }
+    .cat-btn.active { background-color: #b87a90; color: #fff; }
+    #category-nav::-webkit-scrollbar { display: none; }
+    #category-nav { scrollbar-width: none; }
   </style>
 <script>if(history.scrollRestoration)history.scrollRestoration="manual";window.scrollTo(0,0);</script>
 </head>
@@ -157,9 +161,17 @@
     </div>
   </section>
 
-  <!-- Category jump nav -->
-  <div id="category-nav" class="hidden sticky top-16 z-40 bg-white/90 backdrop-blur py-2 px-2">
-    <div class="max-w-6xl mx-auto flex gap-2 overflow-x-auto flex-nowrap" id="category-nav-links"></div>
+  <!-- Category filter nav -->
+  <div id="category-nav" class="hidden sticky top-16 z-40 bg-white border-b border-brand-100 shadow-sm py-3 px-4">
+    <div class="max-w-6xl mx-auto">
+      <!-- Desktop: show all -->
+      <div id="category-nav-desktop" class="hidden md:flex flex-wrap gap-2 justify-center"></div>
+      <!-- Mobile: show a few + "More" -->
+      <div id="category-nav-mobile" class="md:hidden">
+        <div id="mobile-cat-visible" class="flex gap-2 flex-wrap"></div>
+        <div id="mobile-cat-overflow" class="hidden flex-wrap gap-2 mt-2"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Gallery -->
@@ -338,24 +350,30 @@
     (function() {
       var grid = document.getElementById('gallery-grid');
       var nav = document.getElementById('category-nav');
-      var navLinks = document.getElementById('category-nav-links');
-      if (!grid || !nav || !navLinks) return;
+      var desktopNav = document.getElementById('category-nav-desktop');
+      var mobileVisible = document.getElementById('mobile-cat-visible');
+      var mobileOverflow = document.getElementById('mobile-cat-overflow');
+      if (!grid || !nav) return;
 
-      // Find all category section headers
       var headers = grid.querySelectorAll('h3');
       if (headers.length === 0) return;
 
       nav.classList.remove('hidden');
       var activeFilter = 'All';
+      var allButtons = [];
+      var mobileExpanded = false;
+      var MOBILE_VISIBLE_COUNT = 5;
 
       var galleryTitle = document.querySelector('#gallery-grid').parentElement.querySelector('h2');
+
+      var inactiveClass = 'cat-btn px-4 py-2 rounded-full text-sm font-medium bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-100 transition-colors';
+      var activeClass = 'cat-btn active px-4 py-2 rounded-full text-sm font-bold bg-brand-600 text-white border border-brand-600 transition-colors';
 
       function filterPhotos(category) {
         activeFilter = category;
         var items = grid.children;
         var currentCategory = 'Uncategorized';
 
-        // Update the title
         if (galleryTitle) {
           galleryTitle.textContent = (category === 'All') ? 'My Work' : category;
         }
@@ -363,9 +381,7 @@
         for (var i = 0; i < items.length; i++) {
           var el = items[i];
           var h3 = el.querySelector ? el.querySelector('h3') : null;
-
           if (h3) {
-            // This is a category header — always hide
             currentCategory = h3.textContent;
             el.style.display = 'none';
           } else {
@@ -377,32 +393,70 @@
           }
         }
 
-        // Update button styles
-        var buttons = navLinks.querySelectorAll('button');
-        for (var j = 0; j < buttons.length; j++) {
-          if (buttons[j].textContent === category) {
-            buttons[j].className = 'px-3 py-1 rounded-full text-xs font-medium bg-brand-600 text-white whitespace-nowrap transition-colors';
-          } else {
-            buttons[j].className = 'px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-700 hover:bg-brand-200 whitespace-nowrap transition-colors';
-          }
-        }
+        allButtons.forEach(function(b) {
+          b.className = (b.textContent === category) ? activeClass : inactiveClass;
+        });
+
+        window.scrollTo({ top: grid.offsetTop - 80, behavior: 'smooth' });
       }
 
-      // Add "All" button
-      var allBtn = document.createElement('button');
-      allBtn.className = 'px-3 py-1 rounded-full text-xs font-medium bg-brand-600 text-white whitespace-nowrap transition-colors';
-      allBtn.textContent = 'All';
-      allBtn.addEventListener('click', function() { filterPhotos('All'); });
-      navLinks.appendChild(allBtn);
-
-      // Add category buttons
-      headers.forEach(function(h) {
+      function makeBtn(label) {
         var btn = document.createElement('button');
-        btn.className = 'px-3 py-1 rounded-full text-xs font-medium bg-brand-100 text-brand-700 hover:bg-brand-200 whitespace-nowrap transition-colors';
-        btn.textContent = h.textContent;
-        btn.addEventListener('click', function() { filterPhotos(h.textContent); });
-        navLinks.appendChild(btn);
+        btn.className = (label === 'All') ? activeClass : inactiveClass;
+        btn.textContent = label;
+        btn.addEventListener('click', function() { filterPhotos(label); });
+        allButtons.push(btn);
+        return btn;
+      }
+
+      function makeChevron(up) {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'w-3 h-3');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '2.5');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('stroke-linejoin', 'round');
+        path.setAttribute('d', up ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7');
+        svg.appendChild(path);
+        return svg;
+      }
+
+      // Build category list
+      var cats = ['All'];
+      headers.forEach(function(h) { cats.push(h.textContent); });
+
+      // Desktop: all buttons in one row, wrapping
+      cats.forEach(function(c) { desktopNav.appendChild(makeBtn(c)); });
+
+      // Mobile: first few visible, rest in overflow
+      cats.forEach(function(c, i) {
+        var btn = makeBtn(c);
+        if (i < MOBILE_VISIBLE_COUNT) {
+          mobileVisible.appendChild(btn);
+        } else {
+          mobileOverflow.appendChild(btn);
+        }
       });
+
+      // "More" toggle button for mobile
+      if (cats.length > MOBILE_VISIBLE_COUNT) {
+        var moreBtn = document.createElement('button');
+        moreBtn.className = 'cat-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200 transition-colors flex items-center gap-1';
+        moreBtn.textContent = 'More ';
+        moreBtn.appendChild(makeChevron(false));
+        moreBtn.addEventListener('click', function() {
+          mobileExpanded = !mobileExpanded;
+          mobileOverflow.classList.toggle('hidden', !mobileExpanded);
+          mobileOverflow.style.display = mobileExpanded ? 'flex' : 'none';
+          while (moreBtn.firstChild) moreBtn.removeChild(moreBtn.firstChild);
+          moreBtn.appendChild(document.createTextNode(mobileExpanded ? 'Less ' : 'More '));
+          moreBtn.appendChild(makeChevron(mobileExpanded));
+        });
+        mobileVisible.appendChild(moreBtn);
+      }
 
       // Hide all category headers on load
       headers.forEach(function(h) {
