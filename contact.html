@@ -230,3 +230,67 @@
       }).catch(function() {});
     })();
 
+    // Mobile menu
+    (function() {
+      var menuBtn = document.getElementById('mobile-menu-btn');
+      var menuOverlay = document.getElementById('mobile-menu-overlay');
+      var menuPanel = document.getElementById('mobile-menu-panel');
+      var menuClose = document.getElementById('mobile-menu-close');
+      var mobileCartBtn = document.getElementById('cart-icon-btn-mobile');
+      if (menuBtn && menuOverlay && menuPanel && menuClose) {
+        function openMenu() {
+          menuOverlay.classList.remove('hidden');
+          requestAnimationFrame(function() { menuOverlay.style.opacity = '1'; menuPanel.classList.remove('translate-x-full'); });
+        }
+        function closeMenu() {
+          menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full');
+          setTimeout(function() { menuOverlay.classList.add('hidden'); }, 300);
+        }
+        menuBtn.addEventListener('click', openMenu);
+        menuClose.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', function(e) { if (e.target === menuOverlay) closeMenu(); });
+      }
+      if (mobileCartBtn && typeof openCartDrawer === 'function') mobileCartBtn.addEventListener('click', openCartDrawer);
+    })();
+
+    // Contact form
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var name = document.getElementById('contact-name').value.trim();
+      var email = document.getElementById('contact-email').value.trim();
+      var phone = document.getElementById('contact-phone').value.trim();
+      var message = document.getElementById('contact-message').value.trim();
+      var btn = document.getElementById('contact-submit');
+      var successEl = document.getElementById('contact-success');
+      var errorEl = document.getElementById('contact-error');
+
+      if (!name || !email || !message) return;
+
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+      successEl.classList.add('hidden');
+      errorEl.classList.add('hidden');
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, phone: phone, message: message })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) {
+          successEl.classList.remove('hidden');
+          document.getElementById('contact-form').reset();
+        } else {
+          errorEl.classList.remove('hidden');
+        }
+        btn.textContent = 'Send';
+        btn.disabled = false;
+      }).catch(function() {
+        errorEl.classList.remove('hidden');
+        btn.textContent = 'Send';
+        btn.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>
+
