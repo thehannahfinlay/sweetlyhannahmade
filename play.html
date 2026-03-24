@@ -250,19 +250,19 @@
               <p class="font-semibold text-brand-700 text-sm mb-3">Discount tiers:</p>
               <div class="space-y-2">
                 <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-700 font-medium">8–15 moves</span>
+                  <span class="text-sm text-gray-700 font-medium">Under 23 moves</span>
                   <span class="text-brand-700 font-bold text-sm">15% off</span>
                 </div>
                 <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-700 font-medium">16–20 moves</span>
+                  <span class="text-sm text-gray-700 font-medium">23–30 moves</span>
                   <span class="text-brand-700 font-bold text-sm">10% off</span>
                 </div>
                 <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-700 font-medium">21–25 moves</span>
+                  <span class="text-sm text-gray-700 font-medium">31–40 moves</span>
                   <span class="text-brand-700 font-bold text-sm">5% off</span>
                 </div>
                 <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-500">26+ moves</span>
+                  <span class="text-sm text-gray-500">41+ moves</span>
                   <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
                 </div>
               </div>
@@ -391,19 +391,19 @@
       </ul>
       <div class="space-y-2 mb-6">
         <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-700 font-medium">8-15 moves</span>
+          <span class="text-sm text-gray-700 font-medium">Under 23 moves</span>
           <span class="text-brand-700 font-bold text-sm">15% off</span>
         </div>
         <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-700 font-medium">16-20 moves</span>
+          <span class="text-sm text-gray-700 font-medium">23-30 moves</span>
           <span class="text-brand-700 font-bold text-sm">10% off</span>
         </div>
         <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-700 font-medium">21-25 moves</span>
+          <span class="text-sm text-gray-700 font-medium">31-40 moves</span>
           <span class="text-brand-700 font-bold text-sm">5% off</span>
         </div>
         <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-500">26+ moves</span>
+          <span class="text-sm text-gray-500">41+ moves</span>
           <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
         </div>
       </div>
@@ -412,29 +412,54 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════ RESULTS MODAL -->
-  <div id="results-modal" class="fixed inset-0 bg-black/50 z-40 hidden flex items-center justify-center p-4">
-    <div id="results-panel" class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center modal-anim">
-
-      <div id="results-heading" class="text-2xl font-bold text-brand-700 mb-1"></div>
-      <p id="results-stats" class="text-gray-500 text-sm mb-6"></p>
-
-      <div id="results-reward" class="mb-7"></div>
-
-      <div class="flex flex-col gap-3">
-        <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-md text-base text-center">
-          Browse Patterns
-        </a>
-        <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-base text-center">
-          Shop Plushies
-        </a>
+  <div id="results-modal" class="fixed inset-0 z-40 hidden flex items-center justify-center p-4" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
+    <div id="results-panel" class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden modal-anim">
+      <!-- Colored header -->
+      <div class="bg-brand-600 py-8 px-6 text-center">
+        <div id="results-emoji" class="text-5xl mb-3"></div>
+        <div id="results-heading" class="text-2xl md:text-3xl font-bold text-white mb-2"></div>
+        <p id="results-stats" class="text-white/80 text-sm"></p>
       </div>
-
-      <div class="mt-6 pt-5 border-t border-gray-100">
-        <a href="/" class="inline-block w-full text-center text-brand-600 hover:text-brand-700 font-medium text-sm transition-colors py-2">
-          Back to Home
-        </a>
+      <!-- Body -->
+      <div class="p-8">
+        <div id="results-reward" class="mb-8"></div>
+        <div class="flex flex-col gap-3">
+          <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base text-center">
+            Browse Patterns
+          </a>
+          <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3.5 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-base text-center">
+            Shop Plushies
+          </a>
+          <a href="/" class="text-center text-gray-400 hover:text-brand-500 font-medium text-sm transition-colors py-2 mt-2">
+            Back to Home
+          </a>
+        </div>
       </div>
+    </div>
+  </div>
 
+  <!-- ═══════════════════════════════════════════════════ ALREADY PLAYED MODAL -->
+  <div id="already-played-modal" class="fixed inset-0 z-40 hidden flex items-center justify-center p-4" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden modal-anim">
+      <div class="bg-brand-600 py-8 px-6 text-center">
+        <div class="text-5xl mb-3">&#127775;</div>
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">You Already Played!</h2>
+        <p id="already-played-subtitle" class="text-white/80 text-sm"></p>
+      </div>
+      <div class="p-8">
+        <div id="already-played-code" class="mb-8"></div>
+        <div class="flex flex-col gap-3">
+          <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base text-center">
+            Browse Patterns
+          </a>
+          <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3.5 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-base text-center">
+            Shop Plushies
+          </a>
+          <a href="/" class="text-center text-gray-400 hover:text-brand-500 font-medium text-sm transition-colors py-2 mt-2">
+            Back to Home
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -537,10 +562,10 @@
 
     // Reward tiers — moves is total 2nd-card flips
     var REWARD_TIERS = [
-      { minMoves: 8,  maxMoves: 15, pct: 15 },
-      { minMoves: 16, maxMoves: 20, pct: 10 },
-      { minMoves: 21, maxMoves: 25, pct: 5  },
-      { minMoves: 26, maxMoves: Infinity, pct: 0 }
+      { minMoves: 8,  maxMoves: 22, pct: 15 },
+      { minMoves: 23, maxMoves: 30, pct: 10 },
+      { minMoves: 31, maxMoves: 40, pct: 5  },
+      { minMoves: 41, maxMoves: Infinity, pct: 0 }
     ];
 
     function getTier(moves) {
@@ -719,107 +744,154 @@
 
     // Code will be filled in by server response
 
+    // ── Build code display block ─────────────────────────────────────
+    function buildCodeBlock(container, code, pct) {
+      var earnedP = document.createElement('p');
+      earnedP.className = 'text-brand-700 font-semibold text-lg mb-4 text-center';
+      earnedP.textContent = 'You earned ' + pct + '% off your next order!';
+      container.appendChild(earnedP);
+
+      var codeRow = document.createElement('div');
+      codeRow.className = 'flex items-center justify-center gap-3 mb-3';
+
+      var codeBox = document.createElement('div');
+      codeBox.className = 'bg-brand-50 border-2 border-brand-300 rounded-xl px-6 py-3 font-bold text-brand-700 text-xl tracking-widest select-all';
+      codeBox.textContent = code;
+
+      var copyBtn = document.createElement('button');
+      copyBtn.className = 'bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-3 rounded-xl transition-colors text-sm flex-shrink-0';
+      copyBtn.textContent = 'Copy';
+      copyBtn.addEventListener('click', function() {
+        var textToCopy = codeBox.textContent;
+        navigator.clipboard.writeText(textToCopy).then(function() {
+          copyBtn.textContent = 'Copied!';
+          setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+        }).catch(function() {
+          var ta = document.createElement('textarea');
+          ta.value = textToCopy;
+          ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          copyBtn.textContent = 'Copied!';
+          setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+        });
+      });
+
+      codeRow.appendChild(codeBox);
+      codeRow.appendChild(copyBtn);
+      container.appendChild(codeRow);
+
+      var emailNote = document.createElement('p');
+      emailNote.className = 'text-gray-500 text-xs text-center mb-1';
+      emailNote.textContent = 'This code has also been emailed to you!';
+      container.appendChild(emailNote);
+
+      var validNote = document.createElement('p');
+      validNote.className = 'text-gray-400 text-xs text-center';
+      validNote.textContent = 'Valid for 7 days. Use at checkout.';
+      container.appendChild(validNote);
+    }
+
+    // ── Already played modal ────────────────────────────────────────
+    function showAlreadyPlayed(data) {
+      var modal = document.getElementById('already-played-modal');
+      var subtitle = document.getElementById('already-played-subtitle');
+      var codeArea = document.getElementById('already-played-code');
+
+      var nextDate = new Date(data.nextPlay);
+      subtitle.textContent = 'Come back on ' + nextDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + ' to play again!';
+
+      while (codeArea.firstChild) codeArea.removeChild(codeArea.firstChild);
+
+      if (data.code && data.code !== 'ERROR' && data.pct > 0) {
+        buildCodeBlock(codeArea, data.code, data.pct);
+      } else {
+        var p = document.createElement('p');
+        p.className = 'text-gray-500 text-center text-sm';
+        p.textContent = 'You didn\'t earn a discount this time. Try again next week!';
+        codeArea.appendChild(p);
+      }
+
+      modal.classList.remove('hidden');
+    }
+
     // ── Results modal ─────────────────────────────────────────────────
     function showResults() {
       gameActive = false;
       var tier    = getTier(moves);
       var won     = tier.pct > 0;
 
-      // Call server to generate real code and send email
-      fetch('/api/game-complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: playerEmail, name: playerName, moves: moves })
-      }).then(function(r) { return r.json(); }).then(function(data) {
-        if (data.code && data.code !== 'ERROR') {
-          var codeBoxEl = document.querySelector('#results-reward .tracking-widest');
-          if (codeBoxEl) codeBoxEl.textContent = data.code;
-        }
-      }).catch(function() {});
-
+      var emojiEl   = document.getElementById('results-emoji');
       var headingEl = document.getElementById('results-heading');
       var statsEl   = document.getElementById('results-stats');
       var rewardEl  = document.getElementById('results-reward');
       var panel     = document.getElementById('results-panel');
       var modal     = document.getElementById('results-modal');
 
-      headingEl.textContent = won ? 'Congratulations!' : 'Nice try!';
+      emojiEl.textContent   = won ? '\uD83C\uDF89' : '\uD83D\uDCAA';
+      headingEl.textContent = won ? 'Congratulations!' : 'Nice Try!';
       statsEl.textContent   = 'You found all pairs in ' + moves + ' move' + (moves === 1 ? '' : 's') + '!';
 
-      // Clear reward area safely
       while (rewardEl.firstChild) rewardEl.removeChild(rewardEl.firstChild);
 
       if (won) {
-        var code = 'Loading...';
+        // Show loading state, then update when server responds
+        var loadingP = document.createElement('p');
+        loadingP.className = 'text-brand-700 font-semibold text-lg mb-4 text-center';
+        loadingP.textContent = 'Generating your code...';
+        rewardEl.appendChild(loadingP);
 
-
-        var earnedP = document.createElement('p');
-        earnedP.className = 'text-brand-700 font-semibold text-base mb-4';
-        earnedP.textContent = 'You earned ' + tier.pct + '% off!';
-        rewardEl.appendChild(earnedP);
-
-        var codeRow = document.createElement('div');
-        codeRow.className = 'flex items-center justify-center gap-3 mb-3';
-
-        var codeBox = document.createElement('div');
-        codeBox.className = 'bg-brand-50 border-2 border-brand-300 rounded-xl px-5 py-2.5 font-bold text-brand-700 text-lg tracking-widest select-all';
-        codeBox.textContent = code;
-
-        var copyBtn = document.createElement('button');
-        copyBtn.className = 'bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors text-sm flex-shrink-0';
-        copyBtn.textContent = 'Copy';
-        copyBtn.addEventListener('click', function() {
-          navigator.clipboard.writeText(code).then(function() {
-            copyBtn.textContent = 'Copied!';
-            setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
-          }).catch(function() {
-            var ta = document.createElement('textarea');
-            ta.value = code;
-            ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            copyBtn.textContent = 'Copied!';
-            setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
-          });
+        fetch('/api/game-complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: playerEmail, name: playerName, moves: moves })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          while (rewardEl.firstChild) rewardEl.removeChild(rewardEl.firstChild);
+          if (data.code && data.code !== 'ERROR') {
+            buildCodeBlock(rewardEl, data.code, tier.pct);
+          } else {
+            var errP = document.createElement('p');
+            errP.className = 'text-brand-700 font-semibold text-base text-center mb-2';
+            errP.textContent = 'You earned ' + tier.pct + '% off!';
+            rewardEl.appendChild(errP);
+            var errNote = document.createElement('p');
+            errNote.className = 'text-gray-500 text-sm text-center';
+            errNote.textContent = 'Your code will be emailed to you shortly.';
+            rewardEl.appendChild(errNote);
+          }
+        }).catch(function() {
+          while (rewardEl.firstChild) rewardEl.removeChild(rewardEl.firstChild);
+          var errP = document.createElement('p');
+          errP.className = 'text-brand-700 font-semibold text-base text-center mb-2';
+          errP.textContent = 'You earned ' + tier.pct + '% off!';
+          rewardEl.appendChild(errP);
+          var errNote = document.createElement('p');
+          errNote.className = 'text-gray-500 text-sm text-center';
+          errNote.textContent = 'Your code will be emailed to you shortly.';
+          rewardEl.appendChild(errNote);
         });
-
-        codeRow.appendChild(codeBox);
-        codeRow.appendChild(copyBtn);
-        rewardEl.appendChild(codeRow);
-
-        var emailNote = document.createElement('p');
-        emailNote.className = 'text-gray-500 text-xs mb-1';
-        emailNote.textContent = 'Your code has been emailed to you!';
-        rewardEl.appendChild(emailNote);
-
-        var validNote = document.createElement('p');
-        validNote.className = 'text-gray-400 text-xs';
-        validNote.textContent = 'Valid for 7 days from when you played.';
-        rewardEl.appendChild(validNote);
-
       } else {
+        // No win — still call server to record the play
+        fetch('/api/game-complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: playerEmail, name: playerName, moves: moves })
+        }).catch(function() {});
+
         var noWinP = document.createElement('p');
-        noWinP.className = 'text-gray-600 text-base';
-        noWinP.textContent = 'So close! Come back in a week for another chance.';
+        noWinP.className = 'text-gray-600 text-base text-center';
+        noWinP.textContent = 'So close! Come back next week for another chance.';
         rewardEl.appendChild(noWinP);
       }
 
-      // Animate panel
       panel.classList.remove('modal-anim');
       void panel.offsetWidth;
       panel.classList.add('modal-anim');
 
       modal.classList.remove('hidden');
     }
-
-    // Close modal on backdrop click
-    document.getElementById('results-modal').addEventListener('click', function(e) {
-      if (e.target === document.getElementById('results-modal')) {
-        document.getElementById('results-modal').classList.add('hidden');
-      }
-    });
 
     // ── Start button ──────────────────────────────────────────────────
     // Step 1: Send verification code
@@ -859,16 +931,8 @@
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.alreadyPlayed) {
-          var nextDate = new Date(data.nextPlay);
-          var msg = 'You already played this week!';
-          if (data.code && data.pct > 0) {
-            msg += ' Your code: ' + data.code + ' (' + data.pct + '% off).';
-          }
-          msg += ' You can play again on ' + nextDate.toLocaleDateString() + '.';
-          errorDiv.textContent = msg;
-          errorDiv.classList.remove('hidden');
-          sendBtn.textContent = 'Send Verification Code';
-          sendBtn.disabled = false;
+          hideIntro();
+          showAlreadyPlayed(data);
           return;
         }
 
