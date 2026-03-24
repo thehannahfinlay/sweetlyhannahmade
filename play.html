@@ -10,6 +10,8 @@
   <meta property="og:image" content="https://sweetlyhannahmade.com/assets/images/logo.png">
   <meta property="og:url" content="https://sweetlyhannahmade.com/play">
   <meta property="og:type" content="website">
+  <meta name="description" content="Play Memory Match and win up to 15% off handmade crochet plushies and patterns from SweetlyHannahMade!">
+  <link rel="canonical" href="https://sweetlyhannahmade.com/play">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -223,7 +225,11 @@
       <div class="max-w-lg w-full max-h-[80vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
 
         <!-- Hero banner -->
-        <div class="bg-brand-600 py-6 px-4 text-center rounded-t-2xl">
+        <div class="bg-brand-600 py-6 px-4 text-center rounded-t-2xl relative">
+          <a href="/" class="absolute top-4 left-4 text-white/70 hover:text-white text-sm flex items-center gap-1 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Home
+          </a>
           <p class="text-white/80 text-xs font-semibold uppercase tracking-widest mb-1">Weekly Game</p>
           <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">Memory Match</h1>
           <p class="text-white/90 text-sm">Test your memory and win a discount!</p>
@@ -269,25 +275,24 @@
             </div>
           </div>
 
-          <!-- Email + name form -->
+          <!-- Name + email form -->
           <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6 space-y-4">
+            <p class="text-sm font-semibold text-gray-700">Enter your name and email to play</p>
             <div>
-              <label for="player-email" class="block text-sm font-semibold text-gray-700 mb-1.5">Enter your email to play</label>
-              <input
-                id="player-email"
-                type="email"
-                autocomplete="email"
-                placeholder="you@example.com"
-                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
-              >
-            </div>
-            <div>
-              <label for="player-name" class="block text-sm font-semibold text-gray-700 mb-1.5">Your name</label>
               <input
                 id="player-name"
                 type="text"
                 autocomplete="given-name"
                 placeholder="Your name"
+                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
+              >
+            </div>
+            <div>
+              <input
+                id="player-email"
+                type="email"
+                autocomplete="email"
+                placeholder="you@example.com"
                 class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
               >
             </div>
@@ -905,16 +910,16 @@
       var name  = nameInput.value.trim();
       var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-      if (!email || !emailOk) {
-        errorDiv.textContent = 'Please enter a valid email address.';
-        errorDiv.classList.remove('hidden');
-        emailInput.focus();
-        return;
-      }
       if (!name) {
         errorDiv.textContent = 'Please enter your name.';
         errorDiv.classList.remove('hidden');
         nameInput.focus();
+        return;
+      }
+      if (!email || !emailOk) {
+        errorDiv.textContent = 'Please enter a valid email address.';
+        errorDiv.classList.remove('hidden');
+        emailInput.focus();
         return;
       }
 

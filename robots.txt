@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sweetlyhannahmade.com/sitemap.xml
+
+Disallow: /admin
+Disallow: /manage
+Disallow: /admin-panel
+Disallow: /gallery-edit
+Disallow: /success

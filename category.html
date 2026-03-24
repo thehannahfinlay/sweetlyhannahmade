@@ -28,6 +28,12 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
+  <meta name="description" content="Shop handmade crochet patterns and plushies by SweetlyHannahMade.">
+  <meta property="og:title" content="SweetlyHannahMade">
+  <meta property="og:description" content="Shop handmade crochet patterns and plushies.">
+  <meta property="og:image" content="https://sweetlyhannahmade.com/assets/images/logo.png">
+  <meta property="og:url" content="https://sweetlyhannahmade.com/category">
+  <link rel="canonical" href="https://sweetlyhannahmade.com/category">
   <link rel="icon" type="image/png" href="favicon.png">
   <style>
     .cart-drawer-overlay { transition: opacity 0.3s; }
@@ -256,6 +262,20 @@
 
       // Page title
       document.title = category.name + ' \u2014 SweetlyHannahMade';
+
+      // Dynamic SEO meta
+      var metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', category.description || ('Shop ' + category.name + ' by SweetlyHannahMade.'));
+      var ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', category.name + ' — SweetlyHannahMade');
+      var ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute('content', category.description || '');
+      if (category.coverImage) {
+        var ogImg = document.querySelector('meta[property="og:image"]');
+        if (ogImg) ogImg.setAttribute('content', category.coverImage);
+      }
+      var canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) canonical.setAttribute('href', 'https://sweetlyhannahmade.com/category?id=' + categoryId);
 
       // Breadcrumb — textContent only
       document.getElementById('breadcrumb-category').textContent = category.name;

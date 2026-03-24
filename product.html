@@ -28,6 +28,13 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
+  <meta name="description" content="Handmade crochet pattern or plushie by SweetlyHannahMade.">
+  <meta property="og:title" content="SweetlyHannahMade">
+  <meta property="og:description" content="Handmade crochet pattern or plushie.">
+  <meta property="og:image" content="https://sweetlyhannahmade.com/assets/images/logo.png">
+  <meta property="og:url" content="https://sweetlyhannahmade.com/product">
+  <meta property="og:type" content="product">
+  <link rel="canonical" href="https://sweetlyhannahmade.com/product">
   <link rel="icon" type="image/png" href="favicon.png">
   <style>
     .cart-drawer-overlay { transition: opacity 0.3s; }
@@ -331,6 +338,41 @@
 
       // Document title
       document.title = product.name + ' \u2014 SweetlyHannahMade';
+
+      // Dynamic SEO meta
+      var descText = product.description ? product.description.substring(0, 160) : (product.name + ' — handmade by SweetlyHannahMade');
+      var metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', descText);
+      var ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', product.name + ' — SweetlyHannahMade');
+      var ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute('content', descText);
+      if (product.images && product.images[0]) {
+        var ogImg = document.querySelector('meta[property="og:image"]');
+        if (ogImg) ogImg.setAttribute('content', product.images[0]);
+      }
+      var canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) canonical.setAttribute('href', 'https://sweetlyhannahmade.com/product?id=' + productId);
+
+      // Product structured data (JSON-LD)
+      var ldScript = document.createElement('script');
+      ldScript.type = 'application/ld+json';
+      ldScript.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "description": product.description || '',
+        "image": product.images && product.images[0] ? product.images[0] : '',
+        "brand": { "@type": "Brand", "name": "SweetlyHannahMade" },
+        "offers": {
+          "@type": "Offer",
+          "price": product.price,
+          "priceCurrency": "USD",
+          "availability": product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "url": "https://sweetlyhannahmade.com/product?id=" + productId
+        }
+      });
+      document.head.appendChild(ldScript);
 
       // Breadcrumb — textContent only
       const category = (inv.categories || []).find(c => c.id === product.categoryId);
