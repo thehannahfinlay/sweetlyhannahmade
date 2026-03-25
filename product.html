@@ -261,7 +261,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js"></script>
+  <script src="assets/shop.js?v=12"></script>
   <script>
     // Mobile menu
     (function() {
@@ -649,7 +649,16 @@
           }
           const item = getCartItem();
           item.personalization = getPersonalization();
-          addToCart(item);
+          var result = addToCart(item);
+          if (result === 'already_in_cart') {
+            addBtn.textContent = 'Already in your bag';
+            addBtn.style.background = '#f59e0b';
+            setTimeout(() => {
+              addBtn.textContent = 'Add to Bag';
+              addBtn.style.background = '';
+            }, 2000);
+            return;
+          }
           addBtn.textContent = 'Added!';
           addBtn.style.background = '#22c55e';
           setTimeout(() => {

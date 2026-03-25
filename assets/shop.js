@@ -201,13 +201,14 @@ function addToCart(product) {
   if (existing) {
     // Digital products (patterns) limited to qty 1
     if (product.categoryId === 'patterns' || (!product.shipping && !product.categoryId)) {
-      return; // already in cart
+      return 'already_in_cart';
     }
     existing.quantity = (existing.quantity || 1) + (product.quantity || 1);
   } else {
     cart.push({ ...product, quantity: product.quantity || 1 });
   }
   _saveCart(cart);
+  return 'added';
 }
 
 function removeFromCart(productId) {
@@ -305,8 +306,32 @@ function renderCartDrawer() {
       nameEl.textContent = item.name || '';
 
       const priceEl = document.createElement('p');
-      priceEl.className = 'text-brand-600 font-bold text-sm mt-0.5';
-      priceEl.textContent = formatPrice(item.price || 0);
+      priceEl.className = 'text-sm mt-0.5';
+      // Check for discounts (promo or bundle)
+      var promoDiscount = 0;
+      var itemPatternCount = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.quantity || 1) : 0); }, 0);
+      var isPattern = !item.shipping || Number(item.shipping) === 0;
+      if (isPattern && itemPatternCount >= 2) {
+        promoDiscount = 20; // bundle
+      } else if (isPattern && localStorage.getItem('shm_promo') && itemPatternCount < 2) {
+        // We stored the pct in a data attribute — fetch it
+        var savedPct = localStorage.getItem('shm_promo_pct');
+        if (savedPct) promoDiscount = parseInt(savedPct);
+      }
+      if (promoDiscount > 0) {
+        var origSpan = document.createElement('span');
+        origSpan.className = 'text-gray-400 line-through mr-2';
+        origSpan.textContent = formatPrice(item.price || 0);
+        var newPrice = (item.price || 0) * (1 - promoDiscount / 100);
+        var saleSpan = document.createElement('span');
+        saleSpan.className = 'text-green-600 font-bold';
+        saleSpan.textContent = formatPrice(newPrice);
+        priceEl.appendChild(origSpan);
+        priceEl.appendChild(saleSpan);
+      } else {
+        priceEl.className = 'text-brand-600 font-bold text-sm mt-0.5';
+        priceEl.textContent = formatPrice(item.price || 0);
+      }
 
       // Quantity controls
       const qtyRow = document.createElement('div');
@@ -378,12 +403,192 @@ function renderCartDrawer() {
     });
 
     var shippingTotal = cart.reduce(function(sum, item) { return sum + (item.shipping || 0) * (item.quantity || 1); }, 0);
+    // Calculate discounted total
+    var rawTotal = getCartTotal();
+    var discountedTotal = rawTotal;
+    var totalPatterns = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.quantity || 1) : 0); }, 0);
+    if (totalPatterns >= 2) {
+      // Bundle: 20% off patterns
+      var patternTotal = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.price || 0) * (i.quantity || 1) : 0); }, 0);
+      var physicalTotal = rawTotal - patternTotal;
+      discountedTotal = patternTotal * 0.8 + physicalTotal;
+    } else if (localStorage.getItem('shm_promo') && localStorage.getItem('shm_promo_pct')) {
+      var pct = parseInt(localStorage.getItem('shm_promo_pct'));
+      var patternTotal = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.price || 0) * (i.quantity || 1) : 0); }, 0);
+      var physicalTotal = rawTotal - patternTotal;
+      discountedTotal = patternTotal * (1 - pct / 100) + physicalTotal;
+    }
     if (totalEl) {
-      if (shippingTotal > 0) {
-        totalEl.innerHTML = formatPrice(getCartTotal()) + '<span class="text-sm font-normal text-gray-500 block">+ ' + formatPrice(shippingTotal) + ' shipping</span>';
+      while (totalEl.firstChild) totalEl.removeChild(totalEl.firstChild);
+      if (discountedTotal < rawTotal) {
+        var origTotal = document.createElement('span');
+        origTotal.className = 'text-gray-400 line-through text-sm mr-2';
+        origTotal.textContent = formatPrice(rawTotal);
+        totalEl.appendChild(origTotal);
+        totalEl.appendChild(document.createTextNode(formatPrice(discountedTotal)));
       } else {
-        totalEl.textContent = formatPrice(getCartTotal());
+        totalEl.appendChild(document.createTextNode(formatPrice(rawTotal)));
       }
+      if (shippingTotal > 0) {
+        var shipSpan = document.createElement('span');
+        shipSpan.className = 'text-sm font-normal text-gray-500 block';
+        shipSpan.textContent = '+ ' + formatPrice(shippingTotal) + ' shipping';
+        totalEl.appendChild(shipSpan);
+      }
+    }
+
+    // Promo code section
+    var promoSection = document.getElementById('cart-promo-section');
+    if (promoSection) promoSection.parentNode.removeChild(promoSection);
+
+    promoSection = document.createElement('div');
+    promoSection.id = 'cart-promo-section';
+    promoSection.className = 'mb-4';
+
+    var savedPromo = localStorage.getItem('shm_promo');
+    var patternCount = cart.reduce(function(sum, item) { return sum + ((!item.shipping || Number(item.shipping) === 0) ? (item.quantity || 1) : 0); }, 0);
+    var hasBundleDiscount = patternCount >= 2;
+
+    // If bundle discount kicks in, auto-remove any saved promo
+    if (hasBundleDiscount && savedPromo) {
+      localStorage.removeItem('shm_promo');
+      localStorage.removeItem('shm_promo_pct');
+      savedPromo = null;
+    }
+
+    // Applied code pill (if one is saved)
+    if (savedPromo) {
+      var appliedRow = document.createElement('div');
+      appliedRow.className = 'flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2 mb-2';
+      var codeInfo = document.createElement('div');
+      var codePill = document.createElement('span');
+      codePill.className = 'font-bold text-green-700 text-sm tracking-wider';
+      codePill.textContent = savedPromo;
+      var codeLabel = document.createElement('span');
+      codeLabel.className = 'text-green-600 text-xs ml-2';
+      codeLabel.textContent = 'Applied';
+      codeInfo.appendChild(codePill);
+      codeInfo.appendChild(codeLabel);
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'text-gray-400 hover:text-red-500 transition-colors p-1';
+      removeBtn.setAttribute('aria-label', 'Remove promo code');
+      var rmSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      rmSvg.setAttribute('class', 'w-4 h-4');
+      rmSvg.setAttribute('fill', 'none');
+      rmSvg.setAttribute('stroke', 'currentColor');
+      rmSvg.setAttribute('stroke-width', '2');
+      rmSvg.setAttribute('viewBox', '0 0 24 24');
+      var rmPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      rmPath.setAttribute('stroke-linecap', 'round');
+      rmPath.setAttribute('stroke-linejoin', 'round');
+      rmPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+      rmSvg.appendChild(rmPath);
+      removeBtn.appendChild(rmSvg);
+      removeBtn.addEventListener('click', function() {
+        localStorage.removeItem('shm_promo');
+      localStorage.removeItem('shm_promo_pct');
+        renderCartDrawer();
+      });
+      appliedRow.appendChild(codeInfo);
+      appliedRow.appendChild(removeBtn);
+      promoSection.appendChild(appliedRow);
+    }
+
+    // Bundle discount notice
+    if (hasBundleDiscount) {
+      var bundleNotice = document.createElement('p');
+      bundleNotice.className = 'text-xs text-green-600 font-medium mb-2';
+      bundleNotice.textContent = '20% bundle discount applied automatically.';
+      promoSection.appendChild(bundleNotice);
+    }
+
+    // Promo code input (always visible)
+    var inputRow = document.createElement('div');
+    inputRow.className = 'flex gap-2';
+    var promoInput = document.createElement('input');
+    promoInput.type = 'text';
+    promoInput.placeholder = 'Enter promo code';
+    promoInput.className = 'flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-brand-400 focus:border-transparent uppercase';
+    promoInput.style.letterSpacing = '1px';
+    var applyBtn = document.createElement('button');
+    applyBtn.type = 'button';
+    applyBtn.className = 'bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors flex-shrink-0';
+    applyBtn.textContent = 'Apply';
+
+    var errorMsg = document.createElement('p');
+    errorMsg.className = 'hidden text-xs font-medium mt-1.5';
+
+    applyBtn.addEventListener('click', function() {
+      var code = promoInput.value.trim().toUpperCase();
+      if (!code) {
+        errorMsg.textContent = 'Please enter a promo code.';
+        errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      if (hasBundleDiscount) {
+        errorMsg.textContent = 'Promo codes cannot be combined with other discounts.';
+        errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      var currentPromo = localStorage.getItem('shm_promo');
+      if (currentPromo && currentPromo === code) {
+        errorMsg.textContent = 'This promo code has already been applied.';
+        errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      if (currentPromo) {
+        errorMsg.textContent = 'Only one promo code can be used at a time. Remove the current code first.';
+        errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      errorMsg.classList.add('hidden');
+      applyBtn.textContent = 'Applying...';
+      applyBtn.disabled = true;
+
+      fetch('/api/check-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.valid) {
+          localStorage.setItem('shm_promo', code);
+          localStorage.setItem('shm_promo_pct', String(data.pct));
+          renderCartDrawer();
+        } else {
+          errorMsg.textContent = 'This promo code is not valid.';
+          errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
+          errorMsg.classList.remove('hidden');
+          applyBtn.textContent = 'Apply';
+          applyBtn.disabled = false;
+        }
+      }).catch(function() {
+        errorMsg.textContent = 'Something went wrong. Try again.';
+        errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
+        errorMsg.classList.remove('hidden');
+        applyBtn.textContent = 'Apply';
+        applyBtn.disabled = false;
+      });
+    });
+
+    promoInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); applyBtn.click(); }
+    });
+
+    inputRow.appendChild(promoInput);
+    inputRow.appendChild(applyBtn);
+    promoSection.appendChild(inputRow);
+    promoSection.appendChild(errorMsg);
+
+    var footer = document.getElementById('cart-drawer-footer');
+    if (footer) {
+      var checkoutBtn = document.getElementById('cart-checkout-btn');
+      if (checkoutBtn) footer.insertBefore(promoSection, checkoutBtn);
     }
   }
 }
@@ -399,17 +604,17 @@ async function cartCheckout() {
   }
 
   try {
+    var promoCode = localStorage.getItem('shm_promo') || '';
     let body;
     if (cart.length === 1) {
-      // Backwards-compatible single-item format
       body = JSON.stringify({
         name: cart[0].name,
         price: cart[0].price,
         productId: cart[0].id,
         shipping: cart[0].shipping || 0,
+        promoCode: promoCode,
       });
     } else {
-      // Multi-item format
       body = JSON.stringify({
         items: cart.map(item => ({
           name: item.name,
@@ -418,6 +623,7 @@ async function cartCheckout() {
           quantity: item.quantity || 1,
           shipping: item.shipping || 0,
         })),
+        promoCode: promoCode,
       });
     }
 
@@ -476,4 +682,147 @@ document.addEventListener('DOMContentLoaded', () => {
       link.classList.add('text-brand-600');
     }
   });
+
+  // ─── Chat Widget ──────────────────────────────────────────────────────────
+  (function() {
+    // Don't show on admin/manage pages
+    if (window.location.pathname.includes('admin') || window.location.pathname.includes('manage') || window.location.pathname.includes('gallery-edit')) return;
+
+    // Chat bubble button
+    var chatBtn = document.createElement('button');
+    chatBtn.id = 'chat-bubble';
+    chatBtn.setAttribute('aria-label', 'Chat with us');
+    chatBtn.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:45;width:56px;height:56px;border-radius:50%;background:#b87a90;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;transition:transform 0.2s,background 0.2s;';
+    var chatIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    chatIcon.setAttribute('width', '24');
+    chatIcon.setAttribute('height', '24');
+    chatIcon.setAttribute('fill', 'none');
+    chatIcon.setAttribute('stroke', 'currentColor');
+    chatIcon.setAttribute('stroke-width', '2');
+    chatIcon.setAttribute('viewBox', '0 0 24 24');
+    var chatPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    chatPath.setAttribute('stroke-linecap', 'round');
+    chatPath.setAttribute('stroke-linejoin', 'round');
+    chatPath.setAttribute('d', 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z');
+    chatIcon.appendChild(chatPath);
+    chatBtn.appendChild(chatIcon);
+
+    // Chat panel
+    var chatPanel = document.createElement('div');
+    chatPanel.id = 'chat-panel';
+    chatPanel.style.cssText = 'position:fixed;bottom:92px;right:24px;z-index:45;width:340px;max-width:calc(100vw - 32px);background:#fff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:none;overflow:hidden;font-family:inherit;';
+
+    // Header
+    var chatHeader = document.createElement('div');
+    chatHeader.style.cssText = 'background:#b87a90;color:#fff;padding:16px 20px;';
+    var chatTitle = document.createElement('p');
+    chatTitle.style.cssText = 'font-weight:700;font-size:16px;margin:0;';
+    chatTitle.textContent = 'Chat with Hannah';
+    var chatSubtitle = document.createElement('p');
+    chatSubtitle.style.cssText = 'font-size:12px;opacity:0.8;margin:4px 0 0;';
+    chatSubtitle.textContent = 'I\'ll get back to you as soon as I can!';
+    chatHeader.appendChild(chatTitle);
+    chatHeader.appendChild(chatSubtitle);
+
+    // Body
+    var chatBody = document.createElement('div');
+    chatBody.style.cssText = 'padding:16px 20px;';
+
+    var chatNameInput = document.createElement('input');
+    chatNameInput.type = 'text';
+    chatNameInput.placeholder = 'Your name';
+    chatNameInput.style.cssText = 'width:100%;border:1px solid #e8c4d2;border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:10px;outline:none;box-sizing:border-box;';
+
+    var chatEmailInput = document.createElement('input');
+    chatEmailInput.type = 'email';
+    chatEmailInput.placeholder = 'Your email';
+    chatEmailInput.style.cssText = 'width:100%;border:1px solid #e8c4d2;border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:10px;outline:none;box-sizing:border-box;';
+
+    var chatMsgInput = document.createElement('textarea');
+    chatMsgInput.placeholder = 'Type your message...';
+    chatMsgInput.rows = 3;
+    chatMsgInput.style.cssText = 'width:100%;border:1px solid #e8c4d2;border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:10px;outline:none;resize:vertical;box-sizing:border-box;font-family:inherit;';
+
+    var chatSendBtn = document.createElement('button');
+    chatSendBtn.type = 'button';
+    chatSendBtn.textContent = 'Send Message';
+    chatSendBtn.style.cssText = 'width:100%;background:#b87a90;color:#fff;border:none;border-radius:24px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s;';
+
+    var chatStatus = document.createElement('p');
+    chatStatus.style.cssText = 'font-size:12px;text-align:center;margin-top:10px;display:none;';
+
+    chatBody.appendChild(chatNameInput);
+    chatBody.appendChild(chatEmailInput);
+    chatBody.appendChild(chatMsgInput);
+    chatBody.appendChild(chatSendBtn);
+    chatBody.appendChild(chatStatus);
+
+    chatPanel.appendChild(chatHeader);
+    chatPanel.appendChild(chatBody);
+
+    // Toggle
+    var chatOpen = false;
+    chatBtn.addEventListener('click', function() {
+      chatOpen = !chatOpen;
+      chatPanel.style.display = chatOpen ? 'block' : 'none';
+      chatBtn.style.transform = chatOpen ? 'scale(0.9)' : '';
+    });
+    chatBtn.addEventListener('mouseenter', function() { chatBtn.style.background = '#a0687c'; });
+    chatBtn.addEventListener('mouseleave', function() { chatBtn.style.background = '#b87a90'; });
+
+    // Send
+    chatSendBtn.addEventListener('click', function() {
+      var name = chatNameInput.value.trim();
+      var email = chatEmailInput.value.trim();
+      var msg = chatMsgInput.value.trim();
+      if (!name || !email || !msg) {
+        chatStatus.textContent = 'Please fill in all fields.';
+        chatStatus.style.color = '#ef4444';
+        chatStatus.style.display = 'block';
+        return;
+      }
+
+      chatSendBtn.textContent = 'Sending...';
+      chatSendBtn.disabled = true;
+      chatStatus.style.display = 'none';
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, message: '[Chat] ' + msg })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) {
+          chatBody.style.cssText = 'padding:24px 20px;text-align:center;';
+          while (chatBody.firstChild) chatBody.removeChild(chatBody.firstChild);
+          var ty1 = document.createElement('p');
+          ty1.style.cssText = 'font-size:24px;margin-bottom:8px;';
+          ty1.textContent = '\u2705';
+          var ty2 = document.createElement('p');
+          ty2.style.cssText = 'font-weight:700;color:#333;font-size:16px;margin:0 0 4px;';
+          ty2.textContent = 'Message sent!';
+          var ty3 = document.createElement('p');
+          ty3.style.cssText = 'font-size:13px;color:#666;margin:0;';
+          ty3.textContent = 'I\'ll get back to you as soon as I can.';
+          chatBody.appendChild(ty1);
+          chatBody.appendChild(ty2);
+          chatBody.appendChild(ty3);
+        } else {
+          chatStatus.textContent = 'Something went wrong. Try again.';
+          chatStatus.style.color = '#ef4444';
+          chatStatus.style.display = 'block';
+          chatSendBtn.textContent = 'Send Message';
+          chatSendBtn.disabled = false;
+        }
+      }).catch(function() {
+        chatStatus.textContent = 'Something went wrong. Try again.';
+        chatStatus.style.color = '#ef4444';
+        chatStatus.style.display = 'block';
+        chatSendBtn.textContent = 'Send Message';
+        chatSendBtn.disabled = false;
+      });
+    });
+
+    document.body.appendChild(chatPanel);
+    document.body.appendChild(chatBtn);
+  })();
 });

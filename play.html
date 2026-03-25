@@ -102,8 +102,8 @@
     }
 
     /* ── Screen visibility helpers ── */
-    #game-screen   { display: block; }
-    #intro-overlay { position: fixed; inset: 0; z-index: 55; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); padding: 1rem; padding-top: 5rem; }
+    #game-screen   { display: none; }
+    #intro-screen  { display: block; }
 
     /* ── Intro decorative dots ── */
     .dot-pattern {
@@ -116,7 +116,7 @@
 <body class="bg-white text-gray-800 font-sans">
 
   <!-- Announcement Bar -->
-  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none sticky top-0 z-50">
     <span id="announcement-text" class="inline-block"></span>
     <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
   </div>
@@ -222,118 +222,86 @@
   <!-- ══════════════════════════════════════════════════════════ MAIN -->
   <main class="min-h-screen">
 
-    <!-- ── INTRO OVERLAY ──────────────────────────────────────────── -->
-    <div id="intro-overlay">
-      <div class="max-w-lg w-full max-h-[80vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
-
-        <!-- Hero banner -->
-        <div class="bg-brand-600 py-6 px-4 text-center rounded-t-2xl relative">
-          <a href="/" class="absolute top-4 left-4 text-white/70 hover:text-white text-sm flex items-center gap-1 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-            Home
-          </a>
-          <p class="text-white/80 text-xs font-semibold uppercase tracking-widest mb-1">Weekly Game</p>
-          <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">Memory Match</h1>
-          <p class="text-white/90 text-sm">Test your memory and win a discount!</p>
+    <!-- ── INTRO SCREEN ──────────────────────────────────────────── -->
+    <div id="intro-screen">
+      <!-- Hero banner -->
+      <section class="bg-brand-600 py-10 md:py-16 px-4 text-center">
+        <div class="max-w-2xl mx-auto">
+          <p class="text-white/80 text-xs font-semibold uppercase tracking-widest mb-2">Weekly Game</p>
+          <h1 class="text-3xl md:text-5xl font-bold text-white mb-3" style="font-family:'Playfair Display',serif">Memory Match</h1>
+          <p class="text-white/90 text-base md:text-lg">Test your memory and win a discount on your next order!</p>
         </div>
+      </section>
 
-        <!-- Instructions + form -->
-        <div class="p-5 space-y-4">
+      <div class="max-w-lg mx-auto px-4 py-10 space-y-6">
 
-          <!-- How to play card -->
-          <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6">
-            <h2 class="font-bold text-brand-700 text-lg mb-4">How to play:</h2>
-            <ul class="space-y-2 text-gray-700 text-sm">
-              <li class="flex items-start gap-2">
-                <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
-                <span>Flip two cards at a time to find matching pairs</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
-                <span>Find all 8 pairs in as few moves as possible</span>
-              </li>
-            </ul>
+        <!-- How to play -->
+        <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6">
+          <h2 class="font-bold text-brand-700 text-lg mb-4">How to play</h2>
+          <ul class="space-y-2 text-gray-700 text-sm">
+            <li class="flex items-start gap-2">
+              <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
+              <span>Flip two cards at a time to find matching pairs</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-brand-400 font-bold mt-0.5">&#8250;</span>
+              <span>Find all 8 pairs in as few moves as possible</span>
+            </li>
+          </ul>
 
-            <div class="mt-5 pt-5 border-t border-brand-100">
-              <p class="font-semibold text-brand-700 text-sm mb-3">Discount tiers:</p>
-              <div class="space-y-2">
-                <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-700 font-medium">Under 23 moves</span>
-                  <span class="text-brand-700 font-bold text-sm">15% off</span>
-                </div>
-                <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-700 font-medium">23–30 moves</span>
-                  <span class="text-brand-700 font-bold text-sm">10% off</span>
-                </div>
-                <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-700 font-medium">31–40 moves</span>
-                  <span class="text-brand-700 font-bold text-sm">5% off</span>
-                </div>
-                <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2.5">
-                  <span class="text-sm text-gray-500">41+ moves</span>
-                  <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
-                </div>
+          <div class="mt-5 pt-5 border-t border-brand-100">
+            <p class="font-semibold text-brand-700 text-sm mb-3">Discount tiers:</p>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
+                <span class="text-sm text-gray-700 font-medium">Under 23 moves</span>
+                <span class="text-brand-700 font-bold text-sm">15% off</span>
+              </div>
+              <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
+                <span class="text-sm text-gray-700 font-medium">23–30 moves</span>
+                <span class="text-brand-700 font-bold text-sm">10% off</span>
+              </div>
+              <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
+                <span class="text-sm text-gray-700 font-medium">31–40 moves</span>
+                <span class="text-brand-700 font-bold text-sm">5% off</span>
+              </div>
+              <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2.5">
+                <span class="text-sm text-gray-500">41+ moves</span>
+                <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
               </div>
             </div>
           </div>
-
-          <!-- Name + email form -->
-          <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6 space-y-4">
-            <p class="text-sm font-semibold text-gray-700">Enter your name and email to play</p>
-            <div>
-              <input
-                id="player-name"
-                type="text"
-                autocomplete="given-name"
-                placeholder="Your name"
-                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
-              >
-            </div>
-            <div>
-              <input
-                id="player-email"
-                type="email"
-                autocomplete="email"
-                placeholder="you@example.com"
-                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm"
-              >
-            </div>
-            <!-- Verification code (hidden until email sent) -->
-            <div id="verify-section" class="hidden">
-              <label for="verify-code" class="block text-sm font-semibold text-gray-700 mb-1.5">Enter the 4-digit code sent to your email</label>
-              <input
-                id="verify-code"
-                type="text"
-                inputmode="numeric"
-                maxlength="4"
-                placeholder="0000"
-                class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm text-center text-2xl tracking-widest font-bold"
-              >
-              <p class="text-gray-400 text-xs mt-1">Check your email for the code. It expires in 10 minutes.</p>
-            </div>
-            <div id="form-error" class="hidden text-red-500 text-sm font-medium"></div>
-            <button
-              id="send-code-btn"
-              class="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base mt-2"
-            >
-              Send Verification Code
-            </button>
-            <button
-              id="start-btn"
-              class="hidden w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base mt-2"
-            >
-              Start Game
-            </button>
-          </div>
-
-          <!-- Note -->
-          <p class="text-center text-gray-400 text-sm pb-2">
-            You can play once per week.
-          </p>
-
         </div>
+
+        <!-- Name + email form -->
+        <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-6 space-y-4">
+          <p class="text-sm font-semibold text-gray-700">Enter your name and email to play</p>
+          <div>
+            <input id="player-name" type="text" autocomplete="given-name" placeholder="Your name"
+              class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm">
+          </div>
+          <div>
+            <input id="player-email" type="email" autocomplete="email" placeholder="you@example.com"
+              class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm">
+          </div>
+          <div id="verify-section" class="hidden">
+            <label for="verify-code" class="block text-sm font-semibold text-gray-700 mb-1.5">Enter the 4-digit code sent to your email</label>
+            <input id="verify-code" type="text" inputmode="numeric" maxlength="4" placeholder="0000"
+              class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm text-center text-2xl tracking-widest font-bold">
+            <p class="text-gray-400 text-xs mt-1">Check your email for the code. It expires in 10 minutes.</p>
+            <button type="button" id="resend-code-btn" class="text-brand-500 hover:text-brand-700 text-xs font-medium mt-2 underline transition-colors">Resend code</button>
+          </div>
+          <div id="form-error" class="hidden text-red-500 text-sm font-medium"></div>
+          <button id="send-code-btn" class="w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base mt-2">
+            Send Verification Code
+          </button>
+          <button id="start-btn" class="hidden w-full bg-brand-600 hover:bg-brand-700 active:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base mt-2">
+            Start Game
+          </button>
+        </div>
+
+        <p class="text-center text-gray-400 text-sm">You can play once per week.</p>
       </div>
-    </div><!-- /intro-overlay -->
+    </div><!-- /intro-screen -->
 
     <!-- ── GAME SCREEN ───────────────────────────────────────────── -->
     <div id="game-screen">
@@ -419,8 +387,8 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════ RESULTS MODAL -->
-  <div id="results-modal" class="fixed inset-0 z-40 hidden flex items-center justify-center p-4" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
-    <div id="results-panel" class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden modal-anim">
+  <div id="results-modal" class="fixed inset-0 z-30 hidden flex items-center justify-center p-4 pt-20" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
+    <div id="results-panel" class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden overflow-y-auto max-h-[85vh] modal-anim">
       <!-- Colored header -->
       <div class="bg-brand-600 py-8 px-6 text-center">
         <div id="results-emoji" class="text-5xl mb-3"></div>
@@ -446,8 +414,8 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════ ALREADY PLAYED MODAL -->
-  <div id="already-played-modal" class="fixed inset-0 z-40 hidden flex items-center justify-center p-4" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden modal-anim">
+  <div id="already-played-modal" class="fixed inset-0 z-30 hidden flex items-center justify-center p-4 pt-20" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden overflow-y-auto max-h-[85vh] modal-anim">
       <div class="bg-brand-600 py-8 px-6 text-center">
         <div class="text-5xl mb-3">&#127775;</div>
         <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">You Already Played!</h2>
@@ -489,7 +457,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js"></script>
+  <script src="assets/shop.js?v=12"></script>
   <script>
     // ── Footer year ───────────────────────────────────────────────────
     document.getElementById('footer-year').textContent = new Date().getFullYear();
@@ -557,7 +525,7 @@
     //  GAME DATA
     // ══════════════════════════════════════════════════════════════════
     var PLUSHIES = [
-      { id: 'turtles',  src: '/static/gallery-turtles-beach.jpg',                                         alt: 'Turtles' },
+      { id: 'turtles',  src: '/static/gallery-IMG_0543.JPG',                                               alt: 'Turtles' },
       { id: 'cow',      src: '/static/gallery-IMG_4169.JPG',                                               alt: 'Highland Cow' },
       { id: 'cat',      src: '/static/gallery-IMG_2324.JPG',                                               alt: 'Cat' },
       { id: 'monkey',   src: '/static/1773962579713-plushie_prod_01KM46HJV5E74YBFY665J76Z7H.jpg',         alt: 'Monkey' },
@@ -599,15 +567,16 @@
     var board        = document.getElementById('game-board');
 
     // ── Screens ───────────────────────────────────────────────────────
-    var introOverlay = document.getElementById('intro-overlay');
+    var introScreen = document.getElementById('intro-screen');
+    var gameScreen  = document.getElementById('game-screen');
 
     function showIntro() {
-      introOverlay.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      introScreen.style.display = 'block';
+      gameScreen.style.display = 'none';
     }
     function hideIntro() {
-      introOverlay.style.display = 'none';
-      document.body.style.overflow = '';
+      introScreen.style.display = 'none';
+      gameScreen.style.display = 'block';
     }
 
     // ── Shuffle ───────────────────────────────────────────────────────
@@ -797,8 +766,13 @@
 
       var validNote = document.createElement('p');
       validNote.className = 'text-gray-400 text-xs text-center';
-      validNote.textContent = 'Valid for 7 days. Use at checkout.';
+      validNote.textContent = 'Valid for one item only. Single use. Expires in 7 days.';
       container.appendChild(validNote);
+
+      var comboNote = document.createElement('p');
+      comboNote.className = 'text-gray-400 text-xs text-center mt-1';
+      comboNote.textContent = 'Cannot be combined with other discounts.';
+      container.appendChild(comboNote);
     }
 
     // ── Already played modal ────────────────────────────────────────
@@ -972,6 +946,41 @@
         errorDiv.classList.remove('hidden');
         sendBtn.textContent = 'Send Verification Code';
         sendBtn.disabled = false;
+      });
+    });
+
+    // Resend verification code
+    document.getElementById('resend-code-btn').addEventListener('click', function() {
+      var email = document.getElementById('player-email').value.trim();
+      var resendBtn = document.getElementById('resend-code-btn');
+      var errorDiv = document.getElementById('form-error');
+      if (!email) return;
+
+      resendBtn.textContent = 'Sending...';
+      resendBtn.disabled = true;
+      errorDiv.classList.add('hidden');
+
+      fetch('/api/game-send-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        if (d.success) {
+          resendBtn.textContent = 'Code sent!';
+          document.getElementById('verify-code').value = '';
+          document.getElementById('verify-code').focus();
+          setTimeout(function() { resendBtn.textContent = 'Resend code'; resendBtn.disabled = false; }, 3000);
+        } else {
+          errorDiv.textContent = 'Could not resend code. Try again.';
+          errorDiv.classList.remove('hidden');
+          resendBtn.textContent = 'Resend code';
+          resendBtn.disabled = false;
+        }
+      }).catch(function() {
+        errorDiv.textContent = 'Something went wrong. Try again.';
+        errorDiv.classList.remove('hidden');
+        resendBtn.textContent = 'Resend code';
+        resendBtn.disabled = false;
       });
     });
 
