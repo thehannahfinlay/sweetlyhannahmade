@@ -337,7 +337,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=25"></script>
+  <script src="assets/shop.js?v=26"></script>
   <script>
     // Mobile menu
     const menuBtn = document.getElementById('mobile-menu-btn');
@@ -504,7 +504,7 @@
               <h3 class="font-bold text-gray-800 text-base mb-1 flex-1">${escapeHtml(product.name)}</h3>
               ${product.difficulty ? `<p class="text-xs text-brand-400 font-medium mb-2">${escapeHtml(product.difficulty)}</p>` : ''}
               <p class="text-brand-600 font-bold text-lg mt-auto">${escapeHtml(formatPrice(product.price))}</p>
-              ${product.categoryId === 'patterns' ? '<p class="text-xs text-green-600 font-medium">Free instant download</p>' : (!product.shipping || Number(product.shipping) === 0) ? '<p class="text-xs text-green-600 font-medium">Free shipping</p>' : '<p class="text-xs text-gray-400">Shipping calculated at checkout</p>'}
+              ${product.categoryId === 'patterns' ? '<p class="text-xs text-green-600 font-medium">Instant download</p>' : (!product.shipping || Number(product.shipping) === 0) ? '<p class="text-xs text-green-600 font-medium">Free shipping</p>' : '<p class="text-xs text-gray-400">Shipping calculated at checkout</p>'}
             </div>
           </a>
         `).join(''));

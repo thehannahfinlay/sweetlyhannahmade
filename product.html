@@ -289,7 +289,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=25"></script>
+  <script src="assets/shop.js?v=26"></script>
   <script>
     // Mobile menu
     (function() {
@@ -423,7 +423,7 @@
       // Shipping info — only show for physical products (plushies), not patterns
       var shippingEl = document.getElementById('shipping-info');
       if (product.categoryId === 'patterns') {
-        shippingEl.textContent = 'Free instant download';
+        shippingEl.textContent = 'Instant download';
         shippingEl.className = 'text-sm text-green-600 font-medium mt-1';
       } else if (!product.shipping || Number(product.shipping) === 0) {
         shippingEl.textContent = 'Free shipping';
@@ -595,9 +595,9 @@
         ).join(''));
       }
 
-      // Variant selector
+      // Variant selector (hide if custom options handle it)
       let selectedVariant = product.variants && product.variants[0];
-      if (product.hasOptions && product.variants.length > 1) {
+      if (product.hasOptions && product.variants.length > 1 && !product.customOptions) {
         const selectorSection = document.getElementById('variant-selector-section');
         const selector = document.getElementById('variant-select');
         const label = document.getElementById('variant-label');

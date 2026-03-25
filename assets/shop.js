@@ -381,13 +381,13 @@ function renderCartDrawer() {
         priceEl.appendChild(discLabel);
       }
 
-      // Quantity controls: show on the non-discounted row (or the only row if no split)
-      var isSplitDiscountRow = row.discountLabel === 'Promo' && (item.quantity || 1) > 1;
-      var isMainRow = !isSplitDiscountRow;
+      var isSplitPromo = row.discountLabel === 'Promo' && (item.quantity || 1) > 1;
+      var isSplitRemainder = !row.discount && displayQty < (item.quantity || 1);
       info.appendChild(nameEl);
       info.appendChild(priceEl);
 
-      if (item.categoryId !== 'patterns' && isMainRow) {
+      // Qty controls: only on non-promo rows for non-patterns
+      if (item.categoryId !== 'patterns' && !isSplitPromo) {
         var qtyControls = document.createElement('div');
         qtyControls.className = 'flex items-center gap-2 mt-2';
         var decBtn = document.createElement('button');
@@ -395,13 +395,22 @@ function renderCartDrawer() {
         decBtn.className = 'w-6 h-6 rounded-full bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold text-sm flex items-center justify-center transition-colors';
         decBtn.textContent = '\u2212';
         decBtn.addEventListener('click', function() {
-          if (item.quantity <= 1) removeFromCart(item.id);
-          else updateCartQuantity(item.id, item.quantity - 1);
+          if (isSplitRemainder) {
+            // Decrease the non-promo portion (min stays at 2 total so promo row remains)
+            if (item.quantity <= 2) {
+              updateCartQuantity(item.id, 1);
+            } else {
+              updateCartQuantity(item.id, item.quantity - 1);
+            }
+          } else {
+            if (item.quantity <= 1) removeFromCart(item.id);
+            else updateCartQuantity(item.id, item.quantity - 1);
+          }
           renderCartDrawer();
         });
         var qtyNum = document.createElement('span');
         qtyNum.className = 'text-sm font-medium text-gray-700 w-5 text-center';
-        qtyNum.textContent = String(item.quantity || 1);
+        qtyNum.textContent = String(displayQty);
         var incBtn = document.createElement('button');
         incBtn.type = 'button';
         incBtn.className = 'w-6 h-6 rounded-full bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold text-sm flex items-center justify-center transition-colors';
@@ -418,11 +427,11 @@ function renderCartDrawer() {
         info.appendChild(qtyControls);
       }
 
-      // Remove button (only on main rows)
+      // Remove button — every row gets one
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'text-gray-400 hover:text-red-500 transition-colors flex-shrink-0 mt-0.5 p-1';
-      removeBtn.setAttribute('aria-label', 'Remove item');
+      removeBtn.setAttribute('aria-label', 'Remove');
       var rmSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       rmSvg.setAttribute('class', 'w-4 h-4');
       rmSvg.setAttribute('fill', 'none');
@@ -435,9 +444,19 @@ function renderCartDrawer() {
       rmPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
       rmSvg.appendChild(rmPath);
       removeBtn.appendChild(rmSvg);
-      if (isMainRow) {
+      if (isSplitPromo) {
+        // Remove promo row: reduce qty by 1 and remove promo code
         removeBtn.addEventListener('click', function() {
-          removeFromCart(item.id);
+          localStorage.removeItem('shm_promo');
+          localStorage.removeItem('shm_promo_pct');
+          if (item.quantity <= 1) removeFromCart(item.id);
+          else updateCartQuantity(item.id, item.quantity - 1);
+          renderCartDrawer();
+        });
+      } else if (isSplitRemainder) {
+        // Remove remainder row: set qty to 1 (keep the promo one)
+        removeBtn.addEventListener('click', function() {
+          updateCartQuantity(item.id, 1);
           renderCartDrawer();
         });
       } else {
