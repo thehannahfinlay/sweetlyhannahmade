@@ -46,6 +46,9 @@ async function getInventory() {
         processingTime: (p.metadata && p.metadata.processingTime) || null,
         personalization: p.metadata && (p.metadata.personalization === true || p.metadata.personalization === 'true'),
         personalizationLabel: (p.metadata && p.metadata.personalizationLabel) || null,
+        stockQty: (p.metadata && p.metadata.stockQty) ? Number(p.metadata.stockQty) : null,
+        variantImages: (p.metadata && p.metadata.variantImages) || null,
+        customOptions: (p.metadata && p.metadata.customOptions) ? (typeof p.metadata.customOptions === 'string' ? JSON.parse(p.metadata.customOptions) : p.metadata.customOptions) : null,
       };
     });
 
@@ -195,15 +198,20 @@ function _saveCart(cart) {
 }
 
 // product: { id, name, price, image, variantId, quantity }
+var MAX_PLUSHIE_QTY = 5;
+
 function addToCart(product) {
   const cart = getCart();
   const existing = cart.find(item => item.id === product.id);
   if (existing) {
     // Digital products (patterns) limited to qty 1
-    if (product.categoryId === 'patterns' || (!product.shipping && !product.categoryId)) {
+    if (product.categoryId === 'patterns') {
       return 'already_in_cart';
     }
-    existing.quantity = (existing.quantity || 1) + (product.quantity || 1);
+    var newQty = (existing.quantity || 1) + (product.quantity || 1);
+    var itemMax = product.stockQty ? Math.min(product.stockQty, MAX_PLUSHIE_QTY) : MAX_PLUSHIE_QTY;
+    if (newQty > itemMax) return 'max_qty';
+    existing.quantity = newQty;
   } else {
     cart.push({ ...product, quantity: product.quantity || 1 });
   }
@@ -286,38 +294,62 @@ function renderCartDrawer() {
     if (emptyEl) emptyEl.style.display = 'none';
     if (footerEl) footerEl.style.display = 'block';
 
-    cart.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'flex items-start gap-3 py-4 border-b border-brand-100 last:border-0';
+    // Build display rows — split items when promo applies to only 1 of N
+    var displayRows = [];
+    var promoAppliedTo = null;
+    var hasPromo = localStorage.getItem('shm_promo') && localStorage.getItem('shm_promo_pct');
+    var promoPct = hasPromo ? parseInt(localStorage.getItem('shm_promo_pct')) : 0;
+    var cartPatternCount = cart.reduce(function(s, i) { return s + (i.categoryId === 'patterns' ? (i.quantity || 1) : 0); }, 0);
 
-      // Thumbnail
+    cart.forEach(function(item, idx) {
+      var isPattern = item.categoryId === 'patterns';
+      var qty = item.quantity || 1;
+
+      // Check if promo code applies to this item (first item, qty 1 only)
+      var promoOnThis = false;
+      if (hasPromo && !promoAppliedTo && idx === 0) {
+        promoOnThis = true;
+        promoAppliedTo = item.id;
+      }
+
+      if (promoOnThis && qty > 1) {
+        // Split: 1 discounted + rest at full price
+        displayRows.push({ item: item, qty: 1, discount: promoPct, discountLabel: 'Promo' });
+        displayRows.push({ item: item, qty: qty - 1, discount: 0 });
+      } else if (promoOnThis) {
+        displayRows.push({ item: item, qty: 1, discount: promoPct, discountLabel: 'Promo' });
+      } else if (isPattern && cartPatternCount >= 2) {
+        // Bundle discount on patterns
+        displayRows.push({ item: item, qty: qty, discount: 20, discountLabel: 'Bundle' });
+      } else {
+        displayRows.push({ item: item, qty: qty, discount: 0 });
+      }
+    });
+
+    displayRows.forEach(function(row) {
+      var item = row.item;
+      var displayQty = row.qty;
+      var promoDiscount = row.discount;
+
+      const rowEl = document.createElement('div');
+      rowEl.className = 'flex items-start gap-3 py-4 border-b border-brand-100 last:border-0';
+
       const img = document.createElement('img');
       img.src = item.image || '';
       img.alt = item.name || '';
       img.className = 'w-16 h-16 object-cover rounded-lg border border-brand-100 flex-shrink-0 bg-brand-50';
       img.addEventListener('error', () => { img.style.display = 'none'; });
 
-      // Info block
       const info = document.createElement('div');
       info.className = 'flex-1 min-w-0';
 
       const nameEl = document.createElement('p');
       nameEl.className = 'font-semibold text-gray-800 text-sm leading-snug truncate';
-      nameEl.textContent = item.name || '';
+      nameEl.textContent = (item.name || '') + (displayQty > 1 ? '' : '');
 
       const priceEl = document.createElement('p');
       priceEl.className = 'text-sm mt-0.5';
-      // Check for discounts (promo or bundle)
-      var promoDiscount = 0;
-      var itemPatternCount = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.quantity || 1) : 0); }, 0);
-      var isPattern = !item.shipping || Number(item.shipping) === 0;
-      if (isPattern && itemPatternCount >= 2) {
-        promoDiscount = 20; // bundle
-      } else if (isPattern && localStorage.getItem('shm_promo') && itemPatternCount < 2) {
-        // We stored the pct in a data attribute — fetch it
-        var savedPct = localStorage.getItem('shm_promo_pct');
-        if (savedPct) promoDiscount = parseInt(savedPct);
-      }
+
       if (promoDiscount > 0) {
         var origSpan = document.createElement('span');
         origSpan.className = 'text-gray-400 line-through mr-2';
@@ -333,90 +365,118 @@ function renderCartDrawer() {
         priceEl.textContent = formatPrice(item.price || 0);
       }
 
-      // Quantity controls
-      const qtyRow = document.createElement('div');
-      qtyRow.className = 'flex items-center gap-2 mt-2';
-
-      const decBtn = document.createElement('button');
-      decBtn.type = 'button';
-      decBtn.className = 'w-6 h-6 rounded-full bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold text-sm flex items-center justify-center transition-colors';
-      decBtn.textContent = '−';
-      decBtn.setAttribute('aria-label', 'Decrease quantity');
-      decBtn.addEventListener('click', () => {
-        if (item.quantity <= 1) removeFromCart(item.id);
-        else updateCartQuantity(item.id, item.quantity - 1);
-        renderCartDrawer();
-      });
-
-      const qtyNum = document.createElement('span');
-      qtyNum.className = 'text-sm font-medium text-gray-700 w-5 text-center';
-      qtyNum.textContent = String(item.quantity || 1);
-
-      const incBtn = document.createElement('button');
-      incBtn.type = 'button';
-      incBtn.className = 'w-6 h-6 rounded-full bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold text-sm flex items-center justify-center transition-colors';
-      incBtn.textContent = '+';
-      incBtn.setAttribute('aria-label', 'Increase quantity');
-      incBtn.addEventListener('click', () => {
-        updateCartQuantity(item.id, (item.quantity || 1) + 1);
-        renderCartDrawer();
-      });
-
-      qtyRow.appendChild(decBtn);
-      qtyRow.appendChild(qtyNum);
-      qtyRow.appendChild(incBtn);
-
-      info.appendChild(nameEl);
-      info.appendChild(priceEl);
-      // Only show quantity controls for physical items (not patterns)
-      if (item.shipping > 0 || item.categoryId === 'plushies') {
-        info.appendChild(qtyRow);
+      // Quantity display
+      if (displayQty > 1) {
+        var qtyLabel = document.createElement('span');
+        qtyLabel.className = 'text-gray-500 text-xs';
+        qtyLabel.textContent = ' x' + displayQty;
+        nameEl.appendChild(qtyLabel);
       }
 
-      // Remove button
-      const removeBtn = document.createElement('button');
+      // Discount label
+      if (row.discountLabel) {
+        var discLabel = document.createElement('span');
+        discLabel.className = 'text-xs font-medium ml-1 px-1.5 py-0.5 rounded bg-green-100 text-green-700';
+        discLabel.textContent = row.discountLabel + ' -' + promoDiscount + '%';
+        priceEl.appendChild(discLabel);
+      }
+
+      // Quantity controls: show on the non-discounted row (or the only row if no split)
+      var isSplitDiscountRow = row.discountLabel === 'Promo' && (item.quantity || 1) > 1;
+      var isMainRow = !isSplitDiscountRow;
+      info.appendChild(nameEl);
+      info.appendChild(priceEl);
+
+      if (item.categoryId !== 'patterns' && isMainRow) {
+        var qtyControls = document.createElement('div');
+        qtyControls.className = 'flex items-center gap-2 mt-2';
+        var decBtn = document.createElement('button');
+        decBtn.type = 'button';
+        decBtn.className = 'w-6 h-6 rounded-full bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold text-sm flex items-center justify-center transition-colors';
+        decBtn.textContent = '\u2212';
+        decBtn.addEventListener('click', function() {
+          if (item.quantity <= 1) removeFromCart(item.id);
+          else updateCartQuantity(item.id, item.quantity - 1);
+          renderCartDrawer();
+        });
+        var qtyNum = document.createElement('span');
+        qtyNum.className = 'text-sm font-medium text-gray-700 w-5 text-center';
+        qtyNum.textContent = String(item.quantity || 1);
+        var incBtn = document.createElement('button');
+        incBtn.type = 'button';
+        incBtn.className = 'w-6 h-6 rounded-full bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold text-sm flex items-center justify-center transition-colors';
+        incBtn.textContent = '+';
+        incBtn.addEventListener('click', function() {
+          var cartItemMax = item.stockQty ? Math.min(item.stockQty, MAX_PLUSHIE_QTY) : MAX_PLUSHIE_QTY;
+          if ((item.quantity || 1) >= cartItemMax) return;
+          updateCartQuantity(item.id, (item.quantity || 1) + 1);
+          renderCartDrawer();
+        });
+        qtyControls.appendChild(decBtn);
+        qtyControls.appendChild(qtyNum);
+        qtyControls.appendChild(incBtn);
+        info.appendChild(qtyControls);
+      }
+
+      // Remove button (only on main rows)
+      var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'text-gray-400 hover:text-red-500 transition-colors flex-shrink-0 mt-0.5 p-1';
       removeBtn.setAttribute('aria-label', 'Remove item');
-      // SVG X icon via DOM
-      const rmSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      var rmSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       rmSvg.setAttribute('class', 'w-4 h-4');
       rmSvg.setAttribute('fill', 'none');
       rmSvg.setAttribute('stroke', 'currentColor');
       rmSvg.setAttribute('stroke-width', '2');
       rmSvg.setAttribute('viewBox', '0 0 24 24');
-      const rmPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      var rmPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       rmPath.setAttribute('stroke-linecap', 'round');
       rmPath.setAttribute('stroke-linejoin', 'round');
       rmPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
       rmSvg.appendChild(rmPath);
       removeBtn.appendChild(rmSvg);
-      removeBtn.addEventListener('click', () => {
-        removeFromCart(item.id);
-        renderCartDrawer();
-      });
+      if (isMainRow) {
+        removeBtn.addEventListener('click', function() {
+          removeFromCart(item.id);
+          renderCartDrawer();
+        });
+      } else {
+        removeBtn.style.visibility = 'hidden';
+      }
 
-      row.appendChild(img);
-      row.appendChild(info);
-      row.appendChild(removeBtn);
-      itemsEl.appendChild(row);
+      rowEl.appendChild(img);
+      rowEl.appendChild(info);
+      rowEl.appendChild(removeBtn);
+      itemsEl.appendChild(rowEl);
     });
 
-    var shippingTotal = cart.reduce(function(sum, item) { return sum + (item.shipping || 0) * (item.quantity || 1); }, 0);
+    // Check if cart has physical items
+    var hasPhysical = cart.some(function(item) { return item.categoryId !== 'patterns'; });
     // Calculate discounted total
     var rawTotal = getCartTotal();
     var discountedTotal = rawTotal;
-    var totalPatterns = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.quantity || 1) : 0); }, 0);
+    var totalPatterns = cart.reduce(function(s, i) { return s + (i.categoryId === 'patterns' ? (i.quantity || 1) : 0); }, 0);
     if (totalPatterns >= 2) {
-      // Bundle: 20% off patterns
-      var patternTotal = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.price || 0) * (i.quantity || 1) : 0); }, 0);
-      var physicalTotal = rawTotal - patternTotal;
-      discountedTotal = patternTotal * 0.8 + physicalTotal;
+      // Only discount pairs (e.g. 3 patterns = 2 discounted, 1 full price)
+      var discountedPatternCount = Math.floor(totalPatterns / 2) * 2;
+      var patternPrices = [];
+      cart.forEach(function(i) {
+        if (i.categoryId === 'patterns') {
+          for (var q = 0; q < (i.quantity || 1); q++) patternPrices.push(i.price || 0);
+        }
+      });
+      var discountAmount = 0;
+      for (var dp = 0; dp < discountedPatternCount && dp < patternPrices.length; dp++) {
+        discountAmount += patternPrices[dp] * 0.2;
+      }
+      discountedTotal = rawTotal - discountAmount;
     } else if (localStorage.getItem('shm_promo') && localStorage.getItem('shm_promo_pct')) {
+      // Promo applies to first item only (qty 1)
       var pct = parseInt(localStorage.getItem('shm_promo_pct'));
-      var patternTotal = cart.reduce(function(s, i) { return s + ((!i.shipping || Number(i.shipping) === 0) ? (i.price || 0) * (i.quantity || 1) : 0); }, 0);
-      var physicalTotal = rawTotal - patternTotal;
-      discountedTotal = patternTotal * (1 - pct / 100) + physicalTotal;
+      if (cart.length > 0) {
+        var firstItemPrice = cart[0].price || 0;
+        discountedTotal = rawTotal - (firstItemPrice * pct / 100);
+      }
     }
     if (totalEl) {
       while (totalEl.firstChild) totalEl.removeChild(totalEl.firstChild);
@@ -429,10 +489,10 @@ function renderCartDrawer() {
       } else {
         totalEl.appendChild(document.createTextNode(formatPrice(rawTotal)));
       }
-      if (shippingTotal > 0) {
+      if (hasPhysical) {
         var shipSpan = document.createElement('span');
-        shipSpan.className = 'text-sm font-normal text-gray-500 block';
-        shipSpan.textContent = '+ ' + formatPrice(shippingTotal) + ' shipping';
+        shipSpan.className = 'text-sm font-normal text-gray-400 block';
+        shipSpan.textContent = 'Shipping calculated at checkout';
         totalEl.appendChild(shipSpan);
       }
     }
@@ -446,7 +506,7 @@ function renderCartDrawer() {
     promoSection.className = 'mb-4';
 
     var savedPromo = localStorage.getItem('shm_promo');
-    var patternCount = cart.reduce(function(sum, item) { return sum + ((!item.shipping || Number(item.shipping) === 0) ? (item.quantity || 1) : 0); }, 0);
+    var patternCount = cart.reduce(function(sum, item) { return sum + (item.categoryId === 'patterns' ? (item.quantity || 1) : 0); }, 0);
     var hasBundleDiscount = patternCount >= 2;
 
     // If bundle discount kicks in, auto-remove any saved promo
@@ -608,20 +668,22 @@ async function cartCheckout() {
     let body;
     if (cart.length === 1) {
       body = JSON.stringify({
-        name: cart[0].name,
+        name: cart[0].name + (cart[0].personalization ? ' [Note: ' + cart[0].personalization + ']' : ''),
         price: cart[0].price,
         productId: cart[0].id,
         shipping: cart[0].shipping || 0,
+        categoryId: cart[0].categoryId || '',
         promoCode: promoCode,
       });
     } else {
       body = JSON.stringify({
         items: cart.map(item => ({
-          name: item.name,
+          name: item.name + (item.personalization ? ' [Note: ' + item.personalization + ']' : ''),
           price: item.price,
           productId: item.id,
           quantity: item.quantity || 1,
           shipping: item.shipping || 0,
+          categoryId: item.categoryId || '',
         })),
         promoCode: promoCode,
       });

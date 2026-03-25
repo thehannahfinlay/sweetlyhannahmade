@@ -209,16 +209,28 @@
           </select>
         </div>
 
+        <!-- Custom options (e.g. Monkey colors, built by JS) -->
+        <div id="custom-options-section" class="hidden space-y-3"></div>
+
         <!-- Personalization (shown only if enabled via metadata) -->
         <div id="personalization-section" class="hidden">
           <label for="personalization-input" class="block text-sm font-semibold text-gray-700 mb-1">
-            <span id="personalization-label">Add personalization</span>
-            <span class="text-gray-400 font-normal">(optional)</span>
+            <span id="personalization-label">Add personalization (optional)</span>
           </label>
           <textarea id="personalization-input" rows="3"
                     placeholder="Add your personalization details here (e.g., color preferences, name to add, special requests)"
                     class="w-full px-4 py-3 rounded-xl border border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors resize-y text-sm"></textarea>
           <p class="text-xs text-gray-400 mt-1">I'll review your request and reach out if I have any questions before starting.</p>
+        </div>
+
+        <!-- Quantity selector (plushies only, shown by JS) -->
+        <div id="qty-selector" class="hidden flex items-center gap-3">
+          <span class="text-sm font-semibold text-gray-700">Quantity:</span>
+          <div class="flex items-center border border-brand-200 rounded-full overflow-hidden">
+            <button id="qty-dec" type="button" class="w-10 h-10 flex items-center justify-center text-brand-700 hover:bg-brand-50 transition-colors text-lg font-bold">−</button>
+            <span id="qty-value" class="w-10 text-center font-bold text-gray-800">1</span>
+            <button id="qty-inc" type="button" class="w-10 h-10 flex items-center justify-center text-brand-700 hover:bg-brand-50 transition-colors text-lg font-bold">+</button>
+          </div>
         </div>
 
         <!-- Buttons -->
@@ -233,6 +245,22 @@
              class="flex-1 text-center bg-brand-700 hover:bg-brand-600 text-white font-bold text-lg px-8 py-4 rounded-full transition-colors shadow-md border-2 border-brand-700">
             Buy Now
           </button>
+        </div>
+
+        <!-- Bulk order section (plushies only, injected by JS) -->
+        <div id="bulk-order-section" class="hidden mt-4 bg-brand-50 rounded-2xl border border-brand-100 p-5">
+          <p class="font-semibold text-brand-700 text-sm mb-1">Want to purchase a bulk order?</p>
+          <p class="text-gray-500 text-xs mb-3">Reach out and I'd love to help!</p>
+          <div class="space-y-2">
+            <input id="bulk-name" type="text" placeholder="Your name" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400">
+            <input id="bulk-email" type="email" placeholder="Your email" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400">
+            <input id="bulk-qty" type="number" min="6" placeholder="How many?" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400">
+            <textarea id="bulk-notes" rows="2" placeholder="Any details (colors, event date, etc.)" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400 resize-y"></textarea>
+            <button id="bulk-submit-btn" type="button" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-full text-sm transition-colors">
+              Send Bulk Order Request
+            </button>
+            <p id="bulk-status" class="hidden text-xs text-center font-medium mt-1"></p>
+          </div>
         </div>
 
         <!-- Description -->
@@ -261,7 +289,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=12"></script>
+  <script src="assets/shop.js?v=25"></script>
   <script>
     // Mobile menu
     (function() {
@@ -393,15 +421,18 @@
       document.getElementById('product-price').textContent = formatPrice(product.price);
 
       // Shipping info — only show for physical products (plushies), not patterns
-      if (product.categoryId === 'plushies') {
-        const shippingEl = document.getElementById('shipping-info');
-        if (product.shipping && product.shipping > 0) {
-          shippingEl.textContent = '+ ' + formatPrice(product.shipping) + ' shipping (US only)';
-        } else {
-          shippingEl.textContent = 'Free shipping (US only)';
-        }
-        shippingEl.classList.remove('hidden');
+      var shippingEl = document.getElementById('shipping-info');
+      if (product.categoryId === 'patterns') {
+        shippingEl.textContent = 'Free instant download';
+        shippingEl.className = 'text-sm text-green-600 font-medium mt-1';
+      } else if (!product.shipping || Number(product.shipping) === 0) {
+        shippingEl.textContent = 'Free shipping';
+        shippingEl.className = 'text-sm text-green-600 font-medium mt-1';
+      } else {
+        shippingEl.textContent = 'Shipping calculated at checkout';
+        shippingEl.className = 'text-sm text-gray-400 mt-1';
       }
+      shippingEl.classList.remove('hidden');
 
       // Processing time
       if (product.processingTime) {
@@ -598,8 +629,92 @@
           selectedVariant = product.variants.find(v => v.id === selector.value);
           if (selectedVariant) {
             document.getElementById('product-price').textContent = formatPrice(selectedVariant.price);
+            // Switch to variant-specific image if mapping exists
+            if (product.variantImages && selectedVariant.options && selectedVariant.options[0]) {
+              var colorName = selectedVariant.options[0].value;
+              var imgIndices = product.variantImages[colorName];
+              if (imgIndices && imgIndices.length > 0 && typeof showImage === 'function') {
+                showImage(imgIndices[0]);
+              }
+            }
           }
         });
+      }
+
+      // Custom options (e.g. Monkey color + swing color)
+      if (product.customOptions && product.customOptions.length > 0) {
+        var coSection = document.getElementById('custom-options-section');
+        coSection.classList.remove('hidden');
+
+        product.customOptions.forEach(function(opt) {
+          var wrapper = document.createElement('div');
+          var label = document.createElement('label');
+          label.className = 'block text-sm font-semibold text-gray-700 mb-1';
+          label.textContent = opt.label + (opt.required ? '' : ' (optional)');
+          wrapper.appendChild(label);
+
+          var select = document.createElement('select');
+          select.className = 'custom-opt-select w-full px-4 py-3 rounded-xl border border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors text-sm bg-white';
+          select.setAttribute('data-label', opt.label);
+          var placeholder = document.createElement('option');
+          placeholder.value = '';
+          placeholder.textContent = 'Choose ' + opt.label.toLowerCase() + '...';
+          select.appendChild(placeholder);
+
+          opt.options.forEach(function(o) {
+            var option = document.createElement('option');
+            option.value = o;
+            option.textContent = o;
+            select.appendChild(option);
+          });
+
+          wrapper.appendChild(select);
+
+          // "Other" text field
+          if (opt.otherField) {
+            var otherInput = document.createElement('input');
+            otherInput.type = 'text';
+            otherInput.placeholder = 'Please specify...';
+            otherInput.className = 'custom-opt-other hidden w-full mt-2 px-4 py-3 rounded-xl border border-brand-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-colors text-sm';
+            otherInput.setAttribute('data-label', opt.label);
+            select.addEventListener('change', function() {
+              if (select.value === 'Other') {
+                otherInput.classList.remove('hidden');
+                otherInput.focus();
+              } else {
+                otherInput.classList.add('hidden');
+                otherInput.value = '';
+              }
+            });
+            wrapper.appendChild(otherInput);
+          }
+
+          // Image switching when selecting an option
+          select.addEventListener('change', function() {
+            if (product.variantImages && select.value && select.value !== 'Other') {
+              var imgIndices = product.variantImages[select.value];
+              if (imgIndices && imgIndices.length > 0 && typeof showImage === 'function') {
+                showImage(imgIndices[0]);
+              }
+            }
+          });
+
+          coSection.appendChild(wrapper);
+        });
+      }
+
+      // Helper to get custom options values
+      function getCustomOptionsText() {
+        var parts = [];
+        document.querySelectorAll('.custom-opt-select').forEach(function(sel) {
+          var val = sel.value;
+          if (val === 'Other') {
+            var otherInput = document.querySelector('.custom-opt-other[data-label="' + sel.getAttribute('data-label') + '"]');
+            if (otherInput && otherInput.value.trim()) val = otherInput.value.trim();
+          }
+          if (val) parts.push(sel.getAttribute('data-label') + ': ' + val);
+        });
+        return parts.join(', ');
       }
 
       // Personalization
@@ -618,16 +733,18 @@
       function getCartItem() {
         const sv = selectedVariant || product.variants[0];
         const optValue = sv && sv.options && sv.options[0] ? sv.options[0].value : '';
+        const isRealOption = product.hasOptions && optValue && optValue !== 'Default option value';
         return {
-          id: product.id + (optValue ? '-' + optValue : ''),
+          id: product.id + (isRealOption ? '-' + optValue : ''),
           productId: product.id,
-          name: product.name + (optValue ? ' (' + optValue + ')' : ''),
+          name: product.name + (isRealOption ? ' (' + optValue + ')' : ''),
           price: sv ? sv.price : product.price,
           image: product.images && product.images[0] ? product.images[0] : '',
           variantId: sv ? sv.id : product.variantId,
           quantity: 1,
           shipping: product.shipping || 0,
           categoryId: product.categoryId || '',
+          stockQty: product.stockQty || null,
         };
       }
 
@@ -647,8 +764,22 @@
               return;
             }
           }
+          // Validate custom options
+          var customText = typeof getCustomOptionsText === 'function' ? getCustomOptionsText() : '';
+          var customSelects = document.querySelectorAll('.custom-opt-select');
+          var customValid = true;
+          customSelects.forEach(function(sel) {
+            if (!sel.value) {
+              sel.style.borderColor = '#ef4444';
+              customValid = false;
+            } else {
+              sel.style.borderColor = '';
+            }
+          });
+          if (!customValid) return;
+
           const item = getCartItem();
-          item.personalization = getPersonalization();
+          item.personalization = [customText, getPersonalization()].filter(Boolean).join(' | ');
           var result = addToCart(item);
           if (result === 'already_in_cart') {
             addBtn.textContent = 'Already in your bag';
@@ -657,6 +788,13 @@
               addBtn.textContent = 'Add to Bag';
               addBtn.style.background = '';
             }, 2000);
+            return;
+          }
+          if (result === 'max_qty') {
+            var itemMaxQty = product.stockQty ? Math.min(product.stockQty, MAX_PLUSHIE_QTY) : MAX_PLUSHIE_QTY;
+            addBtn.textContent = 'Max quantity reached (' + itemMaxQty + ')';
+            addBtn.style.background = '#f59e0b';
+            setTimeout(function() { addBtn.textContent = 'Add to Bag'; addBtn.style.background = ''; }, 2000);
             return;
           }
           addBtn.textContent = 'Added!';
@@ -704,9 +842,95 @@
         });
       }
 
-      // Description — render markdown, sanitize with DOMPurify before inserting
+      // Description — render markdown, sanitize with DOMPurify
       const descriptionEl = document.getElementById('product-description');
-      descriptionEl.innerHTML = DOMPurify.sanitize(renderMarkdown(product.description));
+      var safeHtml = DOMPurify.sanitize(renderMarkdown(product.description));
+      descriptionEl.innerHTML = safeHtml;
+
+      // Quantity selector for physical products (plushies)
+      if (product.categoryId !== 'patterns') {
+        var qtySelector = document.getElementById('qty-selector');
+        var qtyValue = document.getElementById('qty-value');
+        var qtyDec = document.getElementById('qty-dec');
+        var qtyInc = document.getElementById('qty-inc');
+        var selectedQty = 1;
+        var maxQty = product.stockQty ? Math.min(product.stockQty, MAX_PLUSHIE_QTY) : MAX_PLUSHIE_QTY;
+        qtySelector.classList.remove('hidden');
+
+        qtyDec.addEventListener('click', function() {
+          if (selectedQty > 1) {
+            selectedQty--;
+            qtyValue.textContent = String(selectedQty);
+          }
+        });
+        qtyInc.addEventListener('click', function() {
+          if (selectedQty < maxQty) {
+            selectedQty++;
+            qtyValue.textContent = String(selectedQty);
+          }
+        });
+
+        // Override getCartItem to include selected quantity
+        var origGetCartItem = getCartItem;
+        getCartItem = function() {
+          var item = origGetCartItem();
+          item.quantity = selectedQty;
+          return item;
+        };
+      }
+
+      // Show bulk order section for physical products (plushies)
+      if (product.categoryId !== 'patterns') {
+        var bulkSection = document.getElementById('bulk-order-section');
+        bulkSection.classList.remove('hidden');
+        var bulkProductName = product.name;
+
+        document.getElementById('bulk-submit-btn').addEventListener('click', function() {
+          var name = document.getElementById('bulk-name').value.trim();
+          var email = document.getElementById('bulk-email').value.trim();
+          var qty = document.getElementById('bulk-qty').value.trim();
+          var notes = document.getElementById('bulk-notes').value.trim();
+          var statusEl = document.getElementById('bulk-status');
+          var btn = document.getElementById('bulk-submit-btn');
+
+          if (!name || !email || !qty) {
+            statusEl.textContent = 'Please fill in your name, email, and quantity.';
+            statusEl.className = 'text-xs text-center font-medium mt-1 text-red-500';
+            statusEl.classList.remove('hidden');
+            return;
+          }
+
+          btn.textContent = 'Sending...';
+          btn.disabled = true;
+          statusEl.classList.add('hidden');
+
+          var message = '[Bulk Order] Product: ' + bulkProductName + '\nQuantity: ' + qty + (notes ? '\nNotes: ' + notes : '');
+          fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, email: email, message: message })
+          }).then(function(r) { return r.json(); }).then(function(data) {
+            if (data.success) {
+              statusEl.textContent = 'Request sent! I\'ll get back to you soon.';
+              statusEl.className = 'text-xs text-center font-medium mt-1 text-green-600';
+              statusEl.classList.remove('hidden');
+              btn.textContent = 'Sent!';
+            } else {
+              statusEl.textContent = 'Something went wrong. Try again.';
+              statusEl.className = 'text-xs text-center font-medium mt-1 text-red-500';
+              statusEl.classList.remove('hidden');
+              btn.textContent = 'Send Bulk Order Request';
+              btn.disabled = false;
+            }
+          }).catch(function() {
+            statusEl.textContent = 'Something went wrong. Try again.';
+            statusEl.className = 'text-xs text-center font-medium mt-1 text-red-500';
+            statusEl.classList.remove('hidden');
+            btn.textContent = 'Send Bulk Order Request';
+            btn.disabled = false;
+          });
+        });
+      }
     }
 
     init();
