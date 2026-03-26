@@ -16,7 +16,7 @@ async function getInventory() {
   let products = [];
   let categories = [];
   try {
-    const prodRes = await fetch('/store/products?limit=100&fields=*variants,*variants.prices,metadata,*images,title,description,handle,collection_id,*categories,*tags', { headers: medusaHeaders() });
+    const prodRes = await fetch('/store/products?limit=100&fields=*variants,*variants.prices,metadata,*images,title,description,handle,collection_id,*categories,*tags,*options', { headers: medusaHeaders() });
     const prodData = await prodRes.json();
     products = (prodData.products || []).map(p => {
       const variant = p.variants && p.variants[0];
@@ -42,6 +42,7 @@ async function getInventory() {
           options: (v.options || []).map(o => ({ title: o.option ? o.option.title : '', value: o.value })),
         })),
         hasOptions: p.variants && p.variants.length > 1,
+        optionTitle: (p.options && p.options[0] && p.options[0].title) || null,
         shipping: (p.metadata && p.metadata.shipping) ? Number(p.metadata.shipping) : 0,
         processingTime: (p.metadata && p.metadata.processingTime) || null,
         personalization: p.metadata && (p.metadata.personalization === true || p.metadata.personalization === 'true'),
@@ -445,12 +446,17 @@ function renderCartDrawer() {
       rmSvg.appendChild(rmPath);
       removeBtn.appendChild(rmSvg);
       if (isSplitPromo) {
-        // Remove promo row: reduce qty by 1 and remove promo code
+        // Remove promo row: reduce qty by 1 but keep promo so it applies to next item
         removeBtn.addEventListener('click', function() {
-          localStorage.removeItem('shm_promo');
-          localStorage.removeItem('shm_promo_pct');
-          if (item.quantity <= 1) removeFromCart(item.id);
-          else updateCartQuantity(item.id, item.quantity - 1);
+          if (item.quantity <= 1) {
+            // Last one — remove item and promo
+            localStorage.removeItem('shm_promo');
+            localStorage.removeItem('shm_promo_pct');
+            removeFromCart(item.id);
+          } else {
+            // More items remain — keep promo, reduce qty
+            updateCartQuantity(item.id, item.quantity - 1);
+          }
           renderCartDrawer();
         });
       } else if (isSplitRemainder) {
@@ -689,6 +695,7 @@ async function cartCheckout() {
       body = JSON.stringify({
         name: cart[0].name + (cart[0].personalization ? ' [Note: ' + cart[0].personalization + ']' : ''),
         price: cart[0].price,
+        quantity: cart[0].quantity || 1,
         productId: cart[0].id,
         shipping: cart[0].shipping || 0,
         categoryId: cart[0].categoryId || '',

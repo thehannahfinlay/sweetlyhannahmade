@@ -12,7 +12,8 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: 'Invalid request body' };
   }
 
-  const { name, price, productId } = body;
+  const { name, price, quantity: rawQty, productId } = body;
+  const quantity = Math.max(1, Math.min(10, Math.floor(Number(rawQty) || 1)));
 
   if (!name || !price || !productId) {
     return { statusCode: 400, body: 'Missing required fields' };
@@ -37,7 +38,7 @@ exports.handler = async (event) => {
           },
           unit_amount: priceInCents,
         },
-        quantity: 1,
+        quantity: quantity,
       }],
       mode: 'payment',
       success_url: `${origin}/success.html?product=${encodeURIComponent(productId)}`,
