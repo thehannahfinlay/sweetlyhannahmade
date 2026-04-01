@@ -167,6 +167,7 @@
       <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
     </button>
     <img id="lightbox-img" src="" alt="" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl">
+    <video id="lightbox-video" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl hidden" controls autoplay loop playsinline></video>
     <div id="lightbox-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm"></div>
   </div>
 
@@ -550,38 +551,66 @@
         });
       }
 
-      // Lightbox — click main image to zoom
+      // Lightbox — click main image/video to view full-frame
       (function() {
         var lb = document.getElementById('lightbox');
         var lbImg = document.getElementById('lightbox-img');
+        var lbVideo = document.getElementById('lightbox-video');
         var lbCounter = document.getElementById('lightbox-counter');
         var lbIdx = 0;
-        // Get only actual image URLs (skip video objects)
-        var lbImages = images.filter(function(item) { return typeof item === 'string'; });
+        // Include all media (images and videos)
+        var lbMedia = images;
+
+        function showLightboxItem(idx) {
+          var item = lbMedia[idx];
+          var isVideo = typeof item === 'object' && item.type === 'video';
+          if (isVideo) {
+            lbImg.classList.add('hidden');
+            lbImg.src = '';
+            lbVideo.classList.remove('hidden');
+            lbVideo.src = item.src;
+            lbVideo.play();
+          } else {
+            lbVideo.classList.add('hidden');
+            lbVideo.pause();
+            lbVideo.src = '';
+            lbImg.classList.remove('hidden');
+            lbImg.src = typeof item === 'string' ? item : item.src;
+          }
+          lbCounter.textContent = (idx + 1) + ' / ' + lbMedia.length;
+        }
 
         function openLightbox(idx) {
           lbIdx = idx;
-          lbImg.src = lbImages[lbIdx];
-          lbCounter.textContent = (lbIdx + 1) + ' / ' + lbImages.length;
+          showLightboxItem(lbIdx);
           lb.style.display = 'flex';
           document.body.style.overflow = 'hidden';
         }
         function closeLightbox() {
           lb.style.display = 'none';
           document.body.style.overflow = '';
+          lbVideo.pause();
+          lbVideo.src = '';
         }
         function lbNav(dir) {
-          lbIdx = (lbIdx + dir + lbImages.length) % lbImages.length;
-          lbImg.src = lbImages[lbIdx];
-          lbCounter.textContent = (lbIdx + 1) + ' / ' + lbImages.length;
+          lbIdx = (lbIdx + dir + lbMedia.length) % lbMedia.length;
+          showLightboxItem(lbIdx);
         }
 
         mainImage.style.cursor = 'zoom-in';
         mainImage.addEventListener('click', function() {
-          // Find current image index in lightbox array
-          var src = mainImage.src.replace(window.location.origin, '');
-          var idx = lbImages.indexOf(src);
-          openLightbox(idx >= 0 ? idx : 0);
+          openLightbox(currentImgIndex);
+        });
+        galleryVideo.style.cursor = 'zoom-in';
+        galleryVideo.addEventListener('click', function(e) {
+          // Only open lightbox if not interacting with video controls
+          var rect = galleryVideo.getBoundingClientRect();
+          var clickY = e.clientY - rect.top;
+          if (clickY < rect.height - 40) {
+            e.preventDefault();
+            galleryVideo.pause();
+            openLightbox(currentImgIndex);
+          }
         });
 
         document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
