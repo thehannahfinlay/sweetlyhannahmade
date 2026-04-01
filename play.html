@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background:#fff">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Memory Match – SweetlyHannahMade</title>
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
@@ -27,7 +28,7 @@
               300: '#d4a3b8',
               400: '#c98da8',
               500: '#c48a9e',
-              600: '#b87a90',
+              600: '#a0687c',
               700: '#a0687c',
             }
           }
@@ -38,6 +39,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
   <style>
+    /* ── Announcement fade ── */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .announcement-fade { animation: slideIn 0.4s ease-out; }
+
     /* ── Drawer transitions ── */
     .mobile-menu-overlay { transition: opacity 0.3s; }
     .mobile-menu-panel   { transition: transform 0.3s ease-out; }
@@ -102,8 +110,9 @@
     }
 
     /* ── Screen visibility helpers ── */
-    #game-screen   { display: none; }
+    #game-screen   { display: none; overflow-x: hidden; }
     #intro-screen  { display: block; }
+    html, body     { overflow-x: hidden; }
 
     /* ── Intro decorative dots ── */
     .dot-pattern {
@@ -114,12 +123,6 @@
   <script>if(history.scrollRestoration)history.scrollRestoration="manual";window.scrollTo(0,0);</script>
 </head>
 <body class="bg-white text-gray-800 font-sans">
-
-  <!-- Announcement Bar -->
-  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none sticky top-0 z-50">
-    <span id="announcement-text" class="inline-block"></span>
-    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
-  </div>
 
   <!-- ═══════════════════════════════════════════════════════════ HEADER -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
@@ -159,6 +162,11 @@
       </div>
     </div>
   </header>
+
+  <!-- Announcement Bar -->
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm px-4 font-medium select-none flex items-center justify-center" style="min-height:40px">
+    <p class="py-2 leading-snug"><span id="announcement-text" class="announcement-fade"></span><a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a></p>
+  </div>
 
   <!-- ══════════════════════════════════════════════════ MOBILE MENU -->
   <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/40 z-50 hidden mobile-menu-overlay opacity-0">
@@ -277,11 +285,11 @@
           <p class="text-sm font-semibold text-gray-700">Enter your name and email to play</p>
           <div>
             <input id="player-name" type="text" autocomplete="given-name" placeholder="Your name"
-              class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm">
+              class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-base">
           </div>
           <div>
             <input id="player-email" type="email" autocomplete="email" placeholder="you@example.com"
-              class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-sm">
+              class="w-full border border-brand-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent text-base">
           </div>
           <div id="verify-section" class="hidden">
             <label for="verify-code" class="block text-sm font-semibold text-gray-700 mb-1.5">Enter the 4-digit code sent to your email</label>
@@ -319,15 +327,15 @@
 
       <!-- Stats bar -->
       <div class="bg-white border-b border-brand-100 py-4 px-4">
-        <div class="max-w-2xl mx-auto flex items-center justify-center gap-6">
-          <div class="flex items-center gap-2 bg-brand-50 rounded-2xl border border-brand-100 px-5 py-2.5">
+        <div class="max-w-2xl mx-auto flex items-center justify-center gap-3 md:gap-6 flex-wrap">
+          <div class="flex items-center gap-2 bg-brand-50 rounded-2xl border border-brand-100 px-3 md:px-5 py-2.5">
             <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
             </svg>
             <span class="text-gray-500 text-sm font-medium">Moves:</span>
             <span id="moves-display" class="text-brand-700 font-bold text-base tabular-nums">0</span>
           </div>
-          <div class="flex items-center gap-2 bg-brand-50 rounded-2xl border border-brand-100 px-5 py-2.5">
+          <div class="flex items-center gap-2 bg-brand-50 rounded-2xl border border-brand-100 px-3 md:px-5 py-2.5">
             <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
             </svg>
@@ -387,25 +395,25 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════ RESULTS MODAL -->
-  <div id="results-modal" class="fixed inset-0 z-30 hidden flex items-center justify-center p-4 pt-20" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
-    <div id="results-panel" class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden overflow-y-auto max-h-[85vh] modal-anim">
+  <div id="results-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
+    <div id="results-panel" class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden modal-anim">
       <!-- Colored header -->
-      <div class="bg-brand-600 py-8 px-6 text-center">
-        <div id="results-emoji" class="text-5xl mb-3"></div>
-        <div id="results-heading" class="text-2xl md:text-3xl font-bold text-white mb-2"></div>
+      <div class="bg-brand-600 py-5 px-6 text-center">
+        <div id="results-emoji" class="text-4xl mb-2"></div>
+        <div id="results-heading" class="text-xl md:text-2xl font-bold text-white mb-1"></div>
         <p id="results-stats" class="text-white/80 text-sm"></p>
       </div>
       <!-- Body -->
-      <div class="p-8">
-        <div id="results-reward" class="mb-8"></div>
-        <div class="flex flex-col gap-3">
-          <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base text-center">
+      <div class="p-5">
+        <div id="results-reward" class="mb-5"></div>
+        <div class="flex flex-col gap-2.5">
+          <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-md text-sm text-center">
             Browse Patterns
           </a>
-          <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3.5 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-base text-center">
+          <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-sm text-center">
             Shop Plushies
           </a>
-          <a href="/" class="text-center text-gray-400 hover:text-brand-500 font-medium text-sm transition-colors py-2 mt-2">
+          <a href="/" class="text-center text-gray-400 hover:text-brand-500 font-medium text-xs transition-colors py-1.5">
             Back to Home
           </a>
         </div>
@@ -414,23 +422,23 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════ ALREADY PLAYED MODAL -->
-  <div id="already-played-modal" class="fixed inset-0 z-30 hidden flex items-center justify-center p-4 pt-20" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden overflow-y-auto max-h-[85vh] modal-anim">
-      <div class="bg-brand-600 py-8 px-6 text-center">
-        <div class="text-5xl mb-3">&#127775;</div>
-        <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">You Already Played!</h2>
+  <div id="already-played-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4" style="background: linear-gradient(135deg, #fdf2f6 0%, #f5dce6 50%, #e8c4d2 100%);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden modal-anim">
+      <div class="bg-brand-600 py-5 px-6 text-center">
+        <div class="text-4xl mb-2">&#127775;</div>
+        <h2 class="text-xl md:text-2xl font-bold text-white mb-1">You Already Played!</h2>
         <p id="already-played-subtitle" class="text-white/80 text-sm"></p>
       </div>
-      <div class="p-8">
-        <div id="already-played-code" class="mb-8"></div>
-        <div class="flex flex-col gap-3">
-          <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-full transition-colors shadow-md text-base text-center">
+      <div class="p-5">
+        <div id="already-played-code" class="mb-5"></div>
+        <div class="flex flex-col gap-2.5">
+          <a href="category?id=patterns" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-full transition-colors shadow-md text-sm text-center">
             Browse Patterns
           </a>
-          <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3.5 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-base text-center">
+          <a href="category?id=plushies" class="w-full bg-white hover:bg-brand-50 text-brand-600 font-bold py-3 px-6 rounded-full border-2 border-brand-300 transition-colors shadow-sm text-sm text-center">
             Shop Plushies
           </a>
-          <a href="/" class="text-center text-gray-400 hover:text-brand-500 font-medium text-sm transition-colors py-2 mt-2">
+          <a href="/" class="text-center text-gray-400 hover:text-brand-500 font-medium text-xs transition-colors py-1.5">
             Back to Home
           </a>
         </div>
@@ -457,7 +465,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=26"></script>
+  <script src="assets/shop.js?v=30"></script>
   <script>
     // ── Footer year ───────────────────────────────────────────────────
     document.getElementById('footer-year').textContent = new Date().getFullYear();
@@ -499,9 +507,12 @@
     function rotateAnnouncements(announcements) {
       var el = document.getElementById('announcement-text');
       var linkEl = document.getElementById('announcement-link');
+      el.classList.remove('announcement-fade');
+      void el.offsetWidth;
       var item = announcements[announcementIndex];
       var text = typeof item === 'string' ? item : item.text;
       el.textContent = text;
+      el.classList.add('announcement-fade');
       if (item.link) {
         linkEl.href = item.link;
         linkEl.textContent = item.linkText || 'Learn more';
@@ -515,8 +526,32 @@
       fetch('/inventory.json').then(function(r) { return r.json(); }).then(function(data) {
         var announcements = (data.shop && data.shop.announcements) || [];
         if (announcements.length) {
+          // Measure tallest announcement and lock bar height
+          var bar = document.getElementById('announcement-bar');
+          var el = document.getElementById('announcement-text');
+          var linkEl = document.getElementById('announcement-link');
+          var maxH = 0;
+          announcements.forEach(function(item) {
+            var text = typeof item === 'string' ? item : item.text;
+            el.textContent = text;
+            if (item.link) {
+              linkEl.textContent = item.linkText || 'Learn more';
+              linkEl.classList.remove('hidden');
+            } else {
+              linkEl.classList.add('hidden');
+            }
+            var h = bar.offsetHeight;
+            if (h > maxH) maxH = h;
+          });
+          bar.style.minHeight = maxH + 'px';
+
           rotateAnnouncements(announcements);
           if (announcements.length > 1) setInterval(function() { rotateAnnouncements(announcements); }, 4000);
+
+          // Hide bar when scrolled past
+          window.addEventListener('scroll', function() {
+            bar.style.visibility = window.scrollY >= maxH ? 'hidden' : 'visible';
+          }, { passive: true });
         }
       }).catch(function() {});
     })();
@@ -561,6 +596,7 @@
     var playerEmail  = '';
     var playerName   = '';
     var deckOrder    = []; // track card order for save/restore
+
 
     var movesDisplay = document.getElementById('moves-display');
     var pairsDisplay = document.getElementById('pairs-display');
@@ -657,6 +693,7 @@
           return function() { onCardClick(c); };
         })(cardObj));
       });
+
     }
 
     // ── Card click ────────────────────────────────────────────────────
@@ -796,6 +833,10 @@
       }
 
       modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = '-' + window.scrollY + 'px';
     }
 
     // ── Results modal ─────────────────────────────────────────────────
@@ -872,6 +913,10 @@
       panel.classList.add('modal-anim');
 
       modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = '-' + window.scrollY + 'px';
     }
 
     // ── Start button ──────────────────────────────────────────────────
@@ -1054,15 +1099,7 @@
       });
     }
 
-    // ── Warn before leaving during active game ─────────────────────────
     var gameActive = false;
-    window.addEventListener('beforeunload', function(e) {
-      if (gameActive && matchedPairs < 8) {
-        e.preventDefault();
-        e.returnValue = 'You have a game in progress. Your progress will not be saved if you leave.';
-        return e.returnValue;
-      }
-    });
 
     // ── Init ──────────────────────────────────────────────────────────
     buildBoard();

@@ -295,33 +295,16 @@ function renderCartDrawer() {
     if (emptyEl) emptyEl.style.display = 'none';
     if (footerEl) footerEl.style.display = 'block';
 
-    // Build display rows — split items when promo applies to only 1 of N
+    // Build display rows — bundle discount on patterns, promo applies to order total
     var displayRows = [];
-    var promoAppliedTo = null;
-    var hasPromo = localStorage.getItem('shm_promo') && localStorage.getItem('shm_promo_pct');
-    var promoPct = hasPromo ? parseInt(localStorage.getItem('shm_promo_pct')) : 0;
     var cartPatternCount = cart.reduce(function(s, i) { return s + (i.categoryId === 'patterns' ? (i.quantity || 1) : 0); }, 0);
 
-    cart.forEach(function(item, idx) {
+    cart.forEach(function(item) {
       var isPattern = item.categoryId === 'patterns';
       var qty = item.quantity || 1;
 
-      // Check if promo code applies to this item (first item, qty 1 only)
-      var promoOnThis = false;
-      if (hasPromo && !promoAppliedTo && idx === 0) {
-        promoOnThis = true;
-        promoAppliedTo = item.id;
-      }
-
-      if (promoOnThis && qty > 1) {
-        // Split: 1 discounted + rest at full price
-        displayRows.push({ item: item, qty: 1, discount: promoPct, discountLabel: 'Promo' });
-        displayRows.push({ item: item, qty: qty - 1, discount: 0 });
-      } else if (promoOnThis) {
-        displayRows.push({ item: item, qty: 1, discount: promoPct, discountLabel: 'Promo' });
-      } else if (isPattern && cartPatternCount >= 2) {
-        // Bundle discount on patterns
-        displayRows.push({ item: item, qty: qty, discount: 20, discountLabel: 'Bundle' });
+      if (isPattern && cartPatternCount >= 2) {
+        displayRows.push({ item: item, qty: qty, discount: 10, discountLabel: 'Bundle' });
       } else {
         displayRows.push({ item: item, qty: qty, discount: 0 });
       }
@@ -347,6 +330,14 @@ function renderCartDrawer() {
       const nameEl = document.createElement('p');
       nameEl.className = 'font-semibold text-gray-800 text-sm leading-snug truncate';
       nameEl.textContent = (item.name || '') + (displayQty > 1 ? '' : '');
+
+      // Show personalization / special requests if present
+      if (item.personalization) {
+        var persEl = document.createElement('p');
+        persEl.className = 'text-xs text-gray-500 mt-0.5 leading-snug';
+        persEl.textContent = item.personalization;
+        persEl.title = item.personalization;
+      }
 
       const priceEl = document.createElement('p');
       priceEl.className = 'text-sm mt-0.5';
@@ -382,13 +373,12 @@ function renderCartDrawer() {
         priceEl.appendChild(discLabel);
       }
 
-      var isSplitPromo = row.discountLabel === 'Promo' && (item.quantity || 1) > 1;
-      var isSplitRemainder = !row.discount && displayQty < (item.quantity || 1);
       info.appendChild(nameEl);
+      if (persEl) info.appendChild(persEl);
       info.appendChild(priceEl);
 
-      // Qty controls: only on non-promo rows for non-patterns
-      if (item.categoryId !== 'patterns' && !isSplitPromo) {
+      // Qty controls for non-patterns
+      if (item.categoryId !== 'patterns') {
         var qtyControls = document.createElement('div');
         qtyControls.className = 'flex items-center gap-2 mt-2';
         var decBtn = document.createElement('button');
@@ -396,17 +386,8 @@ function renderCartDrawer() {
         decBtn.className = 'w-6 h-6 rounded-full bg-brand-100 hover:bg-brand-200 text-brand-700 font-bold text-sm flex items-center justify-center transition-colors';
         decBtn.textContent = '\u2212';
         decBtn.addEventListener('click', function() {
-          if (isSplitRemainder) {
-            // Decrease the non-promo portion (min stays at 2 total so promo row remains)
-            if (item.quantity <= 2) {
-              updateCartQuantity(item.id, 1);
-            } else {
-              updateCartQuantity(item.id, item.quantity - 1);
-            }
-          } else {
-            if (item.quantity <= 1) removeFromCart(item.id);
-            else updateCartQuantity(item.id, item.quantity - 1);
-          }
+          if (item.quantity <= 1) removeFromCart(item.id);
+          else updateCartQuantity(item.id, item.quantity - 1);
           renderCartDrawer();
         });
         var qtyNum = document.createElement('span');
@@ -445,29 +426,15 @@ function renderCartDrawer() {
       rmPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
       rmSvg.appendChild(rmPath);
       removeBtn.appendChild(rmSvg);
-      if (isSplitPromo) {
-        // Remove promo row: reduce qty by 1 but keep promo so it applies to next item
-        removeBtn.addEventListener('click', function() {
-          if (item.quantity <= 1) {
-            // Last one — remove item and promo
-            localStorage.removeItem('shm_promo');
-            localStorage.removeItem('shm_promo_pct');
-            removeFromCart(item.id);
-          } else {
-            // More items remain — keep promo, reduce qty
-            updateCartQuantity(item.id, item.quantity - 1);
-          }
-          renderCartDrawer();
-        });
-      } else if (isSplitRemainder) {
-        // Remove remainder row: set qty to 1 (keep the promo one)
-        removeBtn.addEventListener('click', function() {
-          updateCartQuantity(item.id, 1);
-          renderCartDrawer();
-        });
-      } else {
-        removeBtn.style.visibility = 'hidden';
-      }
+      removeBtn.addEventListener('click', function() {
+        removeFromCart(item.id);
+        // Clear promo if cart is now empty
+        if (getCart().length === 0) {
+          localStorage.removeItem('shm_promo');
+          localStorage.removeItem('shm_promo_pct');
+        }
+        renderCartDrawer();
+      });
 
       rowEl.appendChild(img);
       rowEl.appendChild(info);
@@ -482,26 +449,19 @@ function renderCartDrawer() {
     var discountedTotal = rawTotal;
     var totalPatterns = cart.reduce(function(s, i) { return s + (i.categoryId === 'patterns' ? (i.quantity || 1) : 0); }, 0);
     if (totalPatterns >= 2) {
-      // Only discount pairs (e.g. 3 patterns = 2 discounted, 1 full price)
-      var discountedPatternCount = Math.floor(totalPatterns / 2) * 2;
-      var patternPrices = [];
+      // 10% off all patterns
+      var bundleDiscount = 0;
       cart.forEach(function(i) {
         if (i.categoryId === 'patterns') {
-          for (var q = 0; q < (i.quantity || 1); q++) patternPrices.push(i.price || 0);
+          bundleDiscount += (i.price || 0) * (i.quantity || 1) * 0.1;
         }
       });
-      var discountAmount = 0;
-      for (var dp = 0; dp < discountedPatternCount && dp < patternPrices.length; dp++) {
-        discountAmount += patternPrices[dp] * 0.2;
-      }
-      discountedTotal = rawTotal - discountAmount;
-    } else if (localStorage.getItem('shm_promo') && localStorage.getItem('shm_promo_pct')) {
-      // Promo applies to first item only (qty 1)
+      discountedTotal -= bundleDiscount;
+    }
+    if (localStorage.getItem('shm_promo') && localStorage.getItem('shm_promo_pct')) {
+      // Promo applies to entire order total (after bundle discount)
       var pct = parseInt(localStorage.getItem('shm_promo_pct'));
-      if (cart.length > 0) {
-        var firstItemPrice = cart[0].price || 0;
-        discountedTotal = rawTotal - (firstItemPrice * pct / 100);
-      }
+      discountedTotal = discountedTotal * (1 - pct / 100);
     }
     if (totalEl) {
       while (totalEl.firstChild) totalEl.removeChild(totalEl.firstChild);
@@ -534,12 +494,7 @@ function renderCartDrawer() {
     var patternCount = cart.reduce(function(sum, item) { return sum + (item.categoryId === 'patterns' ? (item.quantity || 1) : 0); }, 0);
     var hasBundleDiscount = patternCount >= 2;
 
-    // If bundle discount kicks in, auto-remove any saved promo
-    if (hasBundleDiscount && savedPromo) {
-      localStorage.removeItem('shm_promo');
-      localStorage.removeItem('shm_promo_pct');
-      savedPromo = null;
-    }
+    // Bundle and promo can coexist — bundle applies to patterns, promo to first item
 
     // Applied code pill (if one is saved)
     if (savedPromo) {
@@ -584,7 +539,7 @@ function renderCartDrawer() {
     if (hasBundleDiscount) {
       var bundleNotice = document.createElement('p');
       bundleNotice.className = 'text-xs text-green-600 font-medium mb-2';
-      bundleNotice.textContent = '20% bundle discount applied automatically.';
+      bundleNotice.textContent = '10% bundle discount applied to all patterns.';
       promoSection.appendChild(bundleNotice);
     }
 
@@ -608,12 +563,6 @@ function renderCartDrawer() {
       var code = promoInput.value.trim().toUpperCase();
       if (!code) {
         errorMsg.textContent = 'Please enter a promo code.';
-        errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
-        errorMsg.classList.remove('hidden');
-        return;
-      }
-      if (hasBundleDiscount) {
-        errorMsg.textContent = 'Promo codes cannot be combined with other discounts.';
         errorMsg.className = 'text-xs text-red-500 font-medium mt-1.5';
         errorMsg.classList.remove('hidden');
         return;

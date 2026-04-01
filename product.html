@@ -46,12 +46,6 @@
 </head>
 <body class="bg-white text-gray-800 font-sans" onbeforeunload="window.scrollTo(0,0)" onload="setTimeout(function(){window.scrollTo(0,0)},50)">
 
-  <!-- Announcement Bar -->
-  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
-    <span id="announcement-text" class="inline-block"></span>
-    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
-  </div>
-
   <!-- Header -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -89,6 +83,12 @@
       </div>
     </div>
   </header>
+
+  <!-- Announcement Bar -->
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
+    <span id="announcement-text" class="inline-block"></span>
+    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
+  </div>
 
   <!-- Cart Drawer -->
   <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/40 z-50 hidden cart-drawer-overlay opacity-0">
@@ -305,7 +305,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=26"></script>
+  <script src="assets/shop.js?v=30"></script>
   <script>
     // Mobile menu
     (function() {
@@ -825,8 +825,22 @@
         const sv = selectedVariant || product.variants[0];
         const optValue = sv && sv.options && sv.options[0] ? sv.options[0].value : '';
         const isRealOption = product.hasOptions && optValue && optValue !== 'Default option value';
+        // Include custom options in id so different combos become separate cart entries
+        var customOptKey = '';
+        if (product.customOptions) {
+          var parts = [];
+          document.querySelectorAll('.custom-opt-select').forEach(function(sel) {
+            var val = sel.value;
+            if (val === 'Other') {
+              var otherInput = document.querySelector('.custom-opt-other[data-label="' + sel.getAttribute('data-label') + '"]');
+              if (otherInput && otherInput.value.trim()) val = otherInput.value.trim();
+            }
+            if (val) parts.push(val);
+          });
+          if (parts.length) customOptKey = '-' + parts.join('-');
+        }
         return {
-          id: product.id + (isRealOption ? '-' + optValue : ''),
+          id: product.id + (isRealOption ? '-' + optValue : '') + customOptKey,
           productId: product.id,
           name: product.name + (isRealOption ? ' (' + optValue + ')' : ''),
           price: sv ? sv.price : product.price,
@@ -847,7 +861,7 @@
       } else {
         addBtn.addEventListener('click', () => {
           // Validate variant selection if needed
-          if (product.hasOptions && product.variants.length > 1) {
+          if (product.hasOptions && product.variants.length > 1 && !product.customOptions) {
             const selector = document.getElementById('variant-select');
             if (!selector.value) {
               selector.focus();
@@ -899,7 +913,7 @@
 
         buyBtn.addEventListener('click', async () => {
           // Validate variant selection if needed
-          if (product.hasOptions && product.variants.length > 1) {
+          if (product.hasOptions && product.variants.length > 1 && !product.customOptions) {
             const selector = document.getElementById('variant-select');
             if (!selector.value) {
               selector.focus();
@@ -907,15 +921,24 @@
               return;
             }
           }
+          // Validate custom options
+          var buyCustomText = typeof getCustomOptionsText === 'function' ? getCustomOptionsText() : '';
+          var buyCustomSelects = document.querySelectorAll('.custom-opt-select');
+          var buyCustomValid = true;
+          buyCustomSelects.forEach(function(sel) {
+            if (!sel.value) { sel.style.borderColor = '#ef4444'; buyCustomValid = false; } else { sel.style.borderColor = ''; }
+          });
+          if (!buyCustomValid) return;
+
           buyBtn.textContent = 'Loading...';
           buyBtn.disabled = true;
           const item = getCartItem();
-          const pers = getPersonalization();
+          const pers = [buyCustomText, getPersonalization()].filter(Boolean).join(' | ');
           try {
             const res = await fetch('/api/create-checkout', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: item.name + (pers ? ' [' + pers + ']' : ''), price: item.price, quantity: item.quantity, productId: item.productId || product.id, shipping: product.shipping || 0 }),
+              body: JSON.stringify({ name: item.name + (pers ? ' [Note: ' + pers + ']' : ''), price: item.price, quantity: item.quantity, productId: item.productId || product.id, shipping: product.shipping || 0 }),
             });
             const data = await res.json();
             if (data.url) {

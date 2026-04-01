@@ -47,12 +47,6 @@
 </head>
 <body class="bg-white text-gray-800 font-sans" onload="setTimeout(function(){window.scrollTo(0,0)},50)">
 
-  <!-- Announcement Bar -->
-  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
-    <span id="announcement-text" class="inline-block"></span>
-    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
-  </div>
-
   <!-- Header -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -89,6 +83,12 @@
       </div>
     </div>
   </header>
+
+  <!-- Announcement Bar -->
+  <div id="announcement-bar" class="bg-brand-700 text-white text-center text-sm py-2.5 px-4 font-medium select-none">
+    <span id="announcement-text" class="inline-block"></span>
+    <a id="announcement-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden underline ml-1"></a>
+  </div>
 
   <!-- Mobile menu -->
   <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/40 z-50 hidden" style="transition:opacity 0.3s">
@@ -203,7 +203,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=26"></script>
+  <script src="assets/shop.js?v=30"></script>
   <script>
     document.getElementById('footer-year').textContent = new Date().getFullYear();
 
