@@ -537,7 +537,7 @@
 
     // Reward tiers — moves is total 2nd-card flips
     var REWARD_TIERS = [
-      { minMoves: 8,  maxMoves: 15, pct: 15 },
+      { minMoves: 10, maxMoves: 15, pct: 15 },
       { minMoves: 16, maxMoves: 20, pct: 10 },
       { minMoves: 21, maxMoves: 25, pct: 5  },
       { minMoves: 26, maxMoves: Infinity, pct: 0 }
@@ -548,7 +548,7 @@
         var t = REWARD_TIERS[i];
         if (moves >= t.minMoves && moves <= t.maxMoves) return t;
       }
-      // Fewer than 8 moves → treat as 15% (theoretical perfect game)
+      // Fewer than 10 moves → treat as 15% (theoretical perfect game)
       return REWARD_TIERS[0];
     }
 
