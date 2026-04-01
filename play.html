@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Memory Match – SweetlyHannahMade</title>
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
@@ -253,19 +253,19 @@
             <p class="font-semibold text-brand-700 text-sm mb-3">Discount tiers:</p>
             <div class="space-y-2">
               <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                <span class="text-sm text-gray-700 font-medium">Under 23 moves</span>
+                <span class="text-sm text-gray-700 font-medium">10–15 moves</span>
                 <span class="text-brand-700 font-bold text-sm">15% off</span>
               </div>
               <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                <span class="text-sm text-gray-700 font-medium">23–30 moves</span>
+                <span class="text-sm text-gray-700 font-medium">16–20 moves</span>
                 <span class="text-brand-700 font-bold text-sm">10% off</span>
               </div>
               <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2.5">
-                <span class="text-sm text-gray-700 font-medium">31–40 moves</span>
+                <span class="text-sm text-gray-700 font-medium">21–25 moves</span>
                 <span class="text-brand-700 font-bold text-sm">5% off</span>
               </div>
               <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2.5">
-                <span class="text-sm text-gray-500">41+ moves</span>
+                <span class="text-sm text-gray-500">26+ moves</span>
                 <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
               </div>
             </div>
@@ -366,19 +366,19 @@
       </ul>
       <div class="space-y-2 mb-6">
         <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-700 font-medium">Under 23 moves</span>
+          <span class="text-sm text-gray-700 font-medium">10–15 moves</span>
           <span class="text-brand-700 font-bold text-sm">15% off</span>
         </div>
         <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-700 font-medium">23-30 moves</span>
+          <span class="text-sm text-gray-700 font-medium">16–20 moves</span>
           <span class="text-brand-700 font-bold text-sm">10% off</span>
         </div>
         <div class="flex items-center justify-between bg-brand-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-700 font-medium">31-40 moves</span>
+          <span class="text-sm text-gray-700 font-medium">21–25 moves</span>
           <span class="text-brand-700 font-bold text-sm">5% off</span>
         </div>
         <div class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-2">
-          <span class="text-sm text-gray-500">41+ moves</span>
+          <span class="text-sm text-gray-500">26+ moves</span>
           <span class="text-gray-400 font-medium text-sm">Try again next week!</span>
         </div>
       </div>
@@ -537,10 +537,10 @@
 
     // Reward tiers — moves is total 2nd-card flips
     var REWARD_TIERS = [
-      { minMoves: 8,  maxMoves: 22, pct: 15 },
-      { minMoves: 23, maxMoves: 30, pct: 10 },
-      { minMoves: 31, maxMoves: 40, pct: 5  },
-      { minMoves: 41, maxMoves: Infinity, pct: 0 }
+      { minMoves: 8,  maxMoves: 15, pct: 15 },
+      { minMoves: 16, maxMoves: 20, pct: 10 },
+      { minMoves: 21, maxMoves: 25, pct: 5  },
+      { minMoves: 26, maxMoves: Infinity, pct: 0 }
     ];
 
     function getTier(moves) {
