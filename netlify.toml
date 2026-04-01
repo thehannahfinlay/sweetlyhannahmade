@@ -1,9 +1,0 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
-
-[[headers]]
-  for = "/admin/*"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-eval' https://identity.netlify.com https://unpkg.com; connect-src 'self' https://api.netlify.com https://identity.netlify.com https://github.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' https://unpkg.com;"
