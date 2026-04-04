@@ -363,21 +363,26 @@
       setTimeout(scrollToCustomOrder, 300);
     }
 
-    // Hide category nav when gallery is scrolled past
+    // Hide category nav when scrolled past the gallery
     (function() {
       var catNav = document.getElementById('category-nav');
       var gallerySection = document.querySelector('#gallery-grid');
       if (!catNav || !gallerySection) return;
-      var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            catNav.style.display = '';
-          } else {
-            catNav.style.display = 'none';
-          }
-        });
-      }, { rootMargin: '0px 0px -50px 0px' });
-      observer.observe(gallerySection);
+      var hidden = false;
+      window.addEventListener('scroll', function() {
+        var galleryBottom = gallerySection.getBoundingClientRect().bottom;
+        if (galleryBottom < 0 && !hidden) {
+          hidden = true;
+          catNav.style.opacity = '0';
+          catNav.style.pointerEvents = 'none';
+          catNav.style.transition = 'opacity 0.3s';
+        } else if (galleryBottom >= 0 && hidden) {
+          hidden = false;
+          catNav.style.opacity = '1';
+          catNav.style.pointerEvents = '';
+          catNav.style.transition = 'opacity 0.3s';
+        }
+      }, { passive: true });
     })();
 
     // Category filter nav
