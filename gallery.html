@@ -370,13 +370,14 @@
       if (!catNav || !customOrderSection) return;
       var hidden = false;
       window.addEventListener('scroll', function() {
+        var catNavBottom = catNav.getBoundingClientRect().bottom;
         var galleryBottom = customOrderSection.getBoundingClientRect().top;
-        if (galleryBottom < 0 && !hidden) {
+        if (galleryBottom <= catNavBottom && !hidden) {
           hidden = true;
           catNav.style.opacity = '0';
           catNav.style.pointerEvents = 'none';
           catNav.style.transition = 'opacity 0.3s';
-        } else if (galleryBottom >= 0 && hidden) {
+        } else if (galleryBottom > catNavBottom && hidden) {
           hidden = false;
           catNav.style.opacity = '1';
           catNav.style.pointerEvents = '';
