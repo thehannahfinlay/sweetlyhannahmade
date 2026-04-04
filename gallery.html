@@ -366,11 +366,11 @@
     // Hide category nav when scrolled past the gallery
     (function() {
       var catNav = document.getElementById('category-nav');
-      var gallerySection = document.querySelector('#gallery-grid');
-      if (!catNav || !gallerySection) return;
+      var customOrderSection = document.getElementById('custom-order');
+      if (!catNav || !customOrderSection) return;
       var hidden = false;
       window.addEventListener('scroll', function() {
-        var galleryBottom = gallerySection.getBoundingClientRect().bottom;
+        var galleryBottom = customOrderSection.getBoundingClientRect().top;
         if (galleryBottom < 0 && !hidden) {
           hidden = true;
           catNav.style.opacity = '0';
