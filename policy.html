@@ -36,6 +36,9 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WD9T89Y0GX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WD9T89Y0GX");</script>
 </head>
 <body class="bg-white text-gray-800 font-sans">
 
@@ -51,15 +54,33 @@
         <img src="assets/images/logo.png" alt="SweetlyHannahMade" class="w-8 h-8 rounded">
         <span class="text-xl md:text-2xl font-bold text-brand-600 tracking-tight" style="font-family:'Playfair Display',serif">SweetlyHannahMade</span>
       </a>
-      <nav class="hidden md:flex items-center gap-6">
+      <nav class="hidden lg:flex items-center gap-6">
         <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies & More</a>
+        <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Contact</a>
+        <a href="play" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Win a Discount</a>
+        <button id="cart-icon-btn" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
       </nav>
-      <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Menu">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
+      <div class="lg:hidden flex items-center gap-1">
+        <button id="cart-icon-btn-mobile" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
+        </button>
+        <button id="mobile-menu-btn" class="p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -78,6 +99,10 @@
         <a href="/" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Home</a>
         <a href="category?id=patterns" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Plushies & More</a>
+        <a href="gallery" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
+        <a href="contact" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Contact</a>
+        <a href="play" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Win a Discount</a>
       </nav>
     </div>
   </div>
@@ -99,6 +124,12 @@
         });
         menuOverlay.addEventListener('click', (e) => {
           if (e.target === menuOverlay) { menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full'); setTimeout(() => menuOverlay.classList.add('hidden'), 300); }
+        });
+        menuPanel.querySelectorAll('nav a').forEach(a => {
+          a.addEventListener('click', () => {
+            menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full');
+            setTimeout(() => menuOverlay.classList.add('hidden'), 300);
+          });
         });
       }
     })();

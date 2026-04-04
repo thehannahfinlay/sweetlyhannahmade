@@ -121,6 +121,9 @@
     }
   </style>
   <script>if(history.scrollRestoration)history.scrollRestoration="manual";window.scrollTo(0,0);</script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WD9T89Y0GX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WD9T89Y0GX");</script>
 </head>
 <body class="bg-white text-gray-800 font-sans">
 
@@ -137,7 +140,7 @@
         <span class="text-xl md:text-2xl font-bold text-brand-600 tracking-tight" style="font-family:'Playfair Display',serif">SweetlyHannahMade</span>
       </a>
       <!-- Desktop nav -->
-      <nav class="hidden md:flex items-center gap-6">
+      <nav class="hidden lg:flex items-center gap-6">
         <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies &amp; More</a>
         <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
@@ -152,7 +155,7 @@
         </button>
       </nav>
       <!-- Mobile right-side buttons -->
-      <div class="md:hidden flex items-center gap-1">
+      <div class="lg:hidden flex items-center gap-1">
         <button id="cart-icon-btn-mobile" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -465,7 +468,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=30"></script>
+  <script src="assets/shop.js?v=1775097349"></script>
   <script>
     // ── Footer year ───────────────────────────────────────────────────
     document.getElementById('footer-year').textContent = new Date().getFullYear();
@@ -491,6 +494,9 @@
     menuBtn.addEventListener('click', openMenu);
     menuClose.addEventListener('click', closeMenu);
     menuOverlay.addEventListener('click', function(e) { if (e.target === menuOverlay) closeMenu(); });
+    menuPanel.querySelectorAll('nav a').forEach(a => {
+      a.addEventListener('click', () => closeMenu());
+    });
 
     // ── Cart buttons ──────────────────────────────────────────────────
     var mobileCartBtn  = document.getElementById('cart-icon-btn-mobile');
@@ -803,7 +809,7 @@
 
       var validNote = document.createElement('p');
       validNote.className = 'text-gray-400 text-xs text-center';
-      validNote.textContent = 'Valid for one item only. Single use. Expires in 7 days.';
+      validNote.textContent = 'Single use. Expires in 7 days. Applies to your entire order.';
       container.appendChild(validNote);
 
       var comboNote = document.createElement('p');

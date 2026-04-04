@@ -43,6 +43,9 @@
     .cart-drawer-panel { transition: transform 0.3s ease-out; }
   </style>
 <script>if(history.scrollRestoration)history.scrollRestoration="manual";window.scrollTo(0,0);</script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WD9T89Y0GX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WD9T89Y0GX");</script>
 </head>
 <body class="bg-white text-gray-800 font-sans" onbeforeunload="window.scrollTo(0,0)" onload="setTimeout(function(){window.scrollTo(0,0)},50)">
 
@@ -59,7 +62,7 @@
         <img src="assets/images/logo.png" alt="SweetlyHannahMade" class="w-8 h-8 rounded">
         <span class="text-xl md:text-2xl font-bold text-brand-600 tracking-tight" style="font-family:'Playfair Display',serif">SweetlyHannahMade</span>
       </a>
-      <nav class="hidden md:flex items-center gap-6">
+      <nav class="hidden lg:flex items-center gap-6">
         <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies & More</a>
         <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
@@ -74,7 +77,7 @@
           <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full items-center justify-center" style="display:none"></span>
         </button>
       </nav>
-      <div class="md:hidden flex items-center gap-1">
+      <div class="lg:hidden flex items-center gap-1">
         <button id="cart-icon-btn-mobile" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -167,7 +170,7 @@
       <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
     </button>
     <img id="lightbox-img" src="" alt="" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl">
-    <video id="lightbox-video" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl hidden" controls autoplay loop playsinline></video>
+    <video id="lightbox-video" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl hidden" controls autoplay loop playsinline muted></video>
     <div id="lightbox-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm"></div>
   </div>
 
@@ -267,11 +270,27 @@
         <div id="bulk-order-section" class="hidden mt-4 bg-brand-50 rounded-2xl border border-brand-100 p-5">
           <p class="font-semibold text-brand-700 text-sm mb-1">Want to purchase a bulk order?</p>
           <p class="text-gray-500 text-xs mb-3">Reach out and I'd love to help!</p>
-          <div class="space-y-2">
-            <input id="bulk-name" type="text" placeholder="Your name" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400">
-            <input id="bulk-email" type="email" placeholder="Your email" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400">
-            <input id="bulk-qty" type="number" min="6" placeholder="How many?" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400">
-            <textarea id="bulk-notes" rows="2" placeholder="Any details (colors, event date, etc.)" class="w-full border border-brand-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-400 resize-y"></textarea>
+          <div class="space-y-3">
+            <div>
+              <label for="bulk-name" class="block text-xs font-medium text-gray-600 mb-1">Your name <span class="text-brand-600">*</span></label>
+              <input id="bulk-name" type="text" placeholder="Your name" required class="w-full border border-brand-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-brand-400">
+            </div>
+            <div>
+              <label for="bulk-email" class="block text-xs font-medium text-gray-600 mb-1">Your email <span class="text-brand-600">*</span></label>
+              <input id="bulk-email" type="email" placeholder="Your email" required class="w-full border border-brand-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-brand-400">
+            </div>
+            <div>
+              <label for="bulk-qty" class="block text-xs font-medium text-gray-600 mb-1">How many? (minimum 3) <span class="text-brand-600">*</span></label>
+              <input id="bulk-qty" type="number" min="3" placeholder="3" required class="w-full border border-brand-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-brand-400">
+            </div>
+            <div>
+              <label for="bulk-needed-by" class="block text-xs font-medium text-gray-600 mb-1">When do you need it by? <span class="text-brand-600">*</span></label>
+              <input id="bulk-needed-by" type="date" required class="w-full border border-brand-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-brand-400 text-gray-700">
+            </div>
+            <div>
+              <label for="bulk-notes" class="block text-xs font-medium text-gray-600 mb-1">Any other details</label>
+              <textarea id="bulk-notes" rows="2" placeholder="Colors, special requests, etc." class="w-full border border-brand-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-brand-400 resize-y"></textarea>
+            </div>
             <button id="bulk-submit-btn" type="button" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-full text-sm transition-colors">
               Send Bulk Order Request
             </button>
@@ -291,7 +310,7 @@
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div>
         <p class="text-white font-bold text-lg" style="font-family:'Playfair Display',serif">SweetlyHannahMade</p>
-        <p class="text-sm mt-1 text-gray-400">Handmade with love</p>
+        <p class="text-sm mt-1 text-gray-400">SweetlyHannahMade</p>
       </div>
       <nav class="flex flex-wrap gap-4 text-sm">
         <a href="category?id=patterns" class="hover:text-white transition-colors">Patterns</a>
@@ -305,7 +324,7 @@
     </div>
   </footer>
 
-  <script src="assets/shop.js?v=30"></script>
+  <script src="assets/shop.js?v=1775097349"></script>
   <script>
     // Mobile menu
     (function() {
@@ -326,6 +345,9 @@
         menuBtn.addEventListener('click', openMenu);
         menuClose.addEventListener('click', closeMenu);
         menuOverlay.addEventListener('click', (e) => { if (e.target === menuOverlay) closeMenu(); });
+        menuPanel.querySelectorAll('nav a').forEach(a => {
+          a.addEventListener('click', () => closeMenu());
+        });
       }
       if (mobileCartBtn) mobileCartBtn.addEventListener('click', openCartDrawer);
     })();
@@ -445,15 +467,25 @@
         shippingEl.textContent = 'Free shipping';
         shippingEl.className = 'text-sm text-green-600 font-medium mt-1';
       } else {
-        shippingEl.textContent = 'Shipping calculated at checkout';
-        shippingEl.className = 'text-sm text-gray-400 mt-1';
+        shippingEl.textContent = '';
+        shippingEl.className = 'text-sm text-gray-500 mt-1';
+        var priceSpan = document.createElement('span');
+        priceSpan.textContent = formatPrice(Number(product.shipping)) + ' shipping';
+        var freeNote = document.createElement('span');
+        freeNote.className = 'text-gray-400';
+        freeNote.textContent = ' · Free on orders over $75';
+        shippingEl.appendChild(priceSpan);
+        shippingEl.appendChild(freeNote);
       }
       shippingEl.classList.remove('hidden');
 
       // Processing time
       if (product.processingTime) {
         const procEl = document.getElementById('processing-info');
-        procEl.textContent = product.processingTime;
+        procEl.textContent = 'Made to order · Processing time: ' + product.processingTime;
+        if (product.processingTime.indexOf('1-2') === 0) {
+          procEl.textContent = 'Ready to ship · Processing time: ' + product.processingTime;
+        }
         procEl.classList.remove('hidden');
       }
 
@@ -639,6 +671,7 @@
               (index === 0 ? 'border-brand-500 shadow-md' : 'border-brand-100 hover:border-brand-400');
             // Use a small video element as preview
             var thumbVid = document.createElement('video');
+            thumbVid.muted = true;
             thumbVid.src = item.src;
             thumbVid.className = 'w-full h-full object-cover';
             thumbVid.muted = true;
@@ -808,14 +841,7 @@
         return parts.join(', ');
       }
 
-      // Personalization
-      if (product.personalization) {
-        const persSection = document.getElementById('personalization-section');
-        persSection.classList.remove('hidden');
-        if (product.personalizationLabel) {
-          document.getElementById('personalization-label').textContent = product.personalizationLabel;
-        }
-      }
+      // Personalization — disabled, custom order form handles special requests
 
       // Add to Bag + Buy Now buttons
       const addBtn = document.getElementById('add-to-cart-btn');
@@ -825,6 +851,9 @@
         const sv = selectedVariant || product.variants[0];
         const optValue = sv && sv.options && sv.options[0] ? sv.options[0].value : '';
         const isRealOption = product.hasOptions && optValue && optValue !== 'Default option value';
+        // Fallback: use variant title if no option value (Medusa sometimes has empty options)
+        var variantLabel = isRealOption ? optValue : (product.hasOptions && sv && sv.title && sv.title !== 'Default variant' ? sv.title : '');
+        var hasVariant = !!(isRealOption || variantLabel);
         // Include custom options in id so different combos become separate cart entries
         var customOptKey = '';
         if (product.customOptions) {
@@ -839,16 +868,24 @@
           });
           if (parts.length) customOptKey = '-' + parts.join('-');
         }
+        var optLabel = '';
+        if (hasVariant) {
+          var optTitle = (product.variants[0].options && product.variants[0].options[0] ? product.variants[0].options[0].title : null) || product.optionTitle || 'Option';
+          optLabel = optTitle + ': ' + variantLabel;
+        }
         return {
-          id: product.id + (isRealOption ? '-' + optValue : '') + customOptKey,
+          id: product.id + (hasVariant ? '-' + variantLabel : '') + customOptKey,
           productId: product.id,
-          name: product.name + (isRealOption ? ' (' + optValue + ')' : ''),
+          name: product.name + (hasVariant && !product.customOptions ? ' (' + variantLabel + ')' : ''),
+          optionLabel: optLabel,
           price: sv ? sv.price : product.price,
           image: product.images && product.images[0] ? product.images[0] : '',
           variantId: sv ? sv.id : product.variantId,
           quantity: 1,
           shipping: product.shipping || 0,
           categoryId: product.categoryId || '',
+          processingTime: product.processingTime || '',
+          handle: product.handle || '',
           stockQty: product.stockQty || null,
         };
       }
@@ -1007,8 +1044,15 @@
           var statusEl = document.getElementById('bulk-status');
           var btn = document.getElementById('bulk-submit-btn');
 
-          if (!name || !email || !qty) {
-            statusEl.textContent = 'Please fill in your name, email, and quantity.';
+          var neededBy = document.getElementById('bulk-needed-by').value.trim();
+          if (!name || !email || !qty || !neededBy) {
+            statusEl.textContent = 'Please fill in all required fields.';
+            statusEl.className = 'text-xs text-center font-medium mt-1 text-red-500';
+            statusEl.classList.remove('hidden');
+            return;
+          }
+          if (parseInt(qty) < 3) {
+            statusEl.textContent = 'Minimum quantity for bulk orders is 3.';
             statusEl.className = 'text-xs text-center font-medium mt-1 text-red-500';
             statusEl.classList.remove('hidden');
             return;
@@ -1018,14 +1062,14 @@
           btn.disabled = true;
           statusEl.classList.add('hidden');
 
-          var message = '[Bulk Order] Product: ' + bulkProductName + '\nQuantity: ' + qty + (notes ? '\nNotes: ' + notes : '');
+          var message = '[Bulk Order] Product: ' + bulkProductName + '\nQuantity: ' + qty + '\nNeeded by: ' + neededBy + (notes ? '\nNotes: ' + notes : '');
           fetch('/api/contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: name, email: email, message: message })
           }).then(function(r) { return r.json(); }).then(function(data) {
             if (data.success) {
-              statusEl.textContent = 'Request sent! I\'ll get back to you soon.';
+              statusEl.textContent = "Request sent! I'll review your request and let you know if I'm able to do it.";
               statusEl.className = 'text-xs text-center font-medium mt-1 text-green-600';
               statusEl.classList.remove('hidden');
               btn.textContent = 'Sent!';

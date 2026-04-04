@@ -559,6 +559,12 @@
         menuOverlay.addEventListener('click', (e) => {
           if (e.target === menuOverlay) { menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full'); setTimeout(() => menuOverlay.classList.add('hidden'), 300); }
         });
+        menuPanel.querySelectorAll('nav a').forEach(a => {
+          a.addEventListener('click', () => {
+            menuOverlay.style.opacity = '0'; menuPanel.classList.add('translate-x-full');
+            setTimeout(() => menuOverlay.classList.add('hidden'), 300);
+          });
+        });
       }
       if (mobileCartBtn) mobileCartBtn.addEventListener('click', openCartDrawer);
     })();
