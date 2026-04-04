@@ -73,8 +73,8 @@
       <nav class="hidden lg:flex items-center gap-6">
         <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies & More</a>
-        <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
-        <a href="gallery#custom-order" onclick="scrollToCustomOrder();return false;" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
+        <a href="gallery" id="desktop-nav-gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" id="desktop-nav-custom" onclick="scrollToCustomOrder();return false;" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
         <a href="contact" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Contact</a>
         <a href="play" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Win a Discount</a>
         <button id="cart-icon-btn" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
@@ -115,8 +115,8 @@
         <a href="/" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Home</a>
         <a href="category?id=patterns" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Plushies & More</a>
-        <a href="gallery" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Gallery</a>
-        <a href="gallery#custom-order" onclick="scrollToCustomOrder();return false;" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
+        <a href="gallery" id="mobile-nav-gallery" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Gallery</a>
+        <a href="gallery#custom-order" id="mobile-nav-custom" onclick="scrollToCustomOrder();return false;" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
         <a href="contact" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Contact</a>
         <a href="play" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Win a Discount</a>
       </nav>
@@ -363,25 +363,46 @@
       setTimeout(scrollToCustomOrder, 300);
     }
 
-    // Hide category nav when scrolled past the gallery
+    // Hide category nav & swap active nav highlight when in custom order section
     (function() {
       var catNav = document.getElementById('category-nav');
       var customOrderSection = document.getElementById('custom-order');
       if (!catNav || !customOrderSection) return;
-      var hidden = false;
+
+      var galleryLinks = [document.getElementById('desktop-nav-gallery'), document.getElementById('mobile-nav-gallery')];
+      var customLinks = [document.getElementById('desktop-nav-custom'), document.getElementById('mobile-nav-custom')];
+      var inCustomSection = false;
+
+      function setActiveNav(isCustom) {
+        galleryLinks.forEach(function(l) {
+          if (!l) return;
+          if (isCustom) { l.classList.remove('text-brand-600'); l.classList.add('text-gray-600', 'text-gray-700'); }
+          else { l.classList.add('text-brand-600'); l.classList.remove('text-gray-600', 'text-gray-700'); }
+        });
+        customLinks.forEach(function(l) {
+          if (!l) return;
+          if (isCustom) { l.classList.add('text-brand-600'); l.classList.remove('text-gray-600', 'text-gray-700'); }
+          else { l.classList.remove('text-brand-600'); l.classList.add('text-gray-600', 'text-gray-700'); }
+        });
+      }
+
       window.addEventListener('scroll', function() {
         var catNavBottom = catNav.getBoundingClientRect().bottom;
-        var galleryBottom = customOrderSection.getBoundingClientRect().top;
-        if (galleryBottom <= catNavBottom && !hidden) {
-          hidden = true;
+        var sectionTop = customOrderSection.getBoundingClientRect().top;
+        var nowInCustom = sectionTop <= catNavBottom;
+
+        if (nowInCustom && !inCustomSection) {
+          inCustomSection = true;
           catNav.style.opacity = '0';
           catNav.style.pointerEvents = 'none';
           catNav.style.transition = 'opacity 0.3s';
-        } else if (galleryBottom > catNavBottom && hidden) {
-          hidden = false;
+          setActiveNav(true);
+        } else if (!nowInCustom && inCustomSection) {
+          inCustomSection = false;
           catNav.style.opacity = '1';
           catNav.style.pointerEvents = '';
           catNav.style.transition = 'opacity 0.3s';
+          setActiveNav(false);
         }
       }, { passive: true });
     })();
