@@ -74,7 +74,7 @@
         <a href="category?id=patterns" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Plushies & More</a>
         <a href="gallery" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Gallery</a>
-        <a href="gallery#custom-order" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
+        <a href="gallery#custom-order" onclick="scrollToCustomOrder();return false;" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Custom Orders</a>
         <a href="contact" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Contact</a>
         <a href="play" class="text-gray-600 hover:text-brand-600 font-medium transition-colors">Win a Discount</a>
         <button id="cart-icon-btn" class="relative p-2 text-gray-600 hover:text-brand-600 transition-colors" aria-label="Shopping bag">
@@ -116,7 +116,7 @@
         <a href="category?id=patterns" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Patterns</a>
         <a href="category?id=plushies" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Plushies & More</a>
         <a href="gallery" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Gallery</a>
-        <a href="gallery#custom-order" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
+        <a href="gallery#custom-order" onclick="scrollToCustomOrder();return false;" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Custom Orders</a>
         <a href="contact" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Contact</a>
         <a href="play" class="py-3 px-4 text-gray-700 hover:bg-brand-50 hover:text-brand-600 rounded-lg font-medium transition-colors">Win a Discount</a>
       </nav>
@@ -157,7 +157,7 @@
     <div class="max-w-3xl mx-auto">
       <h1 class="text-3xl md:text-4xl font-bold text-brand-700 mb-3">Gallery & Custom Orders</h1>
       <p class="text-gray-600 text-lg mb-4">Browse my work and request a custom plushie made just for you!</p>
-      <a href="#custom-order" class="inline-flex flex-col items-center gap-1 text-gray-500 hover:text-brand-600 transition-colors font-medium" onclick="document.getElementById('custom-order').scrollIntoView({behavior:'smooth'});return false;">
+      <a href="#custom-order" class="inline-flex flex-col items-center gap-1 text-gray-500 hover:text-brand-600 transition-colors font-medium" onclick="scrollToCustomOrder();return false;">
         <span>Request a Custom Order</span>
         <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </a>
@@ -349,6 +349,36 @@
   <script src="assets/shop.js?v=1775097349"></script>
   <script>
     document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+    // Scroll to custom order with offset so heading is visible
+    function scrollToCustomOrder() {
+      var el = document.getElementById('custom-order');
+      if (!el) return;
+      var headerHeight = document.querySelector('header').offsetHeight || 0;
+      var y = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - 8;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+    // Handle #custom-order in URL on page load
+    if (window.location.hash === '#custom-order') {
+      setTimeout(scrollToCustomOrder, 300);
+    }
+
+    // Hide category nav when gallery is scrolled past
+    (function() {
+      var catNav = document.getElementById('category-nav');
+      var gallerySection = document.querySelector('#gallery-grid');
+      if (!catNav || !gallerySection) return;
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            catNav.style.display = '';
+          } else {
+            catNav.style.display = 'none';
+          }
+        });
+      }, { rootMargin: '0px 0px -50px 0px' });
+      observer.observe(gallerySection);
+    })();
 
     // Category filter nav
     (async function() {
