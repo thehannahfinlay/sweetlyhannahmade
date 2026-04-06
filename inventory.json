@@ -3,11 +3,11 @@
     "name": "SweetlyHannahMade",
     "tagline": "",
     "announcements": [
-      { "text": "Add 2+ patterns to your cart and get 10% off all patterns \u2014 applied automatically!" },
-      { "text": "New patterns added regularly — follow me on Instagram!", "link": "https://instagram.com/sweetlyhannahmade", "linkText": "@sweetlyhannahmade" },
+{ "text": "Buy 2 or more patterns and get 10% off all patterns in your order!" },
       { "text": "Crochet patterns at the lowest prices" },
       { "text": "Play my Memory Match game and win a discount!", "link": "https://sweetlyhannahmade.com/play", "linkText": "Play Now" },
-      { "text": "Now open for custom orders!", "link": "https://sweetlyhannahmade.com/gallery#custom-order", "linkText": "Submit a request" }
+      { "text": "Now open for custom orders!", "link": "https://sweetlyhannahmade.com/gallery#custom-order", "linkText": "Submit a request" },
+      { "text": "Free shipping on orders over $75!" }
     ],
     "about": "Hi there! I'm Hannah. I first learned to crochet from my mom when I was nine, and a few years later I discovered amigurumi — and I've been hooked ever since! I love the whole craft of bringing little stuffed animals to life, from designing patterns to crocheting custom plushies. Most of my patterns are beginner-friendly with plenty of photos, and many include video tutorials to help you along the way.",
     "aboutPhoto": "assets/images/logo.png",
